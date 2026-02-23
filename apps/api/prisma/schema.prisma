@@ -1,0 +1,222 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector"), pg_trgm]
+}
+
+enum ContactType {
+  SPONSOR
+  MENTOR
+  SPEAKER
+  INVESTOR
+  CORPORATE_PARTNER
+  MEDIA
+  GOVERNMENT
+  ALUMNI
+  OTHER
+}
+
+enum ContactStatus {
+  ACTIVE
+  INACTIVE
+  PROSPECT
+  ARCHIVED
+}
+
+enum Seniority {
+  C_SUITE
+  VP
+  DIRECTOR
+  MANAGER
+  IC
+  FOUNDER
+  PARTNER
+  OTHER
+}
+
+enum OrganizationType {
+  COMPANY
+  VC_FIRM
+  UNIVERSITY
+  NONPROFIT
+  GOVERNMENT
+  MEDIA
+  ACCELERATOR
+  OTHER
+}
+
+enum InteractionType {
+  MEETING
+  CALL
+  EMAIL
+  EVENT
+  COFFEE_CHAT
+  INTRO
+  VOICE_LOG
+  OTHER
+}
+
+enum Sentiment {
+  VERY_POSITIVE
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+  VERY_NEGATIVE
+}
+
+model Member {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  name         String
+  role         String   @default("Member")
+  avatarUrl    String?  @map("avatar_url")
+  googleId     String   @unique @map("google_id")
+  joinedAt     DateTime @default(now()) @map("joined_at")
+  isAdmin      Boolean  @default(false) @map("is_admin")
+  isActive     Boolean  @default(true) @map("is_active")
+  notionPageId String?  @map("notion_page_id")
+
+  refreshTokenFamily String? @map("refresh_token_family")
+
+  contactsOnboarded Contact[]     @relation("OnboardedBy")
+  interactions      Interaction[]
+  auditLogs         AuditLog[]
+
+  @@map("members")
+}
+
+model Contact {
+  id        String @id @default(uuid()) @db.Uuid
+  fullName  String @map("full_name")
+  email     String?
+  phone     String?
+  photoUrl  String? @map("photo_url")
+
+  title            String    @default("")
+  organization     String
+  organizationType OrganizationType @default(COMPANY) @map("organization_type")
+  industry         String?
+  seniority        Seniority @default(OTHER)
+
+  contactType ContactType @default(OTHER) @map("contact_type")
+  tags        String[]    @default([])
+  genres      String[]    @default([])
+
+  linkedinUrl     String? @map("linkedin_url")
+  twitterUrl      String? @map("twitter_url")
+  personalWebsite String? @map("personal_website")
+  crunchbaseUrl   String? @map("crunchbase_url")
+  githubUrl       String? @map("github_url")
+  otherUrls       String[] @default([]) @map("other_urls")
+
+  onboardedById String @map("onboarded_by_id") @db.Uuid
+  onboardedBy   Member @relation("OnboardedBy", fields: [onboardedById], references: [id])
+
+  researchSummary             String?  @map("research_summary") @db.Text
+  researchRaw                 Json?    @map("research_raw")
+  researchLastUpdated         DateTime? @map("research_last_updated")
+  researchDepthScore          Float    @default(0) @map("research_depth_score")
+  keyAchievements             String[] @default([]) @map("key_achievements")
+  mutualInterestsWithFoundry  String[] @default([]) @map("mutual_interests_with_foundry")
+  potentialValue              String?  @map("potential_value") @db.Text
+  suggestedIntroductions      String[] @default([]) @map("suggested_introductions")
+
+  // pgvector embedding stored via raw SQL (Prisma doesn't support vector type natively)
+  // profile_embedding vector(1536) — managed via migration
+
+  status       ContactStatus @default(ACTIVE)
+  warmthScore  Float         @default(0.5) @map("warmth_score")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  notionPageId String?       @map("notion_page_id")
+
+  interactions       Interaction[]
+  contactOrganizations ContactOrganization[]
+
+  @@index([onboardedById])
+  @@index([contactType])
+  @@index([status])
+  @@index([organizationType])
+  @@index([warmthScore])
+  @@index([createdAt])
+  @@map("contacts")
+}
+
+model Organization {
+  id              String           @id @default(uuid()) @db.Uuid
+  name            String           @unique
+  type            OrganizationType @default(COMPANY)
+  industry        String?
+  website         String?
+  description     String?          @db.Text
+  logoUrl         String?          @map("logo_url")
+  researchSummary String?          @map("research_summary") @db.Text
+  notionPageId    String?          @map("notion_page_id")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  contactOrganizations ContactOrganization[]
+
+  @@map("organizations")
+}
+
+model ContactOrganization {
+  id             String       @id @default(uuid()) @db.Uuid
+  contactId      String       @map("contact_id") @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  title          String?
+  since          DateTime?
+  current        Boolean      @default(true)
+
+  contact      Contact      @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([contactId, organizationId])
+  @@map("contact_organizations")
+}
+
+model Interaction {
+  id             String          @id @default(uuid()) @db.Uuid
+  contactId      String          @map("contact_id") @db.Uuid
+  memberId       String          @map("member_id") @db.Uuid
+  type           InteractionType @default(OTHER)
+  date           DateTime        @default(now())
+  summary        String          @db.Text
+  rawTranscript  String?         @map("raw_transcript") @db.Text
+  keyTakeaways   String[]        @default([]) @map("key_takeaways")
+  followUpItems  String[]        @default([]) @map("follow_up_items")
+  sentiment      Sentiment       @default(NEUTRAL)
+  notionPageId   String?         @map("notion_page_id")
+  createdAt      DateTime        @default(now()) @map("created_at")
+
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  member  Member  @relation(fields: [memberId], references: [id])
+
+  @@index([contactId])
+  @@index([memberId])
+  @@index([date])
+  @@map("interactions")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
+  memberId   String?  @map("member_id") @db.Uuid
+  metadata   Json?
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  member Member? @relation(fields: [memberId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([memberId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

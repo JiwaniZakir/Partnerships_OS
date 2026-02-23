@@ -1,0 +1,25 @@
+{
+  "name": "foundry-partnerships-os",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "typecheck": "turbo typecheck",
+    "db:migrate": "pnpm --filter @fpos/api exec prisma migrate dev",
+    "db:generate": "pnpm --filter @fpos/api exec prisma generate",
+    "db:seed": "pnpm --filter @fpos/api exec tsx scripts/seed.ts",
+    "neo4j:migrate": "pnpm --filter @fpos/api exec tsx scripts/migrate-neo4j.ts",
+    "notion:setup": "pnpm --filter @fpos/api exec tsx scripts/setup-notion.ts"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

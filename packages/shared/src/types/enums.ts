@@ -1,0 +1,59 @@
+export enum ContactType {
+  SPONSOR = 'SPONSOR',
+  MENTOR = 'MENTOR',
+  SPEAKER = 'SPEAKER',
+  INVESTOR = 'INVESTOR',
+  CORPORATE_PARTNER = 'CORPORATE_PARTNER',
+  MEDIA = 'MEDIA',
+  GOVERNMENT = 'GOVERNMENT',
+  ALUMNI = 'ALUMNI',
+  OTHER = 'OTHER',
+}
+
+export enum ContactStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  PROSPECT = 'PROSPECT',
+  ARCHIVED = 'ARCHIVED',
+}
+
+export enum Seniority {
+  C_SUITE = 'C_SUITE',
+  VP = 'VP',
+  DIRECTOR = 'DIRECTOR',
+  MANAGER = 'MANAGER',
+  IC = 'IC',
+  FOUNDER = 'FOUNDER',
+  PARTNER = 'PARTNER',
+  OTHER = 'OTHER',
+}
+
+export enum OrganizationType {
+  COMPANY = 'COMPANY',
+  VC_FIRM = 'VC_FIRM',
+  UNIVERSITY = 'UNIVERSITY',
+  NONPROFIT = 'NONPROFIT',
+  GOVERNMENT = 'GOVERNMENT',
+  MEDIA = 'MEDIA',
+  ACCELERATOR = 'ACCELERATOR',
+  OTHER = 'OTHER',
+}
+
+export enum InteractionType {
+  MEETING = 'MEETING',
+  CALL = 'CALL',
+  EMAIL = 'EMAIL',
+  EVENT = 'EVENT',
+  COFFEE_CHAT = 'COFFEE_CHAT',
+  INTRO = 'INTRO',
+  VOICE_LOG = 'VOICE_LOG',
+  OTHER = 'OTHER',
+}
+
+export enum Sentiment {
+  VERY_POSITIVE = 'VERY_POSITIVE',
+  POSITIVE = 'POSITIVE',
+  NEUTRAL = 'NEUTRAL',
+  NEGATIVE = 'NEGATIVE',
+  VERY_NEGATIVE = 'VERY_NEGATIVE',
+}
