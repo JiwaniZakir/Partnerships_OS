@@ -47,7 +47,7 @@ export default function ContactsPage() {
       'Onboarded By': c.onboardedBy?.name || '',
       Added: c.createdAt,
     }));
-    exportToCsv(rows, `foundry-contacts-${new Date().toISOString().split('T')[0]}`);
+    exportToCsv(rows, `contacts-${new Date().toISOString().split('T')[0]}`);
   }, [contacts]);
 
   return (

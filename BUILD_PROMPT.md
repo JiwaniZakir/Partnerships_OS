@@ -136,7 +136,7 @@ Verify: Can create a member via auth, create contacts, log interactions, query a
    - Calls Claude API (claude-sonnet-4-5-20250929) with a carefully crafted prompt to generate:
      - `research_summary`: 500-1000 word comprehensive profile
      - `key_achievements`: array of notable accomplishments
-     - `mutual_interests_with_foundry`: how they align with The Foundry's mission
+     - `mutual_interests`: how they align with the organization's mission
      - `potential_value`: specific ways they could contribute to the nonprofit
      - `suggested_introductions`: people they might connect us to
    - Use a structured output prompt that returns JSON
@@ -188,7 +188,7 @@ Verify: Create a contact, trigger research pipeline, confirm PostgreSQL has rese
 
    b. **Agent Orchestrator** (`voice/agent.ts`):
       - System prompt that establishes the agent's personality:
-        "You are the Foundry's Partnership Intelligence Assistant. You help members of The Foundry PHL — a nonprofit connecting college founders with VCs and corporate partners — manage and grow their professional network. You're knowledgeable, efficient, warm, and always ready to help log a new contact, capture meeting notes, or answer questions about the network. You have access to the full partnership database and can search the internet for additional context."
+        "You are the Partnership Intelligence Assistant. You help members of the organization — a nonprofit connecting college founders with VCs and corporate partners — manage and grow their professional network. You're knowledgeable, efficient, warm, and always ready to help log a new contact, capture meeting notes, or answer questions about the network. You have access to the full partnership database and can search the internet for additional context."
       - Maintains conversation state per session
       - Routes to appropriate handler based on detected intent
 
@@ -327,7 +327,7 @@ Verify: App builds on iOS simulator, Google login works with domain restriction,
    - Two-column layout:
      - Left (2/3):
        - "AI Research Profile" card — full rendered research_summary with section headers
-       - "Why They Matter" card — mutual_interests_with_foundry + potential_value
+       - "Why They Matter" card — mutual_interests + potential_value
        - "Interaction History" — timeline of all interactions with expandable summaries
      - Right (1/3):
        - "Quick Info" card — key facts at a glance

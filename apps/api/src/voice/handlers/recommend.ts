@@ -48,7 +48,7 @@ ${c.potentialValue ? 'Value: ' + c.potentialValue.slice(0, 150) : ''}`
   const response = await client.messages.create({
     model: 'claude-sonnet-4-5-20250929',
     max_tokens: 1000,
-    system: `You are the Foundry's strategic advisor. Given a request, recommend 3-5 people from the network.
+    system: `You are the organization's strategic advisor. Given a request, recommend 3-5 people from the network.
 
 For each recommendation:
 1. Name and why they're relevant

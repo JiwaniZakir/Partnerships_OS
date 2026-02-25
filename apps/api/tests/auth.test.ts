@@ -50,7 +50,7 @@ describe('JWT Auth — signAccessToken / verifyAccessToken', () => {
 
     const payload = {
       sub: 'member-123',
-      email: 'zakir@foundryphl.com',
+      email: 'admin@example.com',
       name: 'Zakir Jiwani',
       role: 'President',
       isAdmin: true,
@@ -85,7 +85,7 @@ describe('JWT Auth — signAccessToken / verifyAccessToken', () => {
 
     const token = await signAccessToken({
       sub: 'member-123',
-      email: 'zakir@foundryphl.com',
+      email: 'admin@example.com',
       name: 'Zakir Jiwani',
       role: 'President',
       isAdmin: false,
@@ -118,7 +118,7 @@ describe('JWT Auth — signAccessToken / verifyAccessToken', () => {
 
     const token = await signAccessToken({
       sub: 'member-123',
-      email: 'zakir@foundryphl.com',
+      email: 'admin@example.com',
       name: 'Zakir Jiwani',
       role: 'President',
       isAdmin: false,
@@ -142,7 +142,7 @@ describe('JWT Auth — signAccessToken / verifyAccessToken', () => {
 
     const payload = {
       sub: 'member-123',
-      email: 'zakir@foundryphl.com',
+      email: 'admin@example.com',
       name: 'Zakir Jiwani',
       role: 'President',
       isAdmin: false,
@@ -173,7 +173,7 @@ describe('JWT Auth — signAccessToken / verifyAccessToken', () => {
     const key = await importPKCS8(TEST_PRIVATE_KEY_PEM, 'RS256');
     const expiredToken = await new SignJWT({
       sub: 'member-123',
-      email: 'zakir@foundryphl.com',
+      email: 'admin@example.com',
       name: 'Zakir Jiwani',
       role: 'President',
       isAdmin: false,
@@ -237,7 +237,7 @@ describe('JWT Auth — signAccessToken / verifyAccessToken', () => {
     const key = await importPKCS8(TEST_PRIVATE_KEY_PEM, 'RS256');
     const badAudienceToken = await new SignJWT({
       sub: 'member-123',
-      email: 'zakir@foundryphl.com',
+      email: 'admin@example.com',
       name: 'Zakir',
       role: 'President',
       isAdmin: false,
@@ -268,7 +268,7 @@ describe('JWT Auth — signAccessToken / verifyAccessToken', () => {
     const key = await importPKCS8(TEST_PRIVATE_KEY_PEM, 'RS256');
     const badIssuerToken = await new SignJWT({
       sub: 'member-123',
-      email: 'zakir@foundryphl.com',
+      email: 'admin@example.com',
       name: 'Zakir',
       role: 'President',
       isAdmin: false,
@@ -390,7 +390,7 @@ describe('JWT Auth — signRefreshToken / verifyRefreshToken', () => {
 
     const accessToken = await signAccessToken({
       sub: 'member-456',
-      email: 'zakir@foundryphl.com',
+      email: 'admin@example.com',
       name: 'Zakir Jiwani',
       role: 'President',
       isAdmin: false,

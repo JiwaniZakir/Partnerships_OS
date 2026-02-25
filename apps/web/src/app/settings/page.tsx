@@ -143,7 +143,7 @@ export default function SettingsPage() {
                   <Input
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
-                    placeholder="email@foundryphl.com"
+                    placeholder="email@your-domain.com"
                     className="sm:max-w-xs"
                   />
                   <Button
@@ -162,7 +162,7 @@ export default function SettingsPage() {
                   <p className="text-xs text-red-400 mb-3">Failed to add member.</p>
                 )}
                 <p className="text-xs text-[#6B6560]">
-                  Only @foundryphl.com email addresses can be added as members.
+                  Only approved domain email addresses can be added as members.
                 </p>
               </CardContent>
             </Card>

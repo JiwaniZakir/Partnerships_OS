@@ -74,7 +74,7 @@ export async function runResearchPipeline(contactId: string): Promise<void> {
     synthesis = {
       researchSummary: null,
       keyAchievements: [],
-      mutualInterestsWithFoundry: [],
+      mutualInterests: [],
       potentialValue: null,
       suggestedIntroductions: [],
     };
@@ -89,7 +89,7 @@ export async function runResearchPipeline(contactId: string): Promise<void> {
       researchLastUpdated: new Date(),
       researchDepthScore: Math.min(1, depthScore),
       keyAchievements: synthesis.keyAchievements,
-      mutualInterestsWithFoundry: synthesis.mutualInterestsWithFoundry,
+      mutualInterests: synthesis.mutualInterests,
       potentialValue: synthesis.potentialValue,
       suggestedIntroductions: synthesis.suggestedIntroductions,
     },

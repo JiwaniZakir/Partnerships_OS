@@ -20,8 +20,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Foundry Partnerships OS',
-  description: 'Partnership intelligence platform for The Foundry PHL',
+  title: 'Partnerships OS',
+  description: 'Partnership intelligence platform',
   icons: {
     icon: '/favicon.png',
   },

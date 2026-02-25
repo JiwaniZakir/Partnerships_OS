@@ -75,7 +75,8 @@ const config: NextAuthConfig = {
     },
     async signIn({ user }) {
       const email = user.email || '';
-      return email.endsWith('@foundryphl.com');
+      const allowedDomain = process.env.ALLOWED_DOMAIN || 'example.com';
+      return email.endsWith(`@${allowedDomain}`);
     },
     async jwt({ token, user, account }) {
       // Credentials login — tokens come from the user object directly

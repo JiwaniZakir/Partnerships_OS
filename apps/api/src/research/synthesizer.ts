@@ -27,7 +27,7 @@ interface SynthesisInput {
 interface SynthesisOutput {
   researchSummary: string;
   keyAchievements: string[];
-  mutualInterestsWithFoundry: string[];
+  mutualInterests: string[];
   potentialValue: string;
   suggestedIntroductions: string[];
 }
@@ -41,7 +41,7 @@ export async function synthesizeResearch(
     return {
       researchSummary: '',
       keyAchievements: [],
-      mutualInterestsWithFoundry: [],
+      mutualInterests: [],
       potentialValue: '',
       suggestedIntroductions: [],
     };
@@ -74,7 +74,7 @@ export async function synthesizeResearch(
     messages: [
       {
         role: 'user',
-        content: `You are a research analyst for The Foundry PHL, a nonprofit connecting East Coast college founders with VCs, corporate partners, and industry leaders.
+        content: `You are a research analyst for a nonprofit connecting East Coast college founders with VCs, corporate partners, and industry leaders.
 
 Research the following person and produce a comprehensive profile:
 
@@ -89,8 +89,8 @@ Please respond with a JSON object (no markdown) containing:
 {
   "researchSummary": "A 500-1000 word comprehensive profile covering career trajectory, notable achievements, expertise areas, and professional reputation.",
   "keyAchievements": ["Achievement 1", "Achievement 2", ...],
-  "mutualInterestsWithFoundry": ["Interest/synergy 1", ...],
-  "potentialValue": "Analysis of how this person could benefit The Foundry and vice versa.",
+  "mutualInterests": ["Interest/synergy 1", ...],
+  "potentialValue": "Analysis of how this person could benefit the organization and vice versa.",
   "suggestedIntroductions": ["Person/org they could connect us to", ...]
 }`,
       },
@@ -107,7 +107,7 @@ Please respond with a JSON object (no markdown) containing:
     return {
       researchSummary: parsed.researchSummary || '',
       keyAchievements: parsed.keyAchievements || [],
-      mutualInterestsWithFoundry: parsed.mutualInterestsWithFoundry || [],
+      mutualInterests: parsed.mutualInterests || [],
       potentialValue: parsed.potentialValue || '',
       suggestedIntroductions: parsed.suggestedIntroductions || [],
     };
@@ -116,7 +116,7 @@ Please respond with a JSON object (no markdown) containing:
     return {
       researchSummary: response.content[0] && response.content[0].type === 'text' ? response.content[0].text : '',
       keyAchievements: [],
-      mutualInterestsWithFoundry: [],
+      mutualInterests: [],
       potentialValue: '',
       suggestedIntroductions: [],
     };

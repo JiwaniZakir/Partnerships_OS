@@ -61,7 +61,7 @@ export async function discoverForEvent(
     messages: [
       {
         role: 'user',
-        content: `You are The Foundry PHL's strategic advisor. Given an event/initiative description, rank the best contacts to involve.
+        content: `You are the organization's strategic advisor. Given an event/initiative description, rank the best contacts to involve.
 
 Event/Initiative: "${description}"
 

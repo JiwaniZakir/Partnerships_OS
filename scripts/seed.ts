@@ -19,19 +19,19 @@ async function seed() {
   // Create members
   const members = await Promise.all([
     prisma.member.create({
-      data: { id: randomUUID(), email: 'zakir@foundryphl.com', name: 'Zakir Jiwani', role: 'President', googleId: 'google_zakir', isAdmin: true },
+      data: { id: randomUUID(), email: 'admin@example.com', name: 'Admin User', role: 'President', googleId: 'google_admin', isAdmin: true },
     }),
     prisma.member.create({
-      data: { id: randomUUID(), email: 'admin@foundryphl.com', name: 'Sarah Chen', role: 'VP Partnerships', googleId: 'google_sarah', isAdmin: true },
+      data: { id: randomUUID(), email: 'sarah@example.com', name: 'Sarah Chen', role: 'VP Partnerships', googleId: 'google_sarah', isAdmin: true },
     }),
     prisma.member.create({
-      data: { id: randomUUID(), email: 'michael@foundryphl.com', name: 'Michael Roberts', role: 'Director of Events', googleId: 'google_michael', isAdmin: false },
+      data: { id: randomUUID(), email: 'michael@example.com', name: 'Michael Roberts', role: 'Director of Events', googleId: 'google_michael', isAdmin: false },
     }),
     prisma.member.create({
-      data: { id: randomUUID(), email: 'priya@foundryphl.com', name: 'Priya Patel', role: 'VP Sponsorships', googleId: 'google_priya', isAdmin: false },
+      data: { id: randomUUID(), email: 'priya@example.com', name: 'Priya Patel', role: 'VP Sponsorships', googleId: 'google_priya', isAdmin: false },
     }),
     prisma.member.create({
-      data: { id: randomUUID(), email: 'james@foundryphl.com', name: 'James Wilson', role: 'Director of Outreach', googleId: 'google_james', isAdmin: false },
+      data: { id: randomUUID(), email: 'james@example.com', name: 'James Wilson', role: 'Director of Outreach', googleId: 'google_james', isAdmin: false },
     }),
   ]);
 
@@ -115,10 +115,10 @@ async function seed() {
         onboardedById: member.id,
         organizationType: d.organization.includes('Capital') || d.organization.includes('Ventures') ? 'VC_FIRM' : d.contactType === 'GOVERNMENT' ? 'GOVERNMENT' : 'COMPANY',
         industry: d.genres[0] || null,
-        researchSummary: `${d.fullName} serves as ${d.title} at ${d.organization}. They are well-connected in the ${d.genres.join(' and ')} space and represent a valuable connection for The Foundry's network. Their expertise and position make them an ideal ${d.contactType.toLowerCase().replace('_', ' ')} for our community of East Coast college founders.`,
+        researchSummary: `${d.fullName} serves as ${d.title} at ${d.organization}. They are well-connected in the ${d.genres.join(' and ')} space and represent a valuable connection for the organization's network. Their expertise and position make them an ideal ${d.contactType.toLowerCase().replace('_', ' ')} for our community of East Coast college founders.`,
         researchDepthScore: 0.3,
         keyAchievements: [`${d.title} at ${d.organization}`, `Active in ${d.genres.join(', ')}`],
-        potentialValue: `As a ${d.contactType.toLowerCase().replace('_', ' ')}, ${d.fullName} can help The Foundry by providing access to ${d.organization}'s network and resources in the ${d.genres.join('/')} space.`,
+        potentialValue: `As a ${d.contactType.toLowerCase().replace('_', ' ')}, ${d.fullName} can help the organization by providing access to ${d.organization}'s network and resources in the ${d.genres.join('/')} space.`,
       },
     });
     contacts.push(contact);
@@ -144,8 +144,8 @@ async function seed() {
           memberId: member.id,
           type,
           date: new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000),
-          summary: `${type.charAt(0) + type.slice(1).toLowerCase()} with ${contact.fullName} from ${contact.organization}. Discussed potential collaboration and partnership opportunities with The Foundry.`,
-          keyTakeaways: ['Interested in partnering with Foundry', 'Follow up next month'],
+          summary: `${type.charAt(0) + type.slice(1).toLowerCase()} with ${contact.fullName} from ${contact.organization}. Discussed potential collaboration and partnership opportunities with the organization.`,
+          keyTakeaways: ['Interested in partnering', 'Follow up next month'],
           followUpItems: ['Send partnership deck', 'Schedule follow-up call'],
           sentiment: sentiments[Math.floor(Math.random() * sentiments.length)],
         },

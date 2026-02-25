@@ -7,7 +7,7 @@ const isDev = process.env.NEXT_PUBLIC_API_URL?.includes('localhost') ||
   process.env.NODE_ENV === 'development';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('zakir@foundryphl.com');
+  const [email, setEmail] = useState('admin@example.com');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -37,7 +37,7 @@ export default function LoginPage() {
         </div>
 
         <h1 className="font-serif italic text-3xl text-[#F1EFE7] mb-1">
-          the foundry
+          partnerships
         </h1>
         <p className="text-[11px] text-[#6B6560] font-medium uppercase tracking-[0.25em] mb-10">
           partnerships os
@@ -81,7 +81,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="email@foundryphl.com"
+                placeholder="email@your-domain.com"
                 className="w-full rounded-lg border border-[#2A2520] bg-[#141210] px-4 py-3 text-sm text-[#F1EFE7] placeholder-[#6B6560] focus:border-[#6366F1] focus:outline-none focus:ring-1 focus:ring-[#6366F1]"
               />
               <button
@@ -99,7 +99,7 @@ export default function LoginPage() {
         )}
 
         <p className="mt-6 text-xs text-[#6B6560]">
-          Only @foundryphl.com accounts can access this platform
+          Only approved domain accounts can access this platform
         </p>
       </div>
     </div>

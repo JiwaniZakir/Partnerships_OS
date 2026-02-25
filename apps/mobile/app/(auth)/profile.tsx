@@ -33,7 +33,7 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>About</Text>
         <View style={styles.card}>
           <Text style={styles.cardText}>
-            The Foundry PHL Partnerships OS{'\n'}
+            Partnerships OS{'\n'}
             Version 0.1.0
           </Text>
         </View>

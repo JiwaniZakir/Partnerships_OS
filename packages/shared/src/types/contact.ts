@@ -26,7 +26,7 @@ export interface Contact {
   researchLastUpdated: Date | null;
   researchDepthScore: number;
   keyAchievements: string[];
-  mutualInterestsWithFoundry: string[];
+  mutualInterests: string[];
   potentialValue: string | null;
   suggestedIntroductions: string[];
   status: ContactStatus;

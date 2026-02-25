@@ -28,7 +28,7 @@ interface ContactDetail {
   researchSummary?: string;
   keyAchievements?: string[];
   potentialValue?: string;
-  mutualInterestsWithFoundry?: string[];
+  mutualInterests?: string[];
   onboardedBy?: { name: string };
   createdAt: string;
   interactions?: {

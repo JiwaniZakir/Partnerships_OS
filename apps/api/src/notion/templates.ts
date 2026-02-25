@@ -87,7 +87,7 @@ export function buildContactPageBlocks(contact: any): any[] {
       object: 'block',
       type: 'heading_2',
       heading_2: {
-        rich_text: [{ text: { content: '🤝 Why They Matter to The Foundry' } }],
+        rich_text: [{ text: { content: '🤝 Why They Matter to the Organization' } }],
       },
     });
 

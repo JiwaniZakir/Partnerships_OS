@@ -33,7 +33,7 @@ describe('PII Encryption — encrypt / decrypt', () => {
   });
 
   it('should encrypt and decrypt a simple string round-trip', () => {
-    const plaintext = 'zakir@foundryphl.com';
+    const plaintext = 'admin@example.com';
     const encrypted = encrypt(plaintext);
     const decrypted = decrypt(encrypted);
     expect(decrypted).toBe(plaintext);
@@ -146,7 +146,7 @@ describe('PII Encryption — isEncrypted', () => {
 
   it('should not identify plain text as encrypted', () => {
     expect(isEncrypted('hello world')).toBe(false);
-    expect(isEncrypted('zakir@foundryphl.com')).toBe(false);
+    expect(isEncrypted('admin@example.com')).toBe(false);
     expect(isEncrypted('just some text')).toBe(false);
   });
 

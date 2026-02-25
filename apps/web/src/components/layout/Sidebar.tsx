@@ -83,7 +83,7 @@ export function Sidebar() {
           {(!collapsed || mobileOpen) && (
             <div className="min-w-0">
               <h1 className="font-serif italic text-lg text-[#F1EFE7] leading-tight tracking-tight">
-                the foundry
+                partnerships
               </h1>
               <p className="text-[9px] text-[#6B6560] font-medium uppercase tracking-[0.2em]">
                 partnerships os

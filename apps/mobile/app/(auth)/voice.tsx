@@ -194,7 +194,7 @@ export default function VoiceScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Foundry AI</Text>
+        <Text style={styles.title}>Partnerships AI</Text>
         <View style={styles.statusRow}>
           <View
             style={[

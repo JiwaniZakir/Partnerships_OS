@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Foundry Partnerships OS",
+    "name": "Partnerships OS",
     "slug": "fpos-mobile",
     "version": "0.1.0",
     "orientation": "portrait",
@@ -13,10 +13,10 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.foundryphl.partnerships"
+      "bundleIdentifier": "com.partnerships.os"
     },
     "android": {
-      "package": "com.foundryphl.partnerships",
+      "package": "com.partnerships.os",
       "adaptiveIcon": {
         "backgroundColor": "#0A0A0A"
       }

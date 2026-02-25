@@ -33,7 +33,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
       const email = body.email.toLowerCase();
 
       if (!isApprovedMember(email)) {
-        throw new ForbiddenError('Access restricted to approved Foundry members');
+        throw new ForbiddenError('Access restricted to approved members');
       }
 
       const isAdmin = isAdminMember(email);
@@ -91,7 +91,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
     const googleUser = await verifyGoogleToken(body.idToken);
 
     if (!isApprovedMember(googleUser.email)) {
-      throw new ForbiddenError('Access restricted to approved Foundry members');
+      throw new ForbiddenError('Access restricted to approved members');
     }
 
     const isAdmin = isAdminMember(googleUser.email);

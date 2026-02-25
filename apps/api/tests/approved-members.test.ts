@@ -3,17 +3,17 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // We need to mock `fs.readFileSync` before the module is imported.
 // The approved-members module reads the markdown file synchronously on first call.
 
-const MOCK_APPROVED_MEMBERS_MD = `# Approved Members — The Foundry PHL
+const MOCK_APPROVED_MEMBERS_MD = `# Approved Members
 
 > This file is read by the authentication service.
 
 ## Admins (Full dashboard + mobile access)
-- zakir@foundryphl.com
-- admin@foundryphl.com
+- admin@example.com
+- ops@example.com
 
 ## Members (Mobile app access)
-- alice@foundryphl.com
-- bob@foundryphl.com
+- alice@example.com
+- bob@example.com
 `;
 
 vi.mock('fs', () => ({
@@ -44,25 +44,25 @@ describe('Approved Members — isApprovedMember', () => {
   });
 
   it('should recognize admin emails as approved members', () => {
-    expect(isApprovedMember('zakir@foundryphl.com')).toBe(true);
-    expect(isApprovedMember('admin@foundryphl.com')).toBe(true);
+    expect(isApprovedMember('admin@example.com')).toBe(true);
+    expect(isApprovedMember('ops@example.com')).toBe(true);
   });
 
   it('should recognize regular member emails as approved', () => {
-    expect(isApprovedMember('alice@foundryphl.com')).toBe(true);
-    expect(isApprovedMember('bob@foundryphl.com')).toBe(true);
+    expect(isApprovedMember('alice@example.com')).toBe(true);
+    expect(isApprovedMember('bob@example.com')).toBe(true);
   });
 
   it('should reject emails not in the approved list', () => {
-    expect(isApprovedMember('stranger@foundryphl.com')).toBe(false);
+    expect(isApprovedMember('stranger@example.com')).toBe(false);
     expect(isApprovedMember('user@gmail.com')).toBe(false);
     expect(isApprovedMember('hacker@evil.com')).toBe(false);
   });
 
   it('should be case-insensitive for email matching', () => {
-    expect(isApprovedMember('ZAKIR@foundryphl.com')).toBe(true);
-    expect(isApprovedMember('Zakir@Foundryphl.Com')).toBe(true);
-    expect(isApprovedMember('ALICE@FOUNDRYPHL.COM')).toBe(true);
+    expect(isApprovedMember('ADMIN@example.com')).toBe(true);
+    expect(isApprovedMember('Admin@Example.Com')).toBe(true);
+    expect(isApprovedMember('ALICE@EXAMPLE.COM')).toBe(true);
   });
 
   it('should reject empty string', () => {
@@ -88,23 +88,23 @@ describe('Approved Members — isAdminMember', () => {
   });
 
   it('should identify admin emails as admins', () => {
-    expect(isAdminMember('zakir@foundryphl.com')).toBe(true);
-    expect(isAdminMember('admin@foundryphl.com')).toBe(true);
+    expect(isAdminMember('admin@example.com')).toBe(true);
+    expect(isAdminMember('ops@example.com')).toBe(true);
   });
 
   it('should not identify regular members as admins', () => {
-    expect(isAdminMember('alice@foundryphl.com')).toBe(false);
-    expect(isAdminMember('bob@foundryphl.com')).toBe(false);
+    expect(isAdminMember('alice@example.com')).toBe(false);
+    expect(isAdminMember('bob@example.com')).toBe(false);
   });
 
   it('should not identify unknown emails as admins', () => {
-    expect(isAdminMember('stranger@foundryphl.com')).toBe(false);
+    expect(isAdminMember('stranger@example.com')).toBe(false);
     expect(isAdminMember('admin@gmail.com')).toBe(false);
   });
 
   it('should be case-insensitive for admin matching', () => {
-    expect(isAdminMember('ZAKIR@foundryphl.com')).toBe(true);
-    expect(isAdminMember('Admin@Foundryphl.Com')).toBe(true);
+    expect(isAdminMember('ADMIN@example.com')).toBe(true);
+    expect(isAdminMember('Ops@Example.Com')).toBe(true);
   });
 });
 
@@ -138,10 +138,10 @@ describe('Approved Members — getApprovedMembers', () => {
     expect(admins).toHaveLength(2);
     expect(nonAdmins).toHaveLength(2);
 
-    expect(admins.map((a) => a.email)).toContain('zakir@foundryphl.com');
-    expect(admins.map((a) => a.email)).toContain('admin@foundryphl.com');
-    expect(nonAdmins.map((a) => a.email)).toContain('alice@foundryphl.com');
-    expect(nonAdmins.map((a) => a.email)).toContain('bob@foundryphl.com');
+    expect(admins.map((a) => a.email)).toContain('admin@example.com');
+    expect(admins.map((a) => a.email)).toContain('ops@example.com');
+    expect(nonAdmins.map((a) => a.email)).toContain('alice@example.com');
+    expect(nonAdmins.map((a) => a.email)).toContain('bob@example.com');
   });
 });
 
@@ -163,22 +163,22 @@ describe('Approved Members — markdown parsing edge cases', () => {
   it('should handle file with only admins section', async () => {
     vi.doMock('fs', () => ({
       readFileSync: vi.fn(() => `## Admins
-- solo@foundryphl.com
+- solo@example.com
 `),
     }));
 
     const mod = await import('../src/config/approved-members.js');
     const members = mod.getApprovedMembers();
     expect(members).toHaveLength(1);
-    expect(members[0].email).toBe('solo@foundryphl.com');
+    expect(members[0].email).toBe('solo@example.com');
     expect(members[0].isAdmin).toBe(true);
   });
 
   it('should handle file with only members section', async () => {
     vi.doMock('fs', () => ({
       readFileSync: vi.fn(() => `## Members
-- member1@foundryphl.com
-- member2@foundryphl.com
+- member1@example.com
+- member2@example.com
 `),
     }));
 
@@ -194,12 +194,12 @@ describe('Approved Members — markdown parsing edge cases', () => {
 Some description text
 
 ## Admins
-- admin@foundryphl.com
+- ops@example.com
 Not a member line
 <!-- A comment -->
 
 ## Members
-- member@foundryphl.com
+- member@example.com
 Random text here
 `),
     }));
@@ -212,10 +212,10 @@ Random text here
   it('should handle members section appearing before admins', async () => {
     vi.doMock('fs', () => ({
       readFileSync: vi.fn(() => `## Members
-- member@foundryphl.com
+- member@example.com
 
 ## Admins
-- admin@foundryphl.com
+- ops@example.com
 `),
     }));
 
@@ -225,8 +225,8 @@ Random text here
     // The parser switches isAdmin flag based on section headers
     // Members section first: isAdmin = false
     // Admins section second: isAdmin = true
-    const admin = members.find((m) => m.email === 'admin@foundryphl.com');
-    const member = members.find((m) => m.email === 'member@foundryphl.com');
+    const admin = members.find((m) => m.email === 'ops@example.com');
+    const member = members.find((m) => m.email === 'member@example.com');
 
     expect(admin).toBeDefined();
     expect(admin!.isAdmin).toBe(true);
@@ -237,14 +237,14 @@ Random text here
   it('should handle extra whitespace in email lines', async () => {
     vi.doMock('fs', () => ({
       readFileSync: vi.fn(() => `## Admins
--   spacey@foundryphl.com
+-   spacey@example.com
 `),
     }));
 
     const mod = await import('../src/config/approved-members.js');
     const members = mod.getApprovedMembers();
     expect(members).toHaveLength(1);
-    expect(members[0].email).toBe('spacey@foundryphl.com');
+    expect(members[0].email).toBe('spacey@example.com');
   });
 });
 
@@ -262,9 +262,9 @@ describe('Approved Members — cache behavior', () => {
     const mod = await import('../src/config/approved-members.js');
 
     // Multiple calls should use cached data
-    mod.isApprovedMember('zakir@foundryphl.com');
-    mod.isApprovedMember('alice@foundryphl.com');
-    mod.isAdminMember('zakir@foundryphl.com');
+    mod.isApprovedMember('admin@example.com');
+    mod.isApprovedMember('alice@example.com');
+    mod.isAdminMember('admin@example.com');
     mod.getApprovedMembers();
 
     // readFileSync should have been called exactly once (on first load)

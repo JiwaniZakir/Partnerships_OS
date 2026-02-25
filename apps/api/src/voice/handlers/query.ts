@@ -54,7 +54,7 @@ export async function handleQuery(
   const response = await client.messages.create({
     model: 'claude-sonnet-4-5-20250929',
     max_tokens: 800,
-    system: `You are the Foundry's network intelligence assistant. Answer questions about the network concisely.
+    system: `You are the network intelligence assistant. Answer questions about the network concisely.
 
 Network context:
 ${context || 'No matching contacts found.'}

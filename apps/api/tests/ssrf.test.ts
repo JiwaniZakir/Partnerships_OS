@@ -71,7 +71,7 @@ describe('isPrivateHost — direct function tests', () => {
   it('should not identify public hostnames as private', () => {
     expect(isPrivateHost('google.com')).toBe(false);
     expect(isPrivateHost('linkedin.com')).toBe(false);
-    expect(isPrivateHost('api.foundryphl.com')).toBe(false);
+    expect(isPrivateHost('api.example.com')).toBe(false);
   });
 });
 

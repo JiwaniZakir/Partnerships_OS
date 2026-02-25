@@ -18,7 +18,7 @@ const isDev = API_URL.includes('localhost') || __DEV__;
 export default function LoginScreen() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuthStore();
-  const [email, setEmail] = useState('zakir@foundryphl.com');
+  const [email, setEmail] = useState('admin@example.com');
   const [devLoading, setDevLoading] = useState(false);
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function LoginScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.logoLetter}>f</Text>
-        <Text style={styles.logo}>the foundry</Text>
+        <Text style={styles.logo}>partnerships</Text>
         <Text style={styles.subtitle}>PARTNERSHIPS OS</Text>
       </View>
 
@@ -85,7 +85,7 @@ export default function LoginScreen() {
             style={styles.emailInput}
             value={email}
             onChangeText={setEmail}
-            placeholder="email@foundryphl.com"
+            placeholder="email@your-domain.com"
             placeholderTextColor="#6B6560"
             keyboardType="email-address"
             autoCapitalize="none"
@@ -107,7 +107,7 @@ export default function LoginScreen() {
       )}
 
       <Text style={styles.restriction}>
-        Restricted to @foundryphl.com accounts
+        Restricted to approved domain accounts
       </Text>
     </View>
   );

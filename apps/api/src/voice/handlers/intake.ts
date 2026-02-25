@@ -16,7 +16,7 @@ export async function handleIntake(
   const response = await client.messages.create({
     model: 'claude-sonnet-4-5-20250929',
     max_tokens: 1000,
-    system: `You are the Foundry's Partnership Intelligence Assistant helping ${session.memberName} add a new contact.
+    system: `You are the Partnership Intelligence Assistant helping ${session.memberName} add a new contact.
 
 Your job is to gather contact details through conversation. You need:
 - Full name (REQUIRED)
