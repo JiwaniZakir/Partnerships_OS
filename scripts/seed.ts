@@ -65,7 +65,7 @@ async function seed() {
     { fullName: 'Diana Cruz', title: 'Head of DEI Partnerships', organization: 'Meta', contactType: 'CORPORATE_PARTNER' as const, seniority: 'DIRECTOR' as const, genres: ['social', 'VR/AR'], warmthScore: 0.5 },
     { fullName: 'Steven Chang', title: 'Startup Program Manager', organization: 'Stripe', contactType: 'CORPORATE_PARTNER' as const, seniority: 'MANAGER' as const, genres: ['fintech', 'payments'], warmthScore: 0.65 },
     { fullName: 'Maria Rodriguez', title: 'VP Strategic Partnerships', organization: 'Salesforce', contactType: 'CORPORATE_PARTNER' as const, seniority: 'VP' as const, genres: ['SaaS', 'CRM'], warmthScore: 0.55 },
-    { fullName: 'Patrick O'\''Brien', title: 'Innovation Lab Director', organization: 'Vanguard', contactType: 'CORPORATE_PARTNER' as const, seniority: 'DIRECTOR' as const, genres: ['fintech', 'wealth management'], warmthScore: 0.7 },
+    { fullName: "Patrick O'Brien", title: 'Innovation Lab Director', organization: 'Vanguard', contactType: 'CORPORATE_PARTNER' as const, seniority: 'DIRECTOR' as const, genres: ['fintech', 'wealth management'], warmthScore: 0.7 },
 
     // Speakers (8)
     { fullName: 'Dr. Maya Patel', title: 'Professor of Entrepreneurship', organization: 'Wharton School', contactType: 'SPEAKER' as const, seniority: 'OTHER' as const, genres: ['entrepreneurship', 'education'], warmthScore: 0.85 },
