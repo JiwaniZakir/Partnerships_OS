@@ -62,7 +62,7 @@ jobs:
       - run: pnpm --filter @fpos/api exec prisma migrate deploy
         env:
           DATABASE_URL: postgresql://fpos:fpos_test@localhost:5432/fpos_test
-      - run: pnpm test
+      - run: pnpm test --coverage
         env:
           DATABASE_URL: postgresql://fpos:fpos_test@localhost:5432/fpos_test
           REDIS_URL: redis://localhost:6379
