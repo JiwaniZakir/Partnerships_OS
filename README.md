@@ -1,33 +1,64 @@
+<div align="center">
+
+<img src="logo/2.png" alt="Partnerships OS" width="140" />
+
 # Partnerships OS
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
-[![Neo4j](https://img.shields.io/badge/Neo4j-Graph_DB-4581C3?logo=neo4j&logoColor=white)](https://neo4j.com/)
-[![React Native](https://img.shields.io/badge/React_Native-Expo_52-61DAFB?logo=react&logoColor=white)](https://expo.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+**Enterprise partnership intelligence powered by knowledge graphs, voice AI, and automated research.**
 
-Enterprise partnership intelligence platform. Neo4j knowledge graph, voice-first AI agent, Notion-synced CRM.
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![Neo4j](https://img.shields.io/badge/Neo4j-5-4581C3?style=for-the-badge&logo=neo4j&logoColor=white)](https://neo4j.com/)
+[![Fastify](https://img.shields.io/badge/Fastify-5-000000?style=for-the-badge&logo=fastify&logoColor=white)](https://fastify.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-58A6FF?style=for-the-badge)](LICENSE)
 
----
+[![GitHub stars](https://img.shields.io/github/stars/JiwaniZakir/Partnerships_OS?style=for-the-badge&color=58A6FF)](https://github.com/JiwaniZakir/Partnerships_OS/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/JiwaniZakir/Partnerships_OS?style=for-the-badge&color=58A6FF)](https://github.com/JiwaniZakir/Partnerships_OS/network/members)
 
-## Architecture
+<br />
+
+[Getting Started](#-quick-start) · [Architecture](#-architecture) · [Features](#-features) · [Contributing](#-contributing)
+
+</div>
+
+<br />
+
+## Overview
+
+Partnerships OS is a three-tier intelligence platform that transforms contacts and partnerships into a richly researched, deeply connected knowledge graph. It combines a **Neo4j graph database** for relationship mapping, a **voice-first AI agent** for hands-free data capture, and a **Notion-synced CRM** — enabling teams to build, track, and leverage their collective network with unprecedented depth.
+
+<br />
+
+## :sparkles: Features
+
+- **Knowledge Graph Engine** — Neo4j-powered relationship mapping with typed edges capturing strength, context, and history across contacts, organizations, and interactions
+- **Voice-First AI Agent** — Mobile voice interface (Deepgram STT + ElevenLabs TTS + Claude reasoning) supporting contact intake, network queries, interaction logging, and outreach recommendations
+- **Automated Research Pipeline** — BullMQ background jobs that enrich contacts via Tavily web research, Claude-powered synthesis, pgvector embeddings, and Neo4j graph inference
+- **Interactive Graph Visualization** — D3.js force-directed network explorer with filters, community detection, and path-finding between any two nodes
+- **Notion Bi-Directional Sync** — Real-time mirroring of contacts, interactions, and pipeline state to structured Notion databases with per-member views
+- **RAG-Powered Search** — Hybrid semantic search combining pgvector embeddings, Neo4j graph traversal, and full-text search with Claude-generated natural language answers
+- **AI Discovery Engine** — Event planning, gap analysis, and warm intro pathfinding powered by graph analysis and LLM reasoning
+
+<br />
+
+## :building_construction: Architecture
 
 ```mermaid
 graph TD
-    subgraph "Mobile (Expo)"
+    subgraph "Mobile · Expo SDK 52"
         M1[Voice Agent] --> M2[Contact Intake]
         M1 --> M3[Network Query]
         M1 --> M4[Interaction Logging]
     end
 
-    subgraph "Web Dashboard (Next.js)"
+    subgraph "Web Dashboard · Next.js 15"
         W1[D3.js Graph Explorer] --> W2[Contact Profiles]
         W3[Pipeline Views] --> W4[Analytics]
         W5[Admin Console]
     end
 
-    subgraph "API (Fastify)"
-        A1[Auth - Google OAuth + JWT]
+    subgraph "API · Fastify 5"
+        A1[Auth · Google OAuth + JWT]
         A2[Contact CRUD]
         A3[Research Pipeline]
         A4[Graph Intelligence]
@@ -59,120 +90,125 @@ graph TD
     A6 --> E2
 ```
 
-## Features
+<br />
 
-### Neo4j Knowledge Graph
-Relationship-first data model that maps the full network — contacts, organizations, members, and interactions as nodes, with typed edges capturing relationship strength, context, and history. Graph queries power network discovery, path-finding between contacts, and AI-driven partnership recommendations.
+## :hammer_and_wrench: Tech Stack
 
-### Voice-First AI Agent
-Mobile voice interface powered by Deepgram (STT) and ElevenLabs (TTS) with Claude as the reasoning engine. Supports four intents:
-- **Intake** — Add new contacts via conversational voice input
-- **Query** — Ask questions about the network using RAG over the knowledge graph
-- **Log** — Record meeting notes and interaction summaries hands-free
-- **Recommend** — Get AI-powered outreach suggestions based on graph analysis
+<table>
+<tr><td><b>Monorepo</b></td><td>
 
-### Research Pipeline
-Background job system (BullMQ) that automatically enriches new contacts:
-1. Web research via Tavily API
-2. Claude-powered synthesis of findings
-3. pgvector embedding generation for semantic search
-4. Neo4j graph node creation with relationship inference
-5. Notion page sync with structured templates
+![Turborepo](https://img.shields.io/badge/Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)
 
-### Notion Integration
-Bi-directional sync engine that mirrors contacts, interactions, and pipeline state to Notion databases. Uses structured page templates for consistent formatting.
+</td></tr>
+<tr><td><b>Backend</b></td><td>
 
-### Web Dashboard
-Next.js 15 app with D3.js force-directed graph visualization, contact profiles with interaction timelines, pipeline analytics via Recharts, and admin controls.
+![Fastify](https://img.shields.io/badge/Fastify-000000?style=for-the-badge&logo=fastify&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge&logo=zod&logoColor=white)
 
----
+</td></tr>
+<tr><td><b>Databases</b></td><td>
 
-## Tech Stack
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL_16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Neo4j](https://img.shields.io/badge/Neo4j-4581C3?style=for-the-badge&logo=neo4j&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 
-| Layer | Technology |
-|-------|-----------|
-| **Monorepo** | Turborepo + pnpm workspaces |
-| **API** | Fastify 5, TypeScript |
-| **Database** | PostgreSQL 16 + Prisma ORM + pgvector |
-| **Graph** | Neo4j Community Edition |
-| **Queue** | BullMQ on Redis |
-| **Auth** | Google OAuth + JWT (RS256) |
-| **AI** | Claude API (Anthropic SDK), OpenAI embeddings |
-| **Voice** | Deepgram Nova-2 (STT), ElevenLabs (TTS) |
-| **Research** | Tavily API |
-| **Sync** | Notion API |
-| **Web** | Next.js 15, Tailwind CSS 4, shadcn/ui, D3.js, Recharts |
-| **Mobile** | React Native, Expo SDK 52, Expo Router 4, Zustand |
+</td></tr>
+<tr><td><b>AI / Voice</b></td><td>
 
-## Project Structure
+![Claude](https://img.shields.io/badge/Claude_API-D97757?style=for-the-badge&logo=anthropic&logoColor=white)
+![OpenAI](https://img.shields.io/badge/Embeddings-412991?style=for-the-badge&logo=openai&logoColor=white)
+![Deepgram](https://img.shields.io/badge/Deepgram-13EF93?style=for-the-badge&logo=deepgram&logoColor=black)
+
+</td></tr>
+<tr><td><b>Web</b></td><td>
+
+![Next.js](https://img.shields.io/badge/Next.js_15-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![D3.js](https://img.shields.io/badge/D3.js-F9A03C?style=for-the-badge&logo=d3dotjs&logoColor=white)
+
+</td></tr>
+<tr><td><b>Mobile</b></td><td>
+
+![React Native](https://img.shields.io/badge/React_Native-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Expo](https://img.shields.io/badge/Expo_SDK_52-000020?style=for-the-badge&logo=expo&logoColor=white)
+
+</td></tr>
+</table>
+
+<br />
+
+## :open_file_folder: Project Structure
 
 ```
 partnerships-os/
 ├── apps/
-│   ├── api/                          # Fastify backend
+│   ├── api/                     # Fastify 5 backend
 │   │   ├── src/
-│   │   │   ├── auth/                 # Google OAuth + JWT
-│   │   │   ├── contacts/             # Contact CRUD
-│   │   │   ├── interactions/         # Interaction logging
-│   │   │   ├── members/              # Internal team management
-│   │   │   ├── graph/                # Neo4j operations + discovery
-│   │   │   ├── research/             # AI enrichment pipeline
-│   │   │   ├── voice/                # Voice agent (intake/query/log/recommend)
-│   │   │   ├── notion/               # Sync engine
-│   │   │   ├── jobs/                 # BullMQ workers
-│   │   │   ├── admin/                # Admin endpoints
-│   │   │   └── config/               # Environment + DB connections
-│   │   ├── prisma/                   # Schema + migrations
+│   │   │   ├── auth/            # Google OAuth + JWT + domain guard
+│   │   │   ├── contacts/        # Contact CRUD + research trigger
+│   │   │   ├── interactions/    # Interaction logging
+│   │   │   ├── members/         # Internal team management
+│   │   │   ├── graph/           # Neo4j ops, RAG search, discovery
+│   │   │   ├── research/        # AI enrichment pipeline + enrichers
+│   │   │   ├── voice/           # Voice agent orchestrator + handlers
+│   │   │   ├── notion/          # Bi-directional sync engine
+│   │   │   ├── jobs/            # BullMQ workers + cron
+│   │   │   └── config/          # Env, DB connections, approved members
+│   │   ├── prisma/              # Schema + migrations
 │   │   └── tests/
-│   ├── web/                          # Next.js dashboard
+│   ├── web/                     # Next.js 15 dashboard
 │   │   └── src/
-│   │       ├── app/                  # App Router pages
-│   │       ├── components/           # UI components + D3 graph
+│   │       ├── app/             # App Router (dashboard, graph, contacts, discover)
+│   │       ├── components/      # shadcn/ui, D3 graph, charts
 │   │       ├── hooks/
-│   │       └── lib/                  # API client, auth
-│   └── mobile/                       # React Native voice app
-│       ├── app/                      # Expo Router screens
-│       ├── components/
-│       ├── services/                 # Voice, API, auth
-│       └── stores/                   # Zustand state
+│   │       └── lib/             # API client, auth
+│   └── mobile/                  # Expo voice-first app
+│       ├── app/                 # Expo Router screens
+│       ├── components/          # VoiceButton, Waveform, Transcript
+│       ├── services/            # Voice WebSocket, API, auth
+│       └── stores/              # Zustand state
 ├── packages/
-│   └── shared/                       # TypeScript types + Zod schemas
-├── scripts/                          # Seed, migrations, setup
-├── docker-compose.yml                # PostgreSQL, Neo4j, Redis
+│   └── shared/                  # TypeScript types + Zod schemas
+├── scripts/                     # Seed, migrations, Notion setup
+├── docker-compose.yml           # PostgreSQL + pgvector, Neo4j, Redis
 ├── turbo.json
-├── pnpm-workspace.yaml
-└── package.json
+└── pnpm-workspace.yaml
 ```
 
-## Quick Start
+<br />
+
+## :rocket: Quick Start
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm 9+
-- Docker (for PostgreSQL, Neo4j, Redis)
+- **Node.js** 20+
+- **pnpm** 9+
+- **Docker** (for PostgreSQL, Neo4j, Redis)
 
-### Setup
+### Installation
 
 ```bash
+# Clone the repository
 git clone https://github.com/JiwaniZakir/Partnerships_OS.git
 cd Partnerships_OS
 
 # Install dependencies
 pnpm install
 
-# Start infrastructure
+# Start infrastructure (PostgreSQL + pgvector, Neo4j, Redis)
 docker compose up -d
 
 # Configure environment
 cp .env.example .env
-# Edit .env with your API keys
+# Add your API keys (Anthropic, OpenAI, Deepgram, Tavily, Notion, Google OAuth)
 
 # Run database migrations
 pnpm db:migrate
 pnpm neo4j:migrate
 
-# Seed initial data
+# Seed with sample data
 pnpm db:seed
 
 # Start all apps in development
@@ -182,38 +218,60 @@ pnpm dev
 ### Services
 
 | Service | URL |
-|---------|-----|
-| API | http://localhost:3001 |
-| Web Dashboard | http://localhost:3000 |
-| Neo4j Browser | http://localhost:7474 |
-| Mobile (Expo) | `npx expo start` |
+|:--------|:----|
+| **API Server** | `http://localhost:3001` |
+| **Web Dashboard** | `http://localhost:3000` |
+| **Neo4j Browser** | `http://localhost:7474` |
+| **Mobile (Expo)** | `npx expo start` |
 
-## Data Model
+<br />
+
+## :card_index: Data Model
 
 ### PostgreSQL (Prisma)
 
 | Model | Purpose |
-|-------|---------|
-| **Member** | Internal team members (Google OAuth) |
-| **Contact** | External network contacts with research data |
-| **Organization** | Companies and institutions |
-| **Interaction** | Meeting notes, calls, emails |
-| **AuditLog** | All operations logged for compliance |
+|:------|:--------|
+| `Member` | Internal team members authenticated via Google OAuth |
+| `Contact` | External network contacts with AI research profiles + embeddings |
+| `Organization` | Companies, VC firms, universities, nonprofits |
+| `Interaction` | Meeting notes, calls, emails with AI-generated summaries |
+| `AuditLog` | Full operation audit trail for compliance |
 
 ### Neo4j Graph
 
 ```cypher
-(:Contact)-[:WORKS_AT]->(:Organization)
-(:Contact)-[:KNOWS]->(:Contact)
-(:Member)-[:ONBOARDED]->(:Contact)
-(:Member)-[:MET_WITH]->(:Contact)
-(:Contact)-[:AFFILIATED_WITH]->(:Organization)
+(:Contact)-[:WORKS_AT {title, since}]->(:Organization)
+(:Contact)-[:KNOWS {context, strength}]->(:Contact)
+(:Member)-[:ONBOARDED {date, context}]->(:Contact)
+(:Member)-[:HAD_INTERACTION {type, date}]->(:Contact)
+(:Contact)-[:TAGGED_AS]->(:Tag)
+(:Contact)-[:IN_GENRE]->(:Genre)
+(:Organization)-[:PARTNERED_WITH]->(:Organization)
 ```
 
-## Contributing
+<br />
 
-See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for guidelines.
+## :handshake: Contributing
 
-## License
+Contributions are welcome! Please see [CONTRIBUTING.md](.github/CONTRIBUTING.md) for guidelines on how to get started.
 
-MIT License. See [LICENSE](LICENSE) for details.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+<br />
+
+## :page_facing_up: License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+<br />
+
+<div align="center">
+
+Built by [Zakir Jiwani](https://github.com/JiwaniZakir)
+
+</div>
