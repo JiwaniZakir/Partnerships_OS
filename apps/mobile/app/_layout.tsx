@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { restoreSession } from '../services/auth';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export default function RootLayout() {
   useEffect(() => {
@@ -9,7 +10,7 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <>
+    <ErrorBoundary>
       <StatusBar style="light" />
       <Stack
         screenOptions={{
@@ -18,6 +19,6 @@ export default function RootLayout() {
           animation: 'fade',
         }}
       />
-    </>
+    </ErrorBoundary>
   );
 }

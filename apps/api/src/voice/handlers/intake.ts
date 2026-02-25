@@ -40,12 +40,13 @@ If you still need more info, ask naturally. Be conversational and efficient.`,
     })),
   });
 
+  const block = response.content[0];
   const text =
-    response.content[0].type === 'text' ? response.content[0].text : '';
+    block && block.type === 'text' ? block.text : '';
 
   // Check if the response contains a save action
   const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/);
-  if (jsonMatch) {
+  if (jsonMatch?.[1]) {
     try {
       const data = JSON.parse(jsonMatch[1]);
       if (data.action === 'save' && data.fullName && data.organization) {

@@ -1,4 +1,4 @@
-# BUILD_PROMPT.md — End-to-End Build Prompt for Foundry Partnerships OS
+# BUILD_PROMPT.md — End-to-End Build Prompt for Partnerships OS
 
 > **Copy this entire prompt into Claude Code to begin the build. Claude Code will read the CLAUDE.md file for full specifications.**
 
@@ -7,7 +7,7 @@
 ## Prompt
 
 ```
-Read the CLAUDE.md file in this repository root carefully — it is your complete technical specification. You are building the Foundry Partnerships OS, a three-tier partnership intelligence platform for The Foundry PHL, a nonprofit entrepreneurial organization.
+Read the CLAUDE.md file in this repository root carefully — it is your complete technical specification. You are building the Partnerships OS, a three-tier partnership intelligence platform for a nonprofit entrepreneurial organization.
 
 ## What You're Building
 
@@ -51,8 +51,8 @@ Execute these phases in order. After each phase, run and verify before moving on
 5. Create `config/approved-members.md` with placeholder emails:
    ```
    # Approved Members
-   - zakir@foundryphl.com (Admin)
-   - admin@foundryphl.com (Admin)
+   - admin@example.com (Admin)
+   - user@example.com (Admin)
    ```
 
 Verify: `docker-compose up -d` succeeds, `pnpm build` compiles, Prisma migration runs clean.
@@ -64,7 +64,7 @@ Verify: `docker-compose up -d` succeeds, `pnpm build` compiles, Prisma migration
 1. Implement Google OAuth flow:
    - `POST /auth/google` — accepts Google ID token, validates:
      a. Valid Google token
-     b. Email ends with `@foundryphl.com`
+     b. Email ends with the configured allowed domain
      c. Email exists in approved-members list
    - Issues JWT (24h expiry) + refresh token (30d)
    - Auto-creates Member record on first login
@@ -237,7 +237,7 @@ Verify: Can connect to voice agent via WebSocket, have a conversation to add a n
    - Install: expo-auth-session, expo-secure-store, expo-av
 
 2. **Auth Flow**:
-   - Login screen: clean, minimal with "Sign in with Google" button + Foundry logo
+   - Login screen: clean, minimal with "Sign in with Google" button + organization logo
    - Use expo-auth-session for Google OAuth
    - Send token to backend, receive JWT
    - Store JWT in SecureStore
@@ -266,7 +266,7 @@ Verify: Can connect to voice agent via WebSocket, have a conversation to add a n
    - Member name, email, role
    - Stats: total contacts onboarded, total interactions logged, member since date
    - Settings: notification preferences, logout button
-   - About: app version, Foundry branding
+   - About: app version, organization branding
 
 6. **Design specs**:
    - Color: Dark theme (#0A0A0A bg, #FAFAFA text, #6366F1 accent, #22C55E success, #EF4444 warning)
@@ -275,7 +275,7 @@ Verify: Can connect to voice agent via WebSocket, have a conversation to add a n
    - Spacing: 8px grid system
    - Bottom tab bar: 3 tabs with SF Symbols / Material icons (Mic, People, Person)
 
-Verify: App builds on iOS simulator, Google login works with @foundryphl.com restriction, voice agent connects and responds, contacts list populates.
+Verify: App builds on iOS simulator, Google login works with domain restriction, voice agent connects and responds, contacts list populates.
 
 ---
 
@@ -288,7 +288,7 @@ Verify: App builds on iOS simulator, Google login works with @foundryphl.com res
 
 2. **Layout**:
    - Sidebar navigation (collapsible): Dashboard, Network Graph, Contacts, Discover, Members, Settings
-   - Header: Foundry logo, search bar (command palette with ⌘K), user avatar + dropdown
+   - Header: Logo, search bar (command palette with ⌘K), user avatar + dropdown
    - Clean white/gray design language (Light mode primary, dark mode optional)
 
 3. **Dashboard Page** (`/dashboard`):
@@ -459,7 +459,7 @@ Verify: Create a contact via API → Notion page appears with full formatting. L
 
 3. **The Notion pages must be beautifully formatted.** They serve as the permanent record. Use proper headings, callouts, toggle blocks, tables, and emoji. Make them look like they were hand-crafted.
 
-4. **Research profiles must be genuinely insightful.** Not just a regurgitation of LinkedIn data. The AI synthesis should identify patterns, highlight unique value, and make specific recommendations for The Foundry.
+4. **Research profiles must be genuinely insightful.** Not just a regurgitation of LinkedIn data. The AI synthesis should identify patterns, highlight unique value, and make specific recommendations for the organization.
 
 5. **The mobile app must be buttery smooth.** Dark mode, fluid animations, instant auth, responsive voice UI. It should feel premium despite being minimal.
 

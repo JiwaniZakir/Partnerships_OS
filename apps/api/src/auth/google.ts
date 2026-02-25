@@ -45,7 +45,7 @@ export async function verifyGoogleToken(idToken: string): Promise<GoogleUser> {
   return {
     googleId: payload.sub,
     email,
-    name: payload.name || email.split('@')[0],
+    name: payload.name || email.split('@')[0] || email,
     avatarUrl: payload.picture || null,
   };
 }

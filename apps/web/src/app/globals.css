@@ -1,21 +1,82 @@
 @import "tailwindcss";
 
+@theme {
+  --color-background: #0A0A0A;
+  --color-background-card: #1A1A1A;
+  --color-background-elevated: #141414;
+  --color-border: #2A2A2A;
+  --color-foreground: #F1EFE7;
+  --color-foreground-secondary: #A0998A;
+  --color-foreground-muted: #6B6560;
+  --color-primary: #F1EFE7;
+  --color-primary-foreground: #0A0A0A;
+  --color-accent: #C4B99A;
+  --color-destructive: #EF4444;
+  --color-ring: #F1EFE7;
+
+  --color-chart-1: #F1EFE7;
+  --color-chart-2: #C4B99A;
+  --color-chart-3: #A0998A;
+  --color-chart-4: #6B6560;
+  --color-chart-5: #4A453F;
+
+  --color-node-member: #F1EFE7;
+  --color-node-contact: #C4B99A;
+  --color-node-org: #6B6560;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
-  --muted: #f5f5f5;
-  --muted-foreground: #6b7280;
-  --border: #e5e7eb;
-  --card: #ffffff;
-  --card-foreground: #0a0a0a;
-  --accent: #f3f4f6;
-  --destructive: #ef4444;
-  --ring: #6366f1;
+  --background: #0A0A0A;
+  --background-card: #1A1A1A;
+  --background-elevated: #141414;
+  --border: #2A2A2A;
+  --foreground: #F1EFE7;
+  --foreground-secondary: #A0998A;
+  --foreground-muted: #6B6560;
+  --primary: #F1EFE7;
+  --primary-foreground: #0A0A0A;
+  --accent: #C4B99A;
+  --destructive: #EF4444;
+  --ring: #F1EFE7;
   --radius: 0.5rem;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.font-serif {
+  font-family: var(--font-cormorant), 'Cormorant Garamond', 'Georgia', serif;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A2A2A;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3A3A3A;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #1A1A1A 25%, #222222 50%, #1A1A1A 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
 }

@@ -15,13 +15,4 @@ export interface Interaction {
   createdAt: Date;
 }
 
-export interface InteractionCreateInput {
-  contactId: string;
-  type: InteractionType;
-  date?: Date;
-  summary: string;
-  rawTranscript?: string;
-  keyTakeaways?: string[];
-  followUpItems?: string[];
-  sentiment?: Sentiment;
-}
+// InteractionCreateInput is derived from the Zod schema in schemas/index.ts

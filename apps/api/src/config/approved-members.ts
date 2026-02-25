@@ -34,7 +34,7 @@ function parseApprovedMembers(content: string): ApprovedMember[] {
     }
     const match = line.match(/^-\s+(\S+@\S+)/);
     if (match) {
-      members.push({ email: match[1], isAdmin });
+      members.push({ email: match[1]!, isAdmin });
     }
   }
 

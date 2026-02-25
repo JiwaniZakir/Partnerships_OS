@@ -63,7 +63,8 @@ Be specific with names and details. If no matches, say so honestly and suggest a
     messages: [{ role: 'user', content: message }],
   });
 
-  return response.content[0].type === 'text'
-    ? response.content[0].text
+  const block = response.content[0];
+  return block && block.type === 'text'
+    ? block.text
     : 'I couldn\'t find relevant contacts. Try rephrasing your question.';
 }

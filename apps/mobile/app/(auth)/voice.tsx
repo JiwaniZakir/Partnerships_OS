@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,18 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { VoiceButton } from '../../components/VoiceButton';
+import { Waveform } from '../../components/Waveform';
 import { VoiceClient } from '../../services/voice';
+
+// expo-av is native-only — conditionally import for audio recording
+let Audio: typeof import('expo-av').Audio | null = null;
+if (Platform.OS !== 'web') {
+  Audio = require('expo-av').Audio;
+}
 
 interface Message {
   role: 'user' | 'assistant';
@@ -22,19 +30,46 @@ interface Message {
 export default function VoiceScreen() {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [status, setStatus] = useState('idle');
+  const [status, setStatus] = useState<string>('idle');
   const [messages, setMessages] = useState<Message[]>([]);
   const [textInput, setTextInput] = useState('');
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const voiceClientRef = useRef<VoiceClient | null>(null);
+  const recordingRef = useRef<any>(null);
+
+  // Request microphone permission on mount (native only)
+  useEffect(() => {
+    (async () => {
+      if (Audio) {
+        const { status: audioStatus } = await Audio.requestPermissionsAsync();
+        setHasPermission(audioStatus === 'granted');
+        if (audioStatus === 'granted') {
+          await Audio.setAudioModeAsync({
+            allowsRecordingIOS: true,
+            playsInSilentModeIOS: true,
+          });
+        }
+      } else {
+        // On web, no native audio — mic button won't record
+        setHasPermission(false);
+      }
+    })();
+
+    // Cleanup on unmount
+    return () => {
+      voiceClientRef.current?.disconnect();
+      stopRecording();
+    };
+  }, []);
 
   const addMessage = useCallback((role: 'user' | 'assistant', content: string) => {
     setMessages((prev) => [...prev, { role, content, timestamp: new Date() }]);
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
   }, []);
 
-  const connectVoice = useCallback(async () => {
-    if (voiceClientRef.current?.isConnected) return;
+  const connectVoice = useCallback(async (): Promise<boolean> => {
+    if (voiceClientRef.current?.isConnected) return true;
 
     const client = new VoiceClient({
       onTranscript: (text) => addMessage('user', text),
@@ -53,20 +88,81 @@ export default function VoiceScreen() {
     try {
       await client.connect();
       voiceClientRef.current = client;
+      return true;
     } catch (err) {
       console.error('Connection failed:', err);
+      Alert.alert(
+        'Connection Failed',
+        'Could not connect to the voice server. Make sure the API is running.'
+      );
+      return false;
     }
   }, [addMessage]);
 
-  const handleMicPress = useCallback(async () => {
-    if (isRecording) {
+  const startRecording = async () => {
+    if (!Audio) return;
+    try {
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+      await recording.startAsync();
+      recordingRef.current = recording;
+    } catch (err) {
+      console.error('Failed to start recording:', err);
       setIsRecording(false);
+    }
+  };
+
+  const stopRecording = async () => {
+    const recording = recordingRef.current;
+    if (!recording) return;
+
+    try {
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
+      recordingRef.current = null;
+
+      if (uri && voiceClientRef.current?.isConnected) {
+        // Read the audio file and send it via WebSocket
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const buffer = reader.result as ArrayBuffer;
+          voiceClientRef.current?.sendAudio(buffer);
+          setIsProcessing(true);
+        };
+        reader.readAsArrayBuffer(blob);
+      }
+    } catch (err) {
+      console.error('Failed to stop recording:', err);
+    }
+  };
+
+  const handleMicPress = useCallback(async () => {
+    if (hasPermission === false) {
+      if (Platform.OS === 'web') {
+        // On web, voice recording isn't available — use text input
+        return;
+      }
+      Alert.alert(
+        'Microphone Access Required',
+        'Please enable microphone access in Settings to use voice features.',
+      );
       return;
     }
 
-    await connectVoice();
+    if (isRecording) {
+      setIsRecording(false);
+      await stopRecording();
+      return;
+    }
+
+    const connected = await connectVoice();
+    if (!connected) return;
+
     setIsRecording(true);
-  }, [isRecording, connectVoice]);
+    await startRecording();
+  }, [isRecording, connectVoice, hasPermission]);
 
   const handleSendText = useCallback(async () => {
     if (!textInput.trim()) return;
@@ -76,23 +172,40 @@ export default function VoiceScreen() {
     addMessage('user', message);
     setIsProcessing(true);
 
-    await connectVoice();
+    const connected = await connectVoice();
+    if (!connected) {
+      setIsProcessing(false);
+      return;
+    }
     voiceClientRef.current?.sendText(message);
   }, [textInput, connectVoice, addMessage]);
+
+  const statusLabel =
+    status === 'connected'
+      ? 'Ready'
+      : status === 'processing'
+        ? 'Thinking...'
+        : status === 'listening'
+          ? 'Listening...'
+          : status === 'disconnected'
+            ? 'Disconnected'
+            : 'Tap to connect';
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Foundry AI</Text>
-        <Text style={styles.statusText}>
-          {status === 'connected'
-            ? 'Ready'
-            : status === 'processing'
-              ? 'Thinking...'
-              : status === 'listening'
-                ? 'Listening...'
-                : 'Tap to connect'}
-        </Text>
+        <View style={styles.statusRow}>
+          <View
+            style={[
+              styles.statusDot,
+              status === 'connected' && styles.statusDotConnected,
+              status === 'disconnected' && styles.statusDotDisconnected,
+              (status === 'processing' || status === 'listening') && styles.statusDotActive,
+            ]}
+          />
+          <Text style={styles.statusText}>{statusLabel}</Text>
+        </View>
       </View>
 
       <ScrollView
@@ -104,8 +217,11 @@ export default function VoiceScreen() {
           <View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>Welcome to Partnerships OS</Text>
             <Text style={styles.emptySubtitle}>
-              Tap the mic or type below to get started.{'\n'}
-              Try: "I just met someone at the Goldman event"
+              Tap the mic or type below to get started.{'\n\n'}
+              Try:{'\n'}
+              "I just met someone at the Goldman event"{'\n'}
+              "Who do we know at Sequoia?"{'\n'}
+              "Log a call with Sarah Chen"
             </Text>
           </View>
         )}
@@ -127,9 +243,15 @@ export default function VoiceScreen() {
             </Text>
           </View>
         ))}
+        {isProcessing && (
+          <View style={[styles.messageBubble, styles.assistantBubble]}>
+            <Text style={styles.thinkingText}>...</Text>
+          </View>
+        )}
       </ScrollView>
 
       <View style={styles.controls}>
+        {isRecording && <Waveform isActive={isRecording} />}
         <VoiceButton
           isRecording={isRecording}
           isProcessing={isProcessing}
@@ -178,10 +300,30 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
   },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    gap: 6,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#6B7280',
+  },
+  statusDotConnected: {
+    backgroundColor: '#22C55E',
+  },
+  statusDotDisconnected: {
+    backgroundColor: '#EF4444',
+  },
+  statusDotActive: {
+    backgroundColor: '#C4B99A',
+  },
   statusText: {
-    color: '#6366F1',
+    color: '#C4B99A',
     fontSize: 13,
-    marginTop: 4,
   },
   messages: {
     flex: 1,
@@ -192,13 +334,14 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     alignItems: 'center',
-    paddingTop: 60,
+    paddingTop: 48,
+    paddingHorizontal: 16,
   },
   emptyTitle: {
     color: '#FAFAFA',
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   emptySubtitle: {
     color: '#6B7280',
@@ -214,7 +357,7 @@ const styles = StyleSheet.create({
   },
   userBubble: {
     alignSelf: 'flex-end',
-    backgroundColor: '#6366F1',
+    backgroundColor: '#3D3A33',
     borderBottomRightRadius: 4,
   },
   assistantBubble: {
@@ -232,9 +375,15 @@ const styles = StyleSheet.create({
   assistantText: {
     color: '#E5E5E5',
   },
+  thinkingText: {
+    color: '#6B7280',
+    fontSize: 18,
+    letterSpacing: 4,
+  },
   controls: {
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 16,
+    gap: 12,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -253,7 +402,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   sendButton: {
-    backgroundColor: '#6366F1',
+    backgroundColor: '#F1EFE7',
     paddingHorizontal: 18,
     paddingVertical: 12,
     borderRadius: 24,
@@ -262,7 +411,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   sendButtonText: {
-    color: '#FAFAFA',
+    color: '#0A0A0A',
     fontWeight: '600',
     fontSize: 14,
   },

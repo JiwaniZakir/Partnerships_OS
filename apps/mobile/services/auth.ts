@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import { getItem, setItem, deleteItem } from './storage';
 import { useAuthStore } from '../stores/auth.store';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
@@ -17,16 +17,36 @@ export async function loginWithGoogle(idToken: string): Promise<void> {
 
   const data = await response.json();
 
-  await SecureStore.setItemAsync('accessToken', data.accessToken);
-  await SecureStore.setItemAsync('refreshToken', data.refreshToken);
+  await setItem('accessToken', data.accessToken);
+  await setItem('refreshToken', data.refreshToken);
+
+  useAuthStore.getState().setAuth(data.member, data.accessToken, data.refreshToken);
+}
+
+export async function devLogin(email: string): Promise<void> {
+  const response = await fetch(`${API_URL}/auth/dev-login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || 'Dev login failed');
+  }
+
+  const data = await response.json();
+
+  await setItem('accessToken', data.accessToken);
+  await setItem('refreshToken', data.refreshToken);
 
   useAuthStore.getState().setAuth(data.member, data.accessToken, data.refreshToken);
 }
 
 export async function restoreSession(): Promise<boolean> {
   try {
-    const accessToken = await SecureStore.getItemAsync('accessToken');
-    const refreshToken = await SecureStore.getItemAsync('refreshToken');
+    const accessToken = await getItem('accessToken');
+    const refreshToken = await getItem('refreshToken');
 
     if (!accessToken || !refreshToken) {
       useAuthStore.getState().setLoading(false);
@@ -52,8 +72,8 @@ export async function restoreSession(): Promise<boolean> {
 
     if (refreshResponse.ok) {
       const tokens = await refreshResponse.json();
-      await SecureStore.setItemAsync('accessToken', tokens.accessToken);
-      await SecureStore.setItemAsync('refreshToken', tokens.refreshToken);
+      await setItem('accessToken', tokens.accessToken);
+      await setItem('refreshToken', tokens.refreshToken);
 
       const meResponse = await fetch(`${API_URL}/auth/me`, {
         headers: { Authorization: `Bearer ${tokens.accessToken}` },
@@ -75,7 +95,7 @@ export async function restoreSession(): Promise<boolean> {
 }
 
 export async function logout(): Promise<void> {
-  await SecureStore.deleteItemAsync('accessToken');
-  await SecureStore.deleteItemAsync('refreshToken');
+  await deleteItem('accessToken');
+  await deleteItem('refreshToken');
   useAuthStore.getState().logout();
 }

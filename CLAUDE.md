@@ -1,11 +1,11 @@
-# CLAUDE.md — The Foundry Partnerships OS
+# CLAUDE.md — Partnerships OS
 
 ## Project Identity
 
-**Name:** Foundry Partnerships OS (FPOS)
-**Organization:** The Foundry PHL — a grassroots entrepreneurial nonprofit connecting East Coast college founders with VCs, corporate partners, and industry leaders.
-**Domain:** `@foundryphl.com`
-**Purpose:** A three-tier intelligence platform that transforms every partnership and contact into a richly researched, deeply connected knowledge graph — enabling The Foundry's members to build, track, and leverage their collective network with unprecedented depth.
+**Name:** Partnerships OS (FPOS)
+**Organization:** A grassroots entrepreneurial nonprofit connecting East Coast college founders with VCs, corporate partners, and industry leaders.
+**Domain:** Configured via `ALLOWED_DOMAIN` environment variable
+**Purpose:** A three-tier intelligence platform that transforms every partnership and contact into a richly researched, deeply connected knowledge graph — enabling the organization's members to build, track, and leverage their collective network with unprecedented depth.
 
 ---
 
@@ -54,7 +54,7 @@
 
 ### Frontend — Mobile
 - **Framework:** React Native with Expo (SDK 52+)
-- **Auth:** Google Sign-In restricted to `@foundryphl.com` domain
+- **Auth:** Google Sign-In restricted to the configured allowed domain
 - **State:** Zustand
 - **Voice UI:** Minimal — large mic button, waveform visualization, transcript overlay
 
@@ -77,11 +77,11 @@
 
 ### Core Entities
 
-#### Member (Internal — Foundry team)
+#### Member (Internal — organization team)
 ```
 Member {
   id: UUID
-  email: string (@foundryphl.com)
+  email: string (restricted to allowed domain)
   name: string
   role: string (e.g., "President", "VP Partnerships", "Director of Events")
   avatar_url: string
@@ -135,7 +135,7 @@ Contact {
   research_last_updated: datetime
   research_depth_score: float (0-1, how much we know)
   key_achievements: string[]
-  mutual_interests_with_foundry: string[]
+  mutual_interests_with_org: string[]
   potential_value: text (AI analysis of how they can help)
   suggested_introductions: Contact[] (AI-recommended connections)
 
@@ -214,10 +214,10 @@ Organization {
 
 ### Authentication Flow
 1. App opens → Google Sign-In prompt
-2. Backend validates: email must end with `@foundryphl.com`
+2. Backend validates: email must end with the configured allowed domain
 3. Backend checks email against approved members list (`/config/approved-members.md`)
 4. If approved → issue JWT + refresh token → proceed to voice agent
-5. If not approved → show "Access restricted to Foundry members" screen
+5. If not approved → show "Access restricted to approved members" screen
 6. JWT stored securely in device keychain
 
 ### Voice Agent Behavior
@@ -233,7 +233,7 @@ The agent proactively asks structured questions:
 - "How did you connect — event, intro, cold outreach?"
 - "What did you talk about? What are they interested in?"
 - "Do you have their LinkedIn, email, or any other contact info?"
-- "How warm is the connection? Did they express interest in The Foundry?"
+- "How warm is the connection? Did they express interest in the organization?"
 - "Any follow-up items or next steps?"
 
 After intake, the agent:
@@ -319,7 +319,7 @@ After intake, the agent:
 - **Warm Intro Pathways:** "Find me a path to [Person/Company]" → graph traversal showing connection chains
 
 #### 6. `/members` — Member Management
-- List of all Foundry members with roles
+- List of all members with roles
 - Per-member stats: contacts onboarded, interactions logged, most active genres
 - Click into member → see their full contribution + contact list
 
@@ -344,7 +344,7 @@ After intake, the agent:
 ### Structure
 
 ```
-📁 Foundry Partnerships OS (Root)
+📁 Partnerships OS (Root)
 ├── 📊 Master Contacts Database (Admin view — ALL contacts)
 │   ├── Properties: Name, Organization, Type, Genre, Title, Onboarded By,
 │   │   Warmth Score, Research Status, Last Interaction,
@@ -406,9 +406,9 @@ notable achievements, published work, speaking engagements, board positions,
 investment history (if VC), company trajectory, and any public information
 that helps us understand who they are and what they care about.]
 
-## Why They Matter to The Foundry
+## Why They Matter to the Organization
 [AI analysis of potential synergies, partnership opportunities, and how their
-network/resources align with Foundry initiatives.]
+network/resources align with organizational initiatives.]
 
 ## Key Achievements
 - [Achievement 1]
@@ -471,8 +471,8 @@ network/resources align with Foundry initiatives.]
    - Feed all collected data to Claude API
    - Generate: research_summary (500-1000 words)
    - Generate: key_achievements (bulleted list)
-   - Generate: mutual_interests_with_foundry
-   - Generate: potential_value (how they can help The Foundry)
+   - Generate: mutual_interests_with_org
+   - Generate: potential_value (how they can help the organization)
    - Generate: suggested_introductions
    - Generate: profile_embedding (for RAG search)
 
@@ -579,7 +579,7 @@ REDIS_URL=redis://localhost:6379
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 JWT_SECRET=...
-ALLOWED_DOMAIN=foundryphl.com
+ALLOWED_DOMAIN=example.com
 
 # AI
 ANTHROPIC_API_KEY=...
@@ -600,8 +600,8 @@ NOTION_ORGS_DB_ID=...
 
 # App
 NODE_ENV=production
-API_URL=https://api.foundryphl.com
-WEB_URL=https://partnerships.foundryphl.com
+API_URL=https://api.example.com
+WEB_URL=https://partnerships.example.com
 ```
 
 ---
@@ -609,7 +609,7 @@ WEB_URL=https://partnerships.foundryphl.com
 ## File Structure
 
 ```
-foundry-partnerships-os/
+partnerships-os/
 ├── CLAUDE.md                          # This file
 ├── BUILD_PROGRESS.md                  # End-to-end build instructions
 ├── package.json                       # Root monorepo config
@@ -822,7 +822,7 @@ foundry-partnerships-os/
 - **Web:** Vercel (Next.js)
 - **Mobile:** Expo EAS Build → TestFlight / Play Store internal testing
 - **Databases:** Railway (PostgreSQL), Neo4j Aura Free (graph), Upstash (Redis)
-- **Domain:** `api.foundryphl.com`, `partnerships.foundryphl.com`
+- **Domain:** Configured via environment variables (`API_URL`, `WEB_URL`)
 
 ---
 

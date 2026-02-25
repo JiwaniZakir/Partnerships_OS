@@ -80,8 +80,8 @@ Rank by relevance to the event. Consider their expertise, warmth, and potential 
   });
 
   try {
-    const text =
-      response.content[0].type === 'text' ? response.content[0].text : '[]';
+    const firstBlock = response.content[0];
+    const text = firstBlock && firstBlock.type === 'text' ? firstBlock.text : '[]';
     const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const ranked = JSON.parse(cleaned);
 

@@ -1,11 +1,11 @@
-# Approved Members — The Foundry PHL
+# Approved Members
 
-> This file is read by the authentication service to determine which @foundryphl.com email addresses are allowed to access the Partnerships OS. Only emails listed here will pass authentication.
+> This file is read by the authentication service to determine which email addresses are allowed to access the Partnerships OS. Only emails listed here will pass authentication.
 
 ## Admins (Full dashboard + mobile access)
-- zakir@foundryphl.com
-- admin@foundryphl.com
+- admin@example.com
+- user@example.com
 
 ## Members (Mobile app access)
 <!-- Add member emails below as they join -->
-<!-- Format: - email@foundryphl.com -->
+<!-- Format: - email@your-domain.com -->

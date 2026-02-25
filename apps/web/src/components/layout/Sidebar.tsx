@@ -1,65 +1,176 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  LayoutDashboard,
+  Network,
+  Users,
+  Search,
+  UserCircle,
+  Settings,
+  ChevronsLeft,
+  ChevronsRight,
+  Menu,
+  X,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { label: 'Dashboard', href: '/dashboard', icon: '📊' },
-  { label: 'Network Graph', href: '/graph', icon: '🕸️' },
-  { label: 'Contacts', href: '/contacts', icon: '👥' },
-  { label: 'Discover', href: '/discover', icon: '🔍' },
-  { label: 'Members', href: '/members', icon: '👤' },
-  { label: 'Settings', href: '/settings', icon: '⚙️' },
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Network Graph', href: '/graph', icon: Network },
+  { label: 'Contacts', href: '/contacts', icon: Users },
+  { label: 'Discover', href: '/discover', icon: Search },
+  { label: 'Members', href: '/members', icon: UserCircle },
+  { label: 'Settings', href: '/settings', icon: Settings },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Auto-collapse sidebar on screens < 1024px
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 1024) {
+        setCollapsed(true);
+        setMobileOpen(false);
+      }
+    }
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   return (
-    <aside
-      className={cn(
-        'flex flex-col border-r border-[var(--border)] bg-white h-screen transition-all duration-200',
-        collapsed ? 'w-16' : 'w-60'
+    <>
+      {/* Mobile hamburger button - visible on small screens when sidebar is collapsed */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="fixed top-3.5 left-3 z-50 p-2 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] text-[#A0998A] hover:text-[#F1EFE7] transition-colors lg:hidden"
+        aria-label="Open navigation"
+      >
+        <Menu className="w-4 h-4" />
+      </button>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
       )}
-    >
-      <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-        {!collapsed && (
-          <div>
-            <h1 className="text-sm font-bold tracking-wider">THE FOUNDRY</h1>
-            <p className="text-xs text-[var(--muted-foreground)]">Partnerships OS</p>
+
+      {/* Sidebar */}
+      <aside
+        className={cn(
+          'flex flex-col border-r border-[#2A2A2A] bg-[#0A0A0A] h-screen transition-all duration-200',
+          // Desktop behavior
+          collapsed ? 'w-[68px]' : 'w-60',
+          // Mobile: hidden by default, shown as overlay when mobileOpen
+          'hidden lg:flex',
+          mobileOpen && 'fixed inset-y-0 left-0 z-50 flex w-60'
+        )}
+      >
+        <div className="flex items-center justify-between h-16 px-4 border-b border-[#2A2A2A]">
+          {(!collapsed || mobileOpen) && (
+            <div className="min-w-0">
+              <h1 className="font-serif italic text-lg text-[#F1EFE7] leading-tight tracking-tight">
+                the foundry
+              </h1>
+              <p className="text-[9px] text-[#6B6560] font-medium uppercase tracking-[0.2em]">
+                partnerships os
+              </p>
+            </div>
+          )}
+          {collapsed && !mobileOpen && (
+            <span className="font-serif italic text-xl text-[#F1EFE7] mx-auto">f</span>
+          )}
+
+          {/* Close button for mobile overlay */}
+          {mobileOpen && (
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="p-1.5 hover:bg-[#1A1A1A] rounded-md text-[#6B6560] hover:text-[#F1EFE7] transition-colors flex-shrink-0 lg:hidden"
+              aria-label="Close navigation"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Desktop collapse button */}
+          {!mobileOpen && (
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className={cn(
+                'p-1.5 hover:bg-[#1A1A1A] rounded-md text-[#6B6560] hover:text-[#F1EFE7] transition-colors flex-shrink-0 hidden lg:block',
+                collapsed && 'hidden'
+              )}
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              <ChevronsLeft className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        <nav className="flex-1 py-3 space-y-0.5">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              pathname === item.href || pathname.startsWith(item.href + '/');
+            const showLabel = !collapsed || mobileOpen;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                title={!showLabel ? item.label : undefined}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2 mx-2 rounded-lg text-sm transition-colors relative',
+                  isActive
+                    ? 'bg-[#1A1A1A] text-[#F1EFE7] font-medium'
+                    : 'text-[#A0998A] hover:bg-[#141414] hover:text-[#F1EFE7]'
+                )}
+              >
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[#F1EFE7] rounded-r" />
+                )}
+                <Icon
+                  className={cn(
+                    'w-[18px] h-[18px] flex-shrink-0',
+                    isActive ? 'text-[#F1EFE7]' : 'text-[#6B6560]'
+                  )}
+                />
+                {showLabel && <span>{item.label}</span>}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {collapsed && !mobileOpen && (
+          <div className="p-2 border-t border-[#2A2A2A] hidden lg:block">
+            <button
+              onClick={() => setCollapsed(false)}
+              className="p-1.5 hover:bg-[#1A1A1A] rounded-md text-[#6B6560] hover:text-[#F1EFE7] transition-colors w-full flex justify-center"
+              aria-label="Expand sidebar"
+            >
+              <ChevronsRight className="w-4 h-4" />
+            </button>
           </div>
         )}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="p-1 hover:bg-[var(--accent)] rounded text-sm"
-        >
-          {collapsed ? '→' : '←'}
-        </button>
-      </div>
 
-      <nav className="flex-1 py-4">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 px-4 py-2.5 mx-2 rounded-md text-sm transition-colors',
-                isActive
-                  ? 'bg-indigo-50 text-indigo-700 font-medium'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              )}
-            >
-              <span className="text-lg">{item.icon}</span>
-              {!collapsed && <span>{item.label}</span>}
-            </Link>
-          );
-        })}
-      </nav>
-    </aside>
+        {(!collapsed || mobileOpen) && (
+          <div className="p-4 border-t border-[#2A2A2A]">
+            <p className="text-[10px] text-[#6B6560] text-center">v0.1.0</p>
+          </div>
+        )}
+      </aside>
+    </>
   );
 }

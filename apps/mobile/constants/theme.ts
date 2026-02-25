@@ -1,0 +1,15 @@
+export const colors = {
+  background: '#0A0A0A',
+  backgroundCard: '#1A1A1A',
+  backgroundElevated: '#141414',
+  border: '#2A2A2A',
+  foreground: '#F1EFE7',
+  foregroundSecondary: '#A0998A',
+  foregroundMuted: '#6B6560',
+  primary: '#F1EFE7',
+  primaryForeground: '#0A0A0A',
+  accent: '#C4B99A',
+  destructive: '#EF4444',
+  warmAvatar: '#2A2823',
+  warmBubble: '#3D3A33',
+};

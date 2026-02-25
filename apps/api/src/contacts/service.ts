@@ -6,17 +6,17 @@ import type { Prisma } from '@prisma/client';
 const PII_FIELDS = ['email', 'phone', 'linkedinUrl', 'twitterUrl', 'personalWebsite'] as const;
 
 function encryptPiiFields<T extends Record<string, any>>(data: T): T {
-  const result = { ...data };
+  const result: Record<string, any> = { ...data };
   for (const field of PII_FIELDS) {
     if (field in result && result[field] != null && typeof result[field] === 'string') {
       result[field] = encrypt(result[field]);
     }
   }
-  return result;
+  return result as T;
 }
 
 function decryptPiiFields<T extends Record<string, any>>(record: T): T {
-  const result = { ...record };
+  const result: Record<string, any> = { ...record };
   for (const field of PII_FIELDS) {
     if (field in result && result[field] != null && typeof result[field] === 'string' && isEncrypted(result[field])) {
       try {
@@ -26,7 +26,7 @@ function decryptPiiFields<T extends Record<string, any>>(record: T): T {
       }
     }
   }
-  return result;
+  return result as T;
 }
 
 export interface RequestingMember {

@@ -1,4 +1,4 @@
-import { importPKCS8, importSPKI, SignJWT, jwtVerify, type JWTPayload } from 'jose';
+import { importPKCS8, importSPKI, SignJWT, jwtVerify, type JWTPayload, type KeyLike } from 'jose';
 import { randomUUID } from 'crypto';
 import { getEnv } from '../config/env.js';
 
@@ -11,10 +11,10 @@ export interface TokenPayload extends JWTPayload {
   jti: string;
 }
 
-let privateKey: CryptoKey | null = null;
-let publicKey: CryptoKey | null = null;
+let privateKey: KeyLike | null = null;
+let publicKey: KeyLike | null = null;
 
-async function getPrivateKey(): Promise<CryptoKey> {
+async function getPrivateKey(): Promise<KeyLike> {
   if (!privateKey) {
     const env = getEnv();
     privateKey = await importPKCS8(env.JWT_PRIVATE_KEY, 'RS256');
@@ -22,7 +22,7 @@ async function getPrivateKey(): Promise<CryptoKey> {
   return privateKey;
 }
 
-async function getPublicKey(): Promise<CryptoKey> {
+async function getPublicKey(): Promise<KeyLike> {
   if (!publicKey) {
     const env = getEnv();
     publicKey = await importSPKI(env.JWT_PUBLIC_KEY, 'RS256');

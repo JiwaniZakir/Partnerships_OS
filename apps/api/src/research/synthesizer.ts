@@ -20,6 +20,7 @@ interface SynthesisInput {
   linkedinProfile: any | null;
   socialProfiles: any[];
   newsArticles: any[];
+  crunchbaseData?: any | null;
   existingContext?: string;
 }
 
@@ -59,6 +60,9 @@ export async function synthesizeResearch(
     input.newsArticles.length > 0
       ? `Recent News:\n${input.newsArticles.map((a: any) => `- ${a.title}: ${a.snippet}`).join('\n')}`
       : '',
+    input.crunchbaseData
+      ? `Crunchbase Data:\n${JSON.stringify(input.crunchbaseData, null, 2)}`
+      : '',
     input.existingContext ? `Existing Context:\n${input.existingContext}` : '',
   ]
     .filter(Boolean)
@@ -94,8 +98,9 @@ Please respond with a JSON object (no markdown) containing:
   });
 
   try {
+    const firstBlock = response.content[0];
     const text =
-      response.content[0].type === 'text' ? response.content[0].text : '';
+      firstBlock && firstBlock.type === 'text' ? firstBlock.text : '';
     const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     const parsed = JSON.parse(cleaned);
 
@@ -109,7 +114,7 @@ Please respond with a JSON object (no markdown) containing:
   } catch (err) {
     logger.error({ err }, 'Failed to parse synthesis response');
     return {
-      researchSummary: response.content[0].type === 'text' ? response.content[0].text : '',
+      researchSummary: response.content[0] && response.content[0].type === 'text' ? response.content[0].text : '',
       keyAchievements: [],
       mutualInterestsWithFoundry: [],
       potentialValue: '',

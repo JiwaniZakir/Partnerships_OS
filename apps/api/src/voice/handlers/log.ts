@@ -49,11 +49,12 @@ If the contact name doesn't match anyone, ask for clarification or suggest addin
     })),
   });
 
+  const block = response.content[0];
   const text =
-    response.content[0].type === 'text' ? response.content[0].text : '';
+    block && block.type === 'text' ? block.text : '';
 
   const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/);
-  if (jsonMatch) {
+  if (jsonMatch?.[1]) {
     try {
       const data = JSON.parse(jsonMatch[1]);
       if (data.action === 'log' && data.contactId && data.summary) {

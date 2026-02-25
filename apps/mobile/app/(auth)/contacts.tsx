@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { ContactListItem } from '../../components/ContactListItem';
 import { api } from '../../services/api';
 
@@ -22,6 +23,7 @@ interface Contact {
 }
 
 export default function ContactsScreen() {
+  const router = useRouter();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -67,7 +69,7 @@ export default function ContactsScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <ActivityIndicator size="large" color="#6366F1" style={{ marginTop: 40 }} />
+        <ActivityIndicator size="large" color="#F1EFE7" style={{ marginTop: 40 }} />
       </SafeAreaView>
     );
   }
@@ -99,13 +101,14 @@ export default function ContactsScreen() {
             title={item.title}
             warmthScore={item.warmthScore}
             contactType={item.contactType}
+            onPress={() => router.push(`/(auth)/contact-detail?id=${item.id}`)}
           />
         )}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#6366F1"
+            tintColor="#F1EFE7"
           />
         }
         ListEmptyComponent={

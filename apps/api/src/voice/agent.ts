@@ -173,7 +173,8 @@ async function handleGeneralChat(
     })),
   });
 
-  return response.content[0].type === 'text'
-    ? response.content[0].text
+  const block = response.content[0];
+  return block && block.type === 'text'
+    ? block.text
     : "I'm here to help! Try asking about your network or tell me about a new contact.";
 }

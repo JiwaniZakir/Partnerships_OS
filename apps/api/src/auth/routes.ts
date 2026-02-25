@@ -18,9 +18,73 @@ const refreshSchema = z.object({
   refreshToken: z.string().min(1),
 });
 
+const devLoginSchema = z.object({
+  email: z.string().email(),
+});
+
 export async function authRoutes(app: FastifyInstance): Promise<void> {
   const prisma = getPrisma();
   const redis = getRedis();
+
+  // Dev-only login bypass — no Google OAuth needed
+  if (process.env.NODE_ENV === 'development') {
+    app.post('/auth/dev-login', async (request) => {
+      const body = devLoginSchema.parse(request.body);
+      const email = body.email.toLowerCase();
+
+      if (!isApprovedMember(email)) {
+        throw new ForbiddenError('Access restricted to approved Foundry members');
+      }
+
+      const isAdmin = isAdminMember(email);
+      const tokenFamily = randomUUID();
+      const name = email.split('@')[0]!;
+
+      const member = await prisma.member.upsert({
+        where: { email },
+        update: {
+          refreshTokenFamily: tokenFamily,
+        },
+        create: {
+          email,
+          name,
+          googleId: `dev-${randomUUID()}`,
+          isAdmin,
+          refreshTokenFamily: tokenFamily,
+        },
+      });
+
+      const accessToken = await signAccessToken({
+        sub: member.id,
+        email: member.email,
+        name: member.name,
+        role: member.role,
+        isAdmin: member.isAdmin,
+      });
+
+      const refreshToken = await signRefreshToken({
+        sub: member.id,
+        family: tokenFamily,
+      });
+
+      await redis.set(`refresh:${tokenFamily}`, member.id, 'EX', 30 * 24 * 60 * 60);
+
+      logger.info({ memberId: member.id, email: member.email }, 'Member authenticated via dev-login');
+
+      return {
+        accessToken,
+        refreshToken,
+        member: {
+          id: member.id,
+          email: member.email,
+          name: member.name,
+          role: member.role,
+          isAdmin: member.isAdmin,
+          avatarUrl: member.avatarUrl,
+        },
+      };
+    });
+  }
 
   app.post('/auth/google', async (request, reply) => {
     const body = googleAuthSchema.parse(request.body);

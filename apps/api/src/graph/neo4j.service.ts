@@ -236,7 +236,7 @@ export async function getContactNeighborhood(
   };
 
   const safeDepth = Math.max(1, Math.min(5, Math.floor(depth)));
-  const query = depthQueryMap[safeDepth] ?? depthQueryMap[2];
+  const query = depthQueryMap[safeDepth] ?? depthQueryMap[2]!;
 
   try {
     const result = await session.run(query, { contactId });
@@ -322,7 +322,7 @@ export async function findShortestPath(
 
     if (result.records.length === 0) return null;
 
-    const record = result.records[0];
+    const record = result.records[0]!;
     const path = record.get('path');
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];

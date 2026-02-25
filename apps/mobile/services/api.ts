@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import { setItem } from './storage';
 import { useAuthStore } from '../stores/auth.store';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
@@ -36,8 +36,8 @@ export async function apiRequest<T>(
       if (refreshResponse.ok) {
         const tokens = await refreshResponse.json();
         setTokens(tokens.accessToken, tokens.refreshToken);
-        await SecureStore.setItemAsync('accessToken', tokens.accessToken);
-        await SecureStore.setItemAsync('refreshToken', tokens.refreshToken);
+        await setItem('accessToken', tokens.accessToken);
+        await setItem('refreshToken', tokens.refreshToken);
 
         headers['Authorization'] = `Bearer ${tokens.accessToken}`;
         response = await fetch(`${API_URL}${path}`, {

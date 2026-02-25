@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'crypto';
+import neo4j from 'neo4j-driver';
+import OpenAI from 'openai';
 
 const prisma = new PrismaClient();
 
@@ -153,7 +155,196 @@ async function seed() {
   }
 
   console.log(`Created ${interactionCount} interactions`);
-  console.log('Seed complete!');
+
+  // ─── Phase 2: Neo4j Graph Seeding ───
+  console.log('\n--- Phase 2: Neo4j Graph Seeding ---');
+
+  const neo4jUri = process.env.NEO4J_URI || 'bolt://localhost:7687';
+  const neo4jUser = process.env.NEO4J_USER || 'neo4j';
+  const neo4jPassword = process.env.NEO4J_PASSWORD || 'password';
+
+  let neo4jDriver: ReturnType<typeof neo4j.driver> | null = null;
+  try {
+    neo4jDriver = neo4j.driver(neo4jUri, neo4j.auth.basic(neo4jUser, neo4jPassword));
+    await neo4jDriver.verifyConnectivity();
+    console.log('Connected to Neo4j');
+
+    const session = neo4jDriver.session();
+    try {
+      // Clear existing graph data
+      await session.run('MATCH (n) DETACH DELETE n');
+      console.log('Cleared existing Neo4j data');
+
+      // Upsert Member nodes
+      for (const member of members) {
+        await session.run(
+          `MERGE (m:Member {id: $id})
+           SET m.name = $name, m.email = $email, m.role = $role`,
+          { id: member.id, name: member.name, email: member.email, role: member.role }
+        );
+      }
+      console.log(`Created ${members.length} Member nodes`);
+
+      // Upsert Contact nodes + ONBOARDED relationships
+      for (const contact of contacts) {
+        await session.run(
+          `MERGE (c:Contact {id: $id})
+           SET c.name = $name, c.title = $title, c.organization = $organization,
+               c.contactType = $contactType, c.warmthScore = $warmthScore`,
+          {
+            id: contact.id,
+            name: contact.fullName,
+            title: contact.title,
+            organization: contact.organization,
+            contactType: contact.contactType,
+            warmthScore: contact.warmthScore,
+          }
+        );
+
+        // Create ONBOARDED relationship
+        await session.run(
+          `MATCH (m:Member {id: $memberId})
+           MATCH (c:Contact {id: $contactId})
+           MERGE (m)-[r:ONBOARDED]->(c)
+           SET r.date = datetime()`,
+          { memberId: contact.onboardedById, contactId: contact.id }
+        );
+      }
+      console.log(`Created ${contacts.length} Contact nodes with ONBOARDED relationships`);
+
+      // Create KNOWS relationships (some contacts know each other)
+      const knowsPairs: Array<[number, number, string]> = [
+        [0, 1, 'Met at VC conference'],      // David Kim <-> Lisa Zhang
+        [0, 5, 'Co-investors'],               // David Kim <-> Sarah Mitchell
+        [2, 9, 'Former colleagues'],           // Robert Chen <-> Jennifer Wu
+        [4, 10, 'Angel investor network'],     // Marcus Johnson <-> Daniel Brown
+        [15, 16, 'Tech industry connections'], // Michelle Adams <-> Brian Lee
+        [17, 19, 'Microsoft/AWS partnership'], // Jessica Nguyen <-> Ryan Cooper
+        [25, 26, 'Speaker circuit'],           // Dr. Maya Patel <-> Jason Scott
+        [27, 32, 'AI community'],              // Aisha Williams <-> Jordan Blake
+        [33, 34, 'Entrepreneur network'],      // Victoria Lane <-> William Foster
+        [35, 40, 'Startup ecosystem'],         // Grace Lee <-> Nathan White
+        [43, 44, 'Alumni founders'],           // Sophie Anderson <-> Tyler Brooks
+        [45, 46, 'Alumni founders'],           // Megan Davis <-> Luke Harris
+        [20, 21, 'Goldman Sachs colleagues'],  // Lauren Miller <-> Kevin Park (via GS)
+        [3, 7, 'Healthcare VC network'],       // Amanda Foster <-> Emily Thompson
+        [22, 23, 'Corporate innovation'],      // Andrew Park <-> Diana Cruz
+      ];
+
+      let knowsCount = 0;
+      for (const [idx1, idx2, context] of knowsPairs) {
+        if (contacts[idx1] && contacts[idx2]) {
+          await session.run(
+            `MATCH (c1:Contact {id: $id1})
+             MATCH (c2:Contact {id: $id2})
+             MERGE (c1)-[r:KNOWS]->(c2)
+             SET r.context = $context, r.strength = $strength`,
+            {
+              id1: contacts[idx1].id,
+              id2: contacts[idx2].id,
+              context,
+              strength: 0.5 + Math.random() * 0.5,
+            }
+          );
+          knowsCount++;
+        }
+      }
+      console.log(`Created ${knowsCount} KNOWS relationships`);
+
+      // Create Genre nodes and IN_GENRE relationships
+      const allGenres = new Set<string>();
+      for (const contact of contacts) {
+        for (const genre of contact.genres) {
+          allGenres.add(genre);
+        }
+      }
+
+      for (const genre of allGenres) {
+        await session.run(
+          `MERGE (g:Genre {name: $name})`,
+          { name: genre }
+        );
+      }
+      console.log(`Created ${allGenres.size} Genre nodes`);
+
+      for (const contact of contacts) {
+        if (contact.genres.length > 0) {
+          await session.run(
+            `MATCH (c:Contact {id: $contactId})
+             UNWIND $genres AS genreName
+             MERGE (g:Genre {name: genreName})
+             MERGE (c)-[:IN_GENRE]->(g)`,
+            { contactId: contact.id, genres: contact.genres }
+          );
+        }
+      }
+      console.log('Created IN_GENRE relationships for all contacts');
+    } finally {
+      await session.close();
+    }
+
+    console.log('Neo4j graph seeding complete!');
+  } catch (err) {
+    console.warn('Neo4j seeding skipped or failed:', (err as Error).message);
+    console.warn('Ensure NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD are set and Neo4j is running.');
+  } finally {
+    if (neo4jDriver) {
+      await neo4jDriver.close();
+    }
+  }
+
+  // ─── Phase 3: Embedding Generation ───
+  console.log('\n--- Phase 3: Embedding Generation ---');
+
+  const openaiApiKey = process.env.OPENAI_API_KEY;
+  if (!openaiApiKey) {
+    console.warn('OPENAI_API_KEY not set — skipping embedding generation.');
+    console.warn('Run seed again with OPENAI_API_KEY set to generate embeddings.');
+  } else {
+    const openai = new OpenAI({ apiKey: openaiApiKey, timeout: 30_000 });
+    let embeddingCount = 0;
+    let embeddingErrors = 0;
+
+    for (const contact of contacts) {
+      const text = [
+        contact.researchSummary || '',
+        ...(contact.keyAchievements || []),
+      ].filter(Boolean).join('\n');
+
+      if (!text.trim()) continue;
+
+      try {
+        const response = await openai.embeddings.create({
+          model: 'text-embedding-3-small',
+          input: text,
+          dimensions: 1536,
+        });
+
+        const embedding = response.data[0]?.embedding;
+        if (embedding) {
+          const vectorStr = `[${embedding.join(',')}]`;
+          await prisma.$executeRawUnsafe(
+            `UPDATE contacts SET profile_embedding = $1::vector WHERE id = $2::uuid`,
+            vectorStr,
+            contact.id
+          );
+          embeddingCount++;
+        }
+
+        // Small delay to respect OpenAI rate limits
+        if (embeddingCount % 10 === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+      } catch (err) {
+        embeddingErrors++;
+        console.warn(`Failed to generate embedding for ${contact.fullName}: ${(err as Error).message}`);
+      }
+    }
+
+    console.log(`Generated ${embeddingCount} embeddings (${embeddingErrors} errors)`);
+  }
+
+  console.log('\nSeed complete!');
 }
 
 seed()

@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
+import { randomUUID } from 'crypto';
 import { loadEnv, getEnv } from './config/env.js';
 import { getPrisma, getNeo4j, getRedis, closeConnections } from './config/database.js';
 import { logger } from './utils/logger.js';
@@ -17,6 +18,7 @@ import { notionRoutes } from './notion/routes.js';
 import { adminRoutes } from './admin/routes.js';
 import { initNeo4jSchema } from './graph/neo4j.service.js';
 import { initWorkers, closeWorkers } from './jobs/worker.js';
+import { initScheduledJobs, stopScheduledJobs } from './jobs/scheduled.js';
 import { stopSessionCleanup } from './voice/agent.js';
 
 async function main(): Promise<void> {
@@ -25,21 +27,37 @@ async function main(): Promise<void> {
 
   const app = Fastify({
     logger: false,
+    trustProxy: env.NODE_ENV === 'production',
+    requestIdHeader: 'x-request-id',
+    genReqId: () => randomUUID(),
+  });
+
+  // Request ID tracking for audit trail
+  app.addHook('onRequest', (request, reply, done) => {
+    reply.header('X-Request-Id', request.id);
+    done();
   });
 
   // Security plugins
   await app.register(helmet, {
     contentSecurityPolicy: env.NODE_ENV === 'production' ? undefined : false,
+    hsts: env.NODE_ENV === 'production'
+      ? { maxAge: 63072000, includeSubDomains: true, preload: true }
+      : false,
   });
 
+  // CORS: use env-driven origins, no hardcoded production URLs
+  const allowedOrigins = [env.WEB_URL];
+  if (env.NODE_ENV === 'development') {
+    allowedOrigins.push('http://localhost:3000', 'http://localhost:19006');
+  }
+
   await app.register(cors, {
-    origin: [
-      env.WEB_URL,
-      'https://partnerships.foundryphl.com',
-      'https://foundryphl.com',
-      ...(env.NODE_ENV === 'development' ? ['http://localhost:3000'] : []),
-    ],
+    origin: allowedOrigins,
     credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
+    maxAge: 86400,
   });
 
   await app.register(rateLimit, {
@@ -51,8 +69,34 @@ async function main(): Promise<void> {
     },
   });
 
+  // Stricter rate limit for auth endpoints
+  await app.register(
+    async function authRateLimitPlugin(instance) {
+      await instance.register(rateLimit, {
+        max: 10,
+        timeWindow: '5 minutes',
+        redis: getRedis(),
+        keyGenerator: (request) => `auth:${request.ip}`,
+      });
+    },
+    { prefix: '/auth' }
+  );
+
+  // Stricter rate limit for research endpoints (expensive operations)
+  await app.register(
+    async function researchRateLimitPlugin(instance) {
+      await instance.register(rateLimit, {
+        max: 20,
+        timeWindow: '1 minute',
+        redis: getRedis(),
+        keyGenerator: (request) => `research:${request.member?.sub || request.ip}`,
+      });
+    },
+    { prefix: '/contacts' }
+  );
+
   // Global error handler
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error: Error & { validation?: unknown; statusCode?: number; code?: string }, request, reply) => {
     if (error instanceof AppError) {
       logger.warn({ err: error, path: request.url }, error.message);
       return reply.status(error.statusCode).send({
@@ -82,15 +126,20 @@ async function main(): Promise<void> {
       });
     }
 
-    logger.error({ err: error, path: request.url }, 'Unexpected error');
+    logger.error({ err: error, path: request.url, requestId: request.id }, 'Unexpected error');
     return reply.status(500).send({
       error: 'Internal server error',
       code: 'INTERNAL_ERROR',
+      requestId: request.id,
     });
   });
 
   // Health checks
-  app.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));
+  app.get('/health', async () => ({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    version: process.env.npm_package_version || '0.1.0',
+  }));
 
   app.get('/health/ready', async (_request, reply) => {
     const checks: Record<string, string> = {};
@@ -119,9 +168,18 @@ async function main(): Promise<void> {
       checks.redis = 'error';
     }
 
+    const apiKeys = {
+      anthropic: !!process.env.ANTHROPIC_API_KEY,
+      openai: !!process.env.OPENAI_API_KEY,
+      notion: !!process.env.NOTION_API_KEY,
+      deepgram: !!process.env.DEEPGRAM_API_KEY,
+      tavily: !!process.env.TAVILY_API_KEY,
+      proxycurl: !!process.env.PROXYCURL_API_KEY,
+    };
+
     const allOk = Object.values(checks).every((v) => v === 'ok');
     const statusCode = allOk ? 200 : 503;
-    return reply.status(statusCode).send({ status: allOk ? 'ok' : 'degraded', checks });
+    return reply.status(statusCode).send({ status: allOk ? 'ok' : 'degraded', checks, apiKeys });
   });
 
   // Register routes
@@ -150,6 +208,13 @@ async function main(): Promise<void> {
     logger.warn({ err }, 'BullMQ worker init failed — background jobs may be unavailable');
   }
 
+  try {
+    initScheduledJobs();
+    logger.info('Scheduled jobs initialized');
+  } catch (err) {
+    logger.warn({ err }, 'Scheduled jobs init failed — cron tasks may be unavailable');
+  }
+
   // Start server
   const port = env.API_PORT;
   await app.listen({ port, host: '0.0.0.0' });
@@ -158,6 +223,7 @@ async function main(): Promise<void> {
   // Graceful shutdown
   const shutdown = async (signal: string): Promise<void> => {
     logger.info(`${signal} received — shutting down`);
+    stopScheduledJobs();
     stopSessionCleanup();
     await closeWorkers();
     await app.close();

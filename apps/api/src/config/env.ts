@@ -16,7 +16,7 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string(),
   JWT_PRIVATE_KEY: z.string(),
   JWT_PUBLIC_KEY: z.string(),
-  ALLOWED_DOMAIN: z.string().default('foundryphl.com'),
+  ALLOWED_DOMAIN: z.string().default('example.com'),
 
   ANTHROPIC_API_KEY: z.string(),
   OPENAI_API_KEY: z.string(),

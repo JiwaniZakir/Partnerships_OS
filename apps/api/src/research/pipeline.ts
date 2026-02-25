@@ -3,6 +3,7 @@ import { searchPerson } from './enrichers/web-search.js';
 import { enrichLinkedIn } from './enrichers/linkedin.js';
 import { enrichSocial } from './enrichers/social.js';
 import { getRecentNews } from './enrichers/news.js';
+import { enrichCrunchbase } from './enrichers/crunchbase.js';
 import { synthesizeResearch } from './synthesizer.js';
 import { updateContactEmbedding } from './embeddings.js';
 import * as neo4jService from '../graph/neo4j.service.js';
@@ -26,12 +27,13 @@ export async function runResearchPipeline(contactId: string): Promise<void> {
   );
 
   // Step 1: Run all enrichers in parallel (error-isolated)
-  const [webResults, linkedinProfile, socialProfiles, newsArticles] =
+  const [webResults, linkedinProfile, socialProfiles, newsArticles, crunchbaseData] =
     await Promise.allSettled([
       searchPerson(contact.fullName, contact.organization),
       enrichLinkedIn(contact.linkedinUrl, contact.email),
       enrichSocial(contact.twitterUrl, contact.personalWebsite),
       getRecentNews(contact.fullName, contact.organization),
+      enrichCrunchbase(contact.fullName, contact.organization),
     ]);
 
   const enricherData = {
@@ -45,6 +47,8 @@ export async function runResearchPipeline(contactId: string): Promise<void> {
       socialProfiles.status === 'fulfilled' ? socialProfiles.value : [],
     newsArticles:
       newsArticles.status === 'fulfilled' ? newsArticles.value : [],
+    crunchbaseData:
+      crunchbaseData.status === 'fulfilled' ? crunchbaseData.value : null,
   };
 
   // Compute research depth score
@@ -53,6 +57,7 @@ export async function runResearchPipeline(contactId: string): Promise<void> {
   if (enricherData.linkedinProfile) depthScore += 0.3;
   if (enricherData.socialProfiles.length > 0) depthScore += 0.1;
   if (enricherData.newsArticles.length > 0) depthScore += 0.1;
+  if (enricherData.crunchbaseData) depthScore += 0.1;
 
   // Step 2: AI Synthesis
   let synthesis;

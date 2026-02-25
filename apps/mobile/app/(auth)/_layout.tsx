@@ -29,7 +29,7 @@ export default function AuthLayout() {
           height: 80,
           paddingBottom: 24,
         },
-        tabBarActiveTintColor: '#6366F1',
+        tabBarActiveTintColor: '#F1EFE7',
         tabBarInactiveTintColor: '#6B7280',
         tabBarLabelStyle: {
           fontSize: 11,
@@ -56,6 +56,12 @@ export default function AuthLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ focused }) => <TabIcon name="profile" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="contact-detail"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

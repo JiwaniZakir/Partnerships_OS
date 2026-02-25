@@ -71,10 +71,12 @@ export function decrypt(ciphertext: string): string {
   // Legacy v01 format: VERSION:ivHex:tagHex:encryptedHex (hardcoded salt)
   if (version === '01') {
     const legacyParts = ciphertext.split(':');
-    if (legacyParts.length !== 4) {
+    if (legacyParts.length !== 4 || !legacyParts[1] || !legacyParts[2] || !legacyParts[3]) {
       throw new Error('Invalid legacy encrypted format');
     }
-    const [, ivHex, tagHex, encryptedHex] = legacyParts;
+    const ivHex = legacyParts[1];
+    const tagHex = legacyParts[2];
+    const encryptedHex = legacyParts[3];
     const legacySalt = Buffer.from('fpos-salt', 'utf8');
     const key = scryptSync(rawKey, legacySalt, 32);
     const iv = Buffer.from(ivHex, 'hex');
@@ -83,8 +85,7 @@ export function decrypt(ciphertext: string): string {
     const decipher = createDecipheriv(ALGORITHM, key, iv);
     decipher.setAuthTag(tag);
 
-    let decrypted = decipher.update(encryptedHex, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
+    const decrypted = decipher.update(encryptedHex, 'hex', 'utf8') + decipher.final('utf8');
     return decrypted;
   }
 

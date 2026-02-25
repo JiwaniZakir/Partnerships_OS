@@ -62,7 +62,8 @@ Be specific about WHY each person fits. Suggest warm intro paths when possible.`
     messages: [{ role: 'user', content: message }],
   });
 
-  return response.content[0].type === 'text'
-    ? response.content[0].text
+  const block = response.content[0];
+  return block && block.type === 'text'
+    ? block.text
     : 'I couldn\'t generate recommendations for that request. Try being more specific.';
 }

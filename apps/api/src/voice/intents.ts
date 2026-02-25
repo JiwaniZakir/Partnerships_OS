@@ -43,9 +43,10 @@ User message: "${message}"`,
       ],
     });
 
+    const block = response.content[0];
     const text =
-      response.content[0].type === 'text'
-        ? response.content[0].text.trim()
+      block && block.type === 'text'
+        ? block.text.trim()
         : '';
 
     const intent = text as Intent;

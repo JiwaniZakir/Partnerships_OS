@@ -4,7 +4,10 @@ import { logger } from '../utils/logger.js';
 
 let openaiClient: OpenAI | null = null;
 
-function getOpenAI(): OpenAI {
+function getOpenAI(): OpenAI | null {
+  if (!process.env.OPENAI_API_KEY) {
+    return null;
+  }
   if (!openaiClient) {
     openaiClient = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
@@ -14,8 +17,12 @@ function getOpenAI(): OpenAI {
   return openaiClient;
 }
 
-export async function generateEmbedding(text: string): Promise<number[]> {
+export async function generateEmbedding(text: string): Promise<number[] | null> {
   const openai = getOpenAI();
+  if (!openai) {
+    logger.warn('OPENAI_API_KEY not set — skipping embedding generation');
+    return null;
+  }
 
   const response = await openai.embeddings.create({
     model: 'text-embedding-3-small',
@@ -23,7 +30,9 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     dimensions: 1536,
   });
 
-  return response.data[0].embedding;
+  const first = response.data[0];
+  if (!first) throw new Error('No embedding returned');
+  return first.embedding;
 }
 
 export async function updateContactEmbedding(
@@ -39,6 +48,11 @@ export async function updateContactEmbedding(
 
   try {
     const embedding = await generateEmbedding(text);
+    if (!embedding) {
+      logger.warn({ contactId }, 'Embedding generation returned null — skipping update');
+      return;
+    }
+
     const prisma = getPrisma();
 
     // Store embedding via raw SQL since Prisma doesn't support vector type
@@ -61,6 +75,11 @@ export async function semanticSearch(
 ): Promise<Array<{ id: string; fullName: string; organization: string; score: number }>> {
   try {
     const embedding = await generateEmbedding(query);
+    if (!embedding) {
+      logger.warn('OPENAI_API_KEY not set — semantic search unavailable');
+      return [];
+    }
+
     const prisma = getPrisma();
     const vectorStr = `[${embedding.join(',')}]`;
 

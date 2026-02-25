@@ -3,7 +3,7 @@ services:
     image: pgvector/pgvector:pg16
     container_name: fpos-postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: fpos
       POSTGRES_PASSWORD: fpos_dev_password
@@ -40,7 +40,7 @@ services:
     image: redis:7-alpine
     container_name: fpos-redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     command: redis-server --appendonly yes
     volumes:
       - redisdata:/data

@@ -36,47 +36,7 @@ export interface Contact {
   notionPageId: string | null;
 }
 
-export interface ContactCreateInput {
-  fullName: string;
-  email?: string;
-  phone?: string;
-  title?: string;
-  organization: string;
-  organizationType?: OrganizationType;
-  industry?: string;
-  seniority?: Seniority;
-  contactType?: ContactType;
-  tags?: string[];
-  genres?: string[];
-  linkedinUrl?: string;
-  twitterUrl?: string;
-  personalWebsite?: string;
-  warmthScore?: number;
-  context?: string;
-}
-
-export interface ContactUpdateInput {
-  fullName?: string;
-  email?: string;
-  phone?: string;
-  photoUrl?: string;
-  title?: string;
-  organization?: string;
-  organizationType?: OrganizationType;
-  industry?: string;
-  seniority?: Seniority;
-  contactType?: ContactType;
-  tags?: string[];
-  genres?: string[];
-  linkedinUrl?: string;
-  twitterUrl?: string;
-  personalWebsite?: string;
-  crunchbaseUrl?: string;
-  githubUrl?: string;
-  otherUrls?: string[];
-  status?: ContactStatus;
-  warmthScore?: number;
-}
+// ContactCreateInput and ContactUpdateInput are derived from Zod schemas in schemas/index.ts
 
 export interface ContactFilters {
   search?: string;

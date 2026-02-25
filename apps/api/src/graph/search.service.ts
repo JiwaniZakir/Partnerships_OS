@@ -32,7 +32,7 @@ export async function hybridSearch(
   // Process vector results
   if (vectorResults.status === 'fulfilled') {
     for (let i = 0; i < vectorResults.value.length; i++) {
-      const r = vectorResults.value[i];
+      const r = vectorResults.value[i]!;
       const entry = resultMap.get(r.id) || { scores: [], data: r };
       entry.scores.push(1 / (i + 1)); // RRF score
       resultMap.set(r.id, entry);
@@ -42,7 +42,7 @@ export async function hybridSearch(
   // Process graph results
   if (graphResults.status === 'fulfilled') {
     for (let i = 0; i < graphResults.value.length; i++) {
-      const r = graphResults.value[i];
+      const r = graphResults.value[i]!;
       const entry = resultMap.get(r.id) || { scores: [], data: r };
       entry.scores.push(1 / (i + 1));
       resultMap.set(r.id, entry);
@@ -52,7 +52,7 @@ export async function hybridSearch(
   // Process text results
   if (textResults.status === 'fulfilled') {
     for (let i = 0; i < textResults.value.length; i++) {
-      const r = textResults.value[i];
+      const r = textResults.value[i]!;
       const entry = resultMap.get(r.id) || { scores: [], data: r };
       entry.scores.push(1 / (i + 1));
       resultMap.set(r.id, entry);

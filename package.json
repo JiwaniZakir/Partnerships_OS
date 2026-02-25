@@ -1,5 +1,5 @@
 {
-  "name": "foundry-partnerships-os",
+  "name": "partnerships-os",
   "private": true,
   "scripts": {
     "build": "turbo build",
