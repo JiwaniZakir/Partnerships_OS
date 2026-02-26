@@ -1,0 +1,43 @@
+app = "foundry-os-api"
+primary_region = "ewr"   # Newark — closest free region to Philadelphia
+
+[build]
+  dockerfile = "apps/api/Dockerfile"
+  # Build context is the repo root so the monorepo is available
+  build-target = "runner"
+
+[env]
+  NODE_ENV    = "production"
+  API_PORT    = "3001"
+  ALLOWED_DOMAIN = "foundryphl.com"
+  WEB_URL     = "https://foundry-os-orcin.vercel.app"
+  NEO4J_USER  = "neo4j"
+
+# Secrets (set once via: flyctl secrets set KEY=value KEY=value ...)
+# DATABASE_URL, REDIS_URL, NEO4J_URI, NEO4J_PASSWORD,
+# GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
+# JWT_PRIVATE_KEY, JWT_PUBLIC_KEY, PII_ENCRYPTION_KEY,
+# ANTHROPIC_API_KEY, OPENAI_API_KEY
+
+[http_service]
+  internal_port       = 3001
+  force_https         = true
+  auto_stop_machines  = "stop"
+  auto_start_machines = true
+  min_machines_running = 1        # keep 1 alive — no cold starts on free tier
+
+  [http_service.concurrency]
+    type       = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
+  [[http_service.checks]]
+    grace_period  = "15s"
+    interval      = "30s"
+    method        = "GET"
+    path          = "/health"
+    timeout       = "5s"
+
+[[vm]]
+  size   = "shared-cpu-1x"
+  memory = "256mb"
