@@ -2,7 +2,7 @@
   "installCommand": "pnpm install",
   "buildCommand": "pnpm --filter @fpos/shared build && pnpm --filter @fpos/web build",
   "outputDirectory": "apps/web/.next",
-  "framework": null,
+  "framework": "nextjs",
   "headers": [
     {
       "source": "/(.*)",
