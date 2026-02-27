@@ -19,8 +19,9 @@ WORKDIR /app
 RUN corepack enable pnpm
 
 COPY --from=deps /app/node_modules ./node_modules
+# With node-linker=hoisted all deps are at root node_modules;
+# packages/shared/node_modules does not exist in this mode
 COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
-COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
 
 COPY . .
 
