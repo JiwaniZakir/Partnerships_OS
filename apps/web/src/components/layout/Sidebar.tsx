@@ -54,7 +54,7 @@ export function Sidebar() {
       {/* Mobile hamburger button - visible on small screens when sidebar is collapsed */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed top-3.5 left-3 z-50 p-2 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] text-[#A0998A] hover:text-[#F1EFE7] transition-colors lg:hidden"
+        className="fixed top-3.5 left-3 z-50 p-2 rounded-lg bg-[#0a0a0a] border border-[#1a1a1a] text-[#888888] hover:text-white transition-colors lg:hidden"
         aria-label="Open navigation"
       >
         <Menu className="w-4 h-4" />
@@ -71,7 +71,7 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          'flex flex-col border-r border-[#2A2A2A] bg-[#0A0A0A] h-screen transition-all duration-200',
+          'flex flex-col border-r border-[#0f0f0f] bg-black h-screen transition-all duration-200',
           // Desktop behavior
           collapsed ? 'w-[68px]' : 'w-60',
           // Mobile: hidden by default, shown as overlay when mobileOpen
@@ -79,26 +79,21 @@ export function Sidebar() {
           mobileOpen && 'fixed inset-y-0 left-0 z-50 flex w-60'
         )}
       >
-        <div className="flex items-center justify-between h-16 px-4 border-b border-[#2A2A2A]">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-[#0f0f0f]">
           {(!collapsed || mobileOpen) && (
             <div className="min-w-0">
-              <h1 className="font-serif italic text-lg text-[#F1EFE7] leading-tight tracking-tight">
-                partnerships
-              </h1>
-              <p className="text-[9px] text-[#6B6560] font-medium uppercase tracking-[0.2em]">
-                partnerships os
-              </p>
+              <h1 className="text-sm font-bold text-white tracking-tight font-mono">partnerships os</h1>
             </div>
           )}
           {collapsed && !mobileOpen && (
-            <span className="font-serif italic text-xl text-[#F1EFE7] mx-auto">f</span>
+            <span className="text-sm font-bold text-white mx-auto font-mono">p</span>
           )}
 
           {/* Close button for mobile overlay */}
           {mobileOpen && (
             <button
               onClick={() => setMobileOpen(false)}
-              className="p-1.5 hover:bg-[#1A1A1A] rounded-md text-[#6B6560] hover:text-[#F1EFE7] transition-colors flex-shrink-0 lg:hidden"
+              className="p-1.5 hover:bg-[#0a0a0a] rounded-md text-[#555555] hover:text-white transition-colors flex-shrink-0 lg:hidden"
               aria-label="Close navigation"
             >
               <X className="w-4 h-4" />
@@ -110,7 +105,7 @@ export function Sidebar() {
             <button
               onClick={() => setCollapsed(!collapsed)}
               className={cn(
-                'p-1.5 hover:bg-[#1A1A1A] rounded-md text-[#6B6560] hover:text-[#F1EFE7] transition-colors flex-shrink-0 hidden lg:block',
+                'p-1.5 hover:bg-[#0a0a0a] rounded-md text-[#555555] hover:text-white transition-colors flex-shrink-0 hidden lg:block',
                 collapsed && 'hidden'
               )}
               aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
@@ -132,19 +127,19 @@ export function Sidebar() {
                 href={item.href}
                 title={!showLabel ? item.label : undefined}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2 mx-2 rounded-lg text-sm transition-colors relative',
+                  'flex items-center gap-3 px-3 py-2 mx-2 rounded-lg text-sm transition-colors relative font-mono',
                   isActive
-                    ? 'bg-[#1A1A1A] text-[#F1EFE7] font-medium'
-                    : 'text-[#A0998A] hover:bg-[#141414] hover:text-[#F1EFE7]'
+                    ? 'bg-[#0a0a0a] text-white font-medium'
+                    : 'text-[#888888] hover:bg-[#0a0a0a] hover:text-white'
                 )}
               >
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[#F1EFE7] rounded-r" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-r" />
                 )}
                 <Icon
                   className={cn(
                     'w-[18px] h-[18px] flex-shrink-0',
-                    isActive ? 'text-[#F1EFE7]' : 'text-[#6B6560]'
+                    isActive ? 'text-white' : 'text-[#555555]'
                   )}
                 />
                 {showLabel && <span>{item.label}</span>}
@@ -154,10 +149,10 @@ export function Sidebar() {
         </nav>
 
         {collapsed && !mobileOpen && (
-          <div className="p-2 border-t border-[#2A2A2A] hidden lg:block">
+          <div className="p-2 border-t border-[#1a1a1a] hidden lg:block">
             <button
               onClick={() => setCollapsed(false)}
-              className="p-1.5 hover:bg-[#1A1A1A] rounded-md text-[#6B6560] hover:text-[#F1EFE7] transition-colors w-full flex justify-center"
+              className="p-1.5 hover:bg-[#0a0a0a] rounded-md text-[#555555] hover:text-white transition-colors w-full flex justify-center"
               aria-label="Expand sidebar"
             >
               <ChevronsRight className="w-4 h-4" />
@@ -166,8 +161,8 @@ export function Sidebar() {
         )}
 
         {(!collapsed || mobileOpen) && (
-          <div className="p-4 border-t border-[#2A2A2A]">
-            <p className="text-[10px] text-[#6B6560] text-center">v0.1.0</p>
+          <div className="p-4 border-t border-[#1a1a1a]">
+            <p className="text-[10px] text-[#555555] text-center font-mono">v0.1.0</p>
           </div>
         )}
       </aside>

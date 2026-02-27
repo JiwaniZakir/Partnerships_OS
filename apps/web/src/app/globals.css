@@ -1,82 +1,74 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0A0A0A;
-  --color-background-card: #1A1A1A;
-  --color-background-elevated: #141414;
-  --color-border: #2A2A2A;
-  --color-foreground: #F1EFE7;
-  --color-foreground-secondary: #A0998A;
-  --color-foreground-muted: #6B6560;
-  --color-primary: #F1EFE7;
-  --color-primary-foreground: #0A0A0A;
-  --color-accent: #C4B99A;
-  --color-destructive: #EF4444;
-  --color-ring: #F1EFE7;
+  --color-background: #000000;
+  --color-background-card: #0a0a0a;
+  --color-background-elevated: #111111;
+  --color-border: #1a1a1a;
+  --color-foreground: #ffffff;
+  --color-foreground-secondary: #888888;
+  --color-foreground-muted: #444444;
+  --color-primary: #ffffff;
+  --color-primary-foreground: #000000;
+  --color-accent: #ffffff;
+  --color-destructive: #ef4444;
+  --color-ring: #ffffff;
 
-  --color-chart-1: #F1EFE7;
-  --color-chart-2: #C4B99A;
-  --color-chart-3: #A0998A;
-  --color-chart-4: #6B6560;
-  --color-chart-5: #4A453F;
+  --color-chart-1: #ffffff;
+  --color-chart-2: #888888;
+  --color-chart-3: #555555;
+  --color-chart-4: #333333;
+  --color-chart-5: #222222;
 
-  --color-node-member: #F1EFE7;
-  --color-node-contact: #C4B99A;
-  --color-node-org: #6B6560;
+  --color-node-member: #ffffff;
+  --color-node-contact: #888888;
+  --color-node-org: #444444;
 }
 
 :root {
-  --background: #0A0A0A;
-  --background-card: #1A1A1A;
-  --background-elevated: #141414;
-  --border: #2A2A2A;
-  --foreground: #F1EFE7;
-  --foreground-secondary: #A0998A;
-  --foreground-muted: #6B6560;
-  --primary: #F1EFE7;
-  --primary-foreground: #0A0A0A;
-  --accent: #C4B99A;
-  --destructive: #EF4444;
-  --ring: #F1EFE7;
-  --radius: 0.5rem;
+  --background: #000000;
+  --background-card: #0a0a0a;
+  --background-elevated: #111111;
+  --border: #1a1a1a;
+  --foreground: #ffffff;
+  --foreground-secondary: #888888;
+  --foreground-muted: #444444;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --accent: #ffffff;
+  --destructive: #ef4444;
+  --ring: #ffffff;
+  --radius: 0.25rem;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-}
-
-.font-serif {
-  font-family: var(--font-cormorant), 'Cormorant Garamond', 'Georgia', serif;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 }
 
 /* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #2A2A2A;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #3A3A3A;
-}
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #2a2a2a; }
 
 /* Skeleton shimmer */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
-
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #1A1A1A 25%, #222222 50%, #1A1A1A 75%);
+  background: linear-gradient(90deg, #0a0a0a 25%, #111111 50%, #0a0a0a 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
+
+/* bracket tag style used across the UI */
+.bracket-tag {
+  font-family: inherit;
+  font-size: 0.75rem;
+  color: #888888;
+}
+.bracket-tag::before { content: '['; }
+.bracket-tag::after { content: ']'; }

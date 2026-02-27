@@ -34,23 +34,23 @@ export function Header() {
 
   return (
     <>
-      <header className="h-14 border-b border-[#2A2A2A] bg-[#0A0A0A] flex items-center justify-between px-6">
+      <header className="h-14 border-b border-[#0f0f0f] bg-black flex items-center justify-between px-6">
         <div className="flex items-center gap-4 pl-10 lg:pl-0">
           <button
             onClick={() => setShowCommandPalette(true)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm text-[#6B6560] bg-[#141414] rounded-lg border border-[#2A2A2A] hover:border-[#3A3A3A] hover:text-[#A0998A] transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-[#555555] bg-[#0a0a0a] rounded-lg border border-[#1a1a1a] hover:border-[#2a2a2a] hover:text-[#888888] transition-colors font-mono"
           >
             <Search className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Search...</span>
-            <kbd className="text-[10px] bg-[#0A0A0A] px-1.5 py-0.5 rounded border border-[#2A2A2A] text-[#6B6560] font-mono ml-4 hidden sm:inline">
+            <span className="hidden sm:inline">search...</span>
+            <kbd className="text-[10px] bg-black px-1.5 py-0.5 rounded border border-[#1a1a1a] text-[#555555] font-mono ml-4 hidden sm:inline">
               ⌘K
             </kbd>
           </button>
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="p-2 hover:bg-[#1A1A1A] rounded-lg transition-colors relative">
-            <Bell className="w-4 h-4 text-[#6B6560]" />
+          <button className="p-2 hover:bg-[#0a0a0a] rounded-lg transition-colors relative">
+            <Bell className="w-4 h-4 text-[#555555]" />
           </button>
 
           <div className="relative">
@@ -59,35 +59,35 @@ export function Header() {
                 e.stopPropagation();
                 setShowMenu(!showMenu);
               }}
-              className="flex items-center gap-2.5 hover:bg-[#1A1A1A] rounded-lg p-1.5 pr-3 transition-colors"
+              className="flex items-center gap-2.5 hover:bg-[#0a0a0a] rounded-lg p-1.5 pr-3 transition-colors"
             >
               <Avatar name={member?.name || 'FP'} size="sm" />
               {member && (
-                <div className="text-left hidden sm:block">
-                  <p className="text-sm font-medium text-[#F1EFE7] leading-tight">
+                <div className="text-left hidden sm:block font-mono">
+                  <p className="text-sm font-medium text-white leading-tight">
                     {member.name}
                   </p>
-                  <p className="text-[11px] text-[#6B6560] leading-tight">
-                    {member.role || 'Member'}
+                  <p className="text-[11px] text-[#555555] leading-tight">
+                    {member.role || 'member'}
                   </p>
                 </div>
               )}
             </button>
 
             {showMenu && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] shadow-xl py-1 z-50">
-                <div className="px-3 py-2 border-b border-[#2A2A2A]">
-                  <p className="text-sm font-medium text-[#F1EFE7]">
+              <div className="absolute right-0 top-full mt-1 w-48 bg-[#0a0a0a] rounded-lg border border-[#1a1a1a] shadow-xl py-1 z-50">
+                <div className="px-3 py-2 border-b border-[#1a1a1a]">
+                  <p className="text-sm font-medium text-white font-mono">
                     {member?.name}
                   </p>
-                  <p className="text-xs text-[#6B6560]">{member?.email}</p>
+                  <p className="text-xs text-[#555555] font-mono">{member?.email}</p>
                 </div>
                 <button
                   onClick={() => signOut({ callbackUrl: '/login' })}
-                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[#A0998A] hover:bg-[#2A2A2A] hover:text-[#F1EFE7] transition-colors"
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[#888888] hover:bg-[#1a1a1a] hover:text-white transition-colors font-mono"
                 >
                   <LogOut className="w-4 h-4" />
-                  Sign out
+                  sign out
                 </button>
               </div>
             )}
