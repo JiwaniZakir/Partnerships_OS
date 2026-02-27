@@ -1,0 +1,40 @@
+# Never send node_modules to Docker build context — they're installed inside Docker
+node_modules
+**/node_modules
+
+# Build outputs
+**/dist
+**/.next
+**/build
+
+# Git
+.git
+.gitignore
+
+# Dev config
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+**/coverage
+**/.vitest
+
+# Turbo cache
+.turbo
+
+# Expo / mobile specific
+apps/mobile/.expo
+apps/mobile/android
+apps/mobile/ios
+
+# Foundry Logo folder
+"Foundry Logo"
