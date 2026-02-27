@@ -7,6 +7,9 @@ node_modules
 **/.next
 **/build
 
+# TypeScript incremental build cache (references local .pnpm paths, breaks hoisted Docker builds)
+**/*.tsbuildinfo
+
 # Git
 .git
 .gitignore

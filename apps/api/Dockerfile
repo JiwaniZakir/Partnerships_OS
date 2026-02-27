@@ -25,7 +25,8 @@ COPY --from=deps /app/.npmrc ./
 COPY . .
 
 # Build @fpos/shared first so its dist/ files are available
-RUN pnpm --filter @fpos/shared build
+# Delete stale .tsbuildinfo (references .pnpm paths that don't exist with hoisted linker)
+RUN rm -f packages/shared/tsconfig.tsbuildinfo && pnpm --filter @fpos/shared build
 
 # Promote @fpos/shared to root node_modules as a real directory
 # (workspace symlink in apps/api/node_modules is dangling across Docker COPY stages)
