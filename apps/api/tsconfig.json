@@ -6,10 +6,6 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ES2022",
-    "paths": {
-      "@fpos/shared": ["../../packages/shared"],
-      "@fpos/shared/*": ["../../packages/shared/*"]
-    }
   },
   "include": ["src"],
   "references": [

@@ -32,7 +32,9 @@ RUN pnpm --filter @fpos/shared build
 RUN rm -rf node_modules/@fpos 2>/dev/null || true && \
     mkdir -p node_modules/@fpos/shared && \
     cp packages/shared/package.json node_modules/@fpos/shared/ && \
-    cp -r packages/shared/dist node_modules/@fpos/shared/
+    cp -r packages/shared/dist node_modules/@fpos/shared/ && \
+    echo "=== @fpos/shared promoted ===" && \
+    ls node_modules/@fpos/shared/dist/
 
 # Generate Prisma client (goes to root node_modules/@prisma/client — real dir with hoisted)
 RUN pnpm --filter @fpos/api exec prisma generate
