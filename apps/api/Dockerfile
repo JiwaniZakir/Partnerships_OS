@@ -6,8 +6,8 @@ WORKDIR /app
 # Enable pnpm
 RUN corepack enable pnpm
 
-# Copy workspace root files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copy workspace root files (.npmrc sets node-linker=hoisted for flat node_modules)
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/shared/package.json ./packages/shared/
 
