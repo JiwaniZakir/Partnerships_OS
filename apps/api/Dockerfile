@@ -25,6 +25,15 @@ COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_module
 COPY . .
 
 RUN pnpm --filter @fpos/shared build
+
+# Replace workspace symlink with a real directory so TypeScript can resolve
+# @fpos/shared during tsc. Docker COPY --from doesn't follow symlinks that
+# point outside the copied source directory, leaving a dangling symlink.
+RUN rm -rf apps/api/node_modules/@fpos/shared && \
+    mkdir -p apps/api/node_modules/@fpos/shared && \
+    cp packages/shared/package.json apps/api/node_modules/@fpos/shared/ && \
+    cp -r packages/shared/dist apps/api/node_modules/@fpos/shared/
+
 RUN pnpm --filter @fpos/api exec prisma generate
 RUN pnpm --filter @fpos/api build
 
