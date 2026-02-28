@@ -127,6 +127,13 @@ async function main(): Promise<void> {
     });
   });
 
+  // Root route
+  app.get('/', async () => ({
+    name: 'Partnerships OS API',
+    version: process.env.npm_package_version || '0.1.0',
+    docs: '/health for status, /health/ready for full readiness check',
+  }));
+
   // Health checks
   app.get('/health', async () => ({
     status: 'ok',
