@@ -7,18 +7,33 @@ import {
   ActivityIndicator,
   TextInput,
   Alert,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
 import { useAuthStore } from '../stores/auth.store';
-import { devLogin } from '../services/auth';
+import { loginWithGoogle, devLogin } from '../services/auth';
+
+// Required for web browser auth session to complete
+WebBrowser.maybeCompleteAuthSession();
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
+const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
 
 export default function LoginScreen() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuthStore();
   const [email, setEmail] = useState('');
   const [devLoading, setDevLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Google OAuth setup — only if client ID is configured
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
+    GOOGLE_CLIENT_ID
+      ? { clientId: GOOGLE_CLIENT_ID }
+      : { clientId: 'not-configured' },
+  );
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -26,12 +41,37 @@ export default function LoginScreen() {
     }
   }, [isAuthenticated]);
 
-  const handleGoogleSignIn = () => {
-    Alert.alert(
-      'Google Sign-In',
-      'To enable Google Sign-In:\n\n1. Create a Google OAuth 2.0 Web Client ID\n2. Add it to .env as EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID\n\nUse Dev Login below to test the app now.',
-      [{ text: 'OK' }],
-    );
+  // Handle Google OAuth response
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const idToken = response.params.id_token;
+      if (idToken) {
+        setGoogleLoading(true);
+        loginWithGoogle(idToken)
+          .catch((err) => {
+            Alert.alert('Google Sign-In Failed', err.message || 'Authentication failed.');
+          })
+          .finally(() => setGoogleLoading(false));
+      }
+    }
+  }, [response]);
+
+  const handleGoogleSignIn = async () => {
+    if (!GOOGLE_CLIENT_ID) {
+      Alert.alert(
+        'Not Configured',
+        'Set EXPO_PUBLIC_GOOGLE_CLIENT_ID in your .env to enable Google Sign-In.\n\nUse Dev Login below for now.',
+      );
+      return;
+    }
+    setGoogleLoading(true);
+    try {
+      await promptAsync();
+    } catch (err: any) {
+      Alert.alert('Google Sign-In Error', err.message || 'Failed to start sign-in.');
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   const handleDevLogin = async () => {
@@ -69,8 +109,16 @@ export default function LoginScreen() {
         Your AI-powered partnership intelligence platform
       </Text>
 
-      <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn}>
-        <Text style={styles.googleButtonText}>Sign in with Google</Text>
+      <TouchableOpacity
+        style={[styles.googleButton, googleLoading && styles.buttonDisabled]}
+        onPress={handleGoogleSignIn}
+        disabled={googleLoading || !request}
+      >
+        {googleLoading ? (
+          <ActivityIndicator size="small" color="#0A0A0A" />
+        ) : (
+          <Text style={styles.googleButtonText}>Sign in with Google</Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.divider}>
@@ -88,10 +136,11 @@ export default function LoginScreen() {
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}
+        onSubmitEditing={handleDevLogin}
       />
 
       <TouchableOpacity
-        style={[styles.devButton, devLoading && styles.devButtonDisabled]}
+        style={[styles.devButton, devLoading && styles.buttonDisabled]}
         onPress={handleDevLogin}
         disabled={devLoading}
       >
@@ -102,9 +151,7 @@ export default function LoginScreen() {
         )}
       </TouchableOpacity>
 
-      <Text style={styles.hint}>approved emails: admin@example.com</Text>
-
-      <Text style={styles.apiUrl}>↗ {API_URL}</Text>
+      <Text style={styles.apiUrl}>{API_URL}</Text>
     </View>
   );
 }
@@ -157,6 +204,8 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 320,
     alignItems: 'center',
+    minHeight: 52,
+    justifyContent: 'center',
   },
   googleButtonText: {
     color: '#0A0A0A',
@@ -205,20 +254,15 @@ const styles = StyleSheet.create({
     minHeight: 50,
     justifyContent: 'center',
   },
-  devButtonDisabled: { opacity: 0.5 },
+  buttonDisabled: { opacity: 0.5 },
   devButtonText: {
     color: '#6366F1',
     fontSize: 15,
     fontWeight: '600',
   },
-  hint: {
-    color: '#374151',
-    fontSize: 11,
-    marginTop: 16,
-  },
   apiUrl: {
     color: '#1F2937',
     fontSize: 10,
-    marginTop: 6,
+    marginTop: 24,
   },
 });

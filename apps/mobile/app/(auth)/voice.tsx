@@ -14,6 +14,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { VoiceButton } from '../../components/VoiceButton';
 import { Waveform } from '../../components/Waveform';
 import { VoiceClient } from '../../services/voice';
+import { api } from '../../services/api';
+import * as FileSystem from 'expo-file-system';
 
 // expo-av is native-only — conditionally import for audio recording
 let Audio: typeof import('expo-av').Audio | null = null;
@@ -121,20 +123,37 @@ export default function VoiceScreen() {
       const uri = recording.getURI();
       recordingRef.current = null;
 
-      if (uri && voiceClientRef.current?.isConnected) {
-        // Read the audio file and send it via WebSocket
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const buffer = reader.result as ArrayBuffer;
-          voiceClientRef.current?.sendAudio(buffer);
-          setIsProcessing(true);
-        };
-        reader.readAsArrayBuffer(blob);
+      if (!uri) return;
+
+      setIsProcessing(true);
+
+      // Read audio file as base64 and transcribe via REST API
+      const base64Audio = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const { transcript } = await api.post<{ transcript: string }>(
+        '/voice/transcribe',
+        { audio: base64Audio, mimeType: 'audio/m4a' }
+      );
+
+      if (!transcript?.trim()) {
+        setIsProcessing(false);
+        return;
       }
-    } catch (err) {
-      console.error('Failed to stop recording:', err);
+
+      // Show transcript and send through voice agent
+      addMessage('user', transcript);
+      const connected = await connectVoice();
+      if (connected) {
+        voiceClientRef.current?.sendText(transcript);
+      } else {
+        setIsProcessing(false);
+      }
+    } catch (err: any) {
+      console.error('Transcription failed:', err);
+      Alert.alert('Transcription Failed', err.message || 'Could not process audio.');
+      setIsProcessing(false);
     }
   };
 

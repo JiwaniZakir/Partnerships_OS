@@ -66,6 +66,57 @@ export async function voiceRoutes(app: FastifyInstance): Promise<void> {
     }
   );
 
+  // Transcribe audio via OpenAI Whisper
+  app.post(
+    '/voice/transcribe',
+    { preHandler: [requireAuth] },
+    async (request, reply) => {
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        reply.status(503);
+        return { error: 'Transcription service unavailable' };
+      }
+
+      // Expect base64-encoded audio in request body
+      const { audio, mimeType } = z
+        .object({
+          audio: z.string().min(1),
+          mimeType: z.string().default('audio/m4a'),
+        })
+        .parse(request.body);
+
+      const audioBuffer = Buffer.from(audio, 'base64');
+
+      // Determine file extension from mimeType
+      const extMap: Record<string, string> = {
+        'audio/m4a': 'm4a',
+        'audio/mp4': 'm4a',
+        'audio/mpeg': 'mp3',
+        'audio/wav': 'wav',
+        'audio/webm': 'webm',
+      };
+      const ext = extMap[mimeType] || 'm4a';
+
+      // Call OpenAI Whisper API
+      const { default: OpenAI } = await import('openai');
+      const openai = new OpenAI({ apiKey });
+
+      const file = new File([audioBuffer], `recording.${ext}`, { type: mimeType });
+      const transcription = await openai.audio.transcriptions.create({
+        model: 'whisper-1',
+        file,
+        language: 'en',
+      });
+
+      logger.info(
+        { memberId: request.member.sub, length: transcription.text.length },
+        'Audio transcribed'
+      );
+
+      return { transcript: transcription.text };
+    }
+  );
+
   // WebSocket endpoint for real-time voice
   try {
     const websocket = await import('@fastify/websocket');
@@ -169,7 +220,6 @@ export async function voiceRoutes(app: FastifyInstance): Promise<void> {
             }
 
             if (msg.type === 'audio') {
-              // Session ownership validation
               const session = getSession(sessionId);
               if (!session) {
                 socket.send(
@@ -178,14 +228,42 @@ export async function voiceRoutes(app: FastifyInstance): Promise<void> {
                 return;
               }
 
-              // Audio data would be sent to Deepgram STT here
-              // For now, acknowledge receipt
-              socket.send(
-                JSON.stringify({
-                  type: 'status',
-                  status: 'processing',
-                })
-              );
+              socket.send(JSON.stringify({ type: 'status', status: 'processing' }));
+
+              // Transcribe audio via OpenAI Whisper
+              const apiKey = process.env.OPENAI_API_KEY;
+              if (!apiKey || !msg.data) {
+                socket.send(JSON.stringify({ type: 'error', message: 'Transcription unavailable' }));
+                return;
+              }
+
+              try {
+                const { default: OpenAI } = await import('openai');
+                const openai = new OpenAI({ apiKey });
+                const audioBuffer = Buffer.from(msg.data);
+                const file = new File([audioBuffer], 'recording.m4a', { type: 'audio/m4a' });
+                const transcription = await openai.audio.transcriptions.create({
+                  model: 'whisper-1',
+                  file,
+                  language: 'en',
+                });
+
+                const transcript = transcription.text.trim();
+                if (!transcript) {
+                  socket.send(JSON.stringify({ type: 'error', message: 'Could not understand audio' }));
+                  return;
+                }
+
+                // Send transcript back to client
+                socket.send(JSON.stringify({ type: 'transcript', content: transcript }));
+
+                // Process through the agent
+                const response = await processMessage(sessionId, transcript);
+                socket.send(JSON.stringify({ type: 'response', content: response }));
+              } catch (err) {
+                logger.error({ err }, 'Audio transcription failed');
+                socket.send(JSON.stringify({ type: 'error', message: 'Transcription failed' }));
+              }
             }
           } catch (err) {
             logger.error({ err }, 'WebSocket message error');
