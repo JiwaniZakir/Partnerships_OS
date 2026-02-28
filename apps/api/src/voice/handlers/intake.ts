@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { createContact } from '../../contacts/service.js';
-import { getResearchQueue, getNotionSyncQueue } from '../../jobs/queues.js';
+import { dispatchResearch, dispatchNotionSync } from '../../jobs/dispatcher.js';
 import type { VoiceSession } from '../agent.js';
 import { logger } from '../../utils/logger.js';
 
@@ -68,13 +68,9 @@ If you still need more info, ask naturally. Be conversational and efficient.`,
           'Contact created via voice'
         );
 
-        // Fire-and-forget: enqueue research and Notion sync jobs
-        getResearchQueue()
-          .add('research', { contactId: contact.id })
-          .catch((err) => logger.error({ err, contactId: contact.id }, 'Failed to enqueue research job'));
-        getNotionSyncQueue()
-          .add('sync-contact', { type: 'contact', entityId: contact.id })
-          .catch((err) => logger.error({ err, contactId: contact.id }, 'Failed to enqueue Notion sync job'));
+        // Fire-and-forget: run research and Notion sync inline
+        dispatchResearch(contact.id);
+        dispatchNotionSync('contact', contact.id);
 
         // Reset intent — we're done
         session.currentIntent = null;

@@ -4,7 +4,7 @@ import { requireAuth } from '../auth/middleware.js';
 import { runResearchPipeline } from './pipeline.js';
 import { semanticSearch } from './embeddings.js';
 import { logger } from '../utils/logger.js';
-import { getResearchQueue } from '../jobs/worker.js';
+import { dispatchResearch } from '../jobs/dispatcher.js';
 import { getPrisma } from '../config/database.js';
 import { NotFoundError, ForbiddenError } from '../utils/errors.js';
 
@@ -28,19 +28,8 @@ export async function researchRoutes(app: FastifyInstance): Promise<void> {
         throw new ForbiddenError('You can only trigger research for contacts you onboarded');
       }
 
-      try {
-        const queue = getResearchQueue();
-        await queue.add('research', { contactId }, {
-          attempts: 3,
-          backoff: { type: 'exponential', delay: 5000 },
-        });
-        logger.info({ contactId }, 'Research job queued');
-      } catch {
-        // Fallback to direct execution if queue unavailable
-        runResearchPipeline(contactId).catch((err) => {
-          logger.error({ err, contactId }, 'Background research failed');
-        });
-      }
+      dispatchResearch(contactId);
+      logger.info({ contactId }, 'Research dispatched');
 
       reply.status(202);
       return { message: 'Research pipeline triggered', contactId };

@@ -4,7 +4,6 @@ import { verifyGoogleToken } from './google.js';
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from './jwt.js';
 import { isApprovedMember, isAdminMember } from '../config/approved-members.js';
 import { getPrisma } from '../config/database.js';
-import { getRedis } from '../config/database.js';
 import { requireAuth } from './middleware.js';
 import { AuthError, ForbiddenError } from '../utils/errors.js';
 import { randomUUID } from 'crypto';
@@ -24,7 +23,6 @@ const devLoginSchema = z.object({
 
 export async function authRoutes(app: FastifyInstance): Promise<void> {
   const prisma = getPrisma();
-  const redis = getRedis();
 
   // Dev login bypass — enabled in development OR when DEV_LOGIN_ENABLED=true
   // Safe: still restricted to approved members list
@@ -72,7 +70,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
         family: tokenFamily,
       });
 
-      await redis.set(`refresh:${tokenFamily}`, member.id, 'EX', 30 * 24 * 60 * 60);
+      // Token family stored in member.refreshTokenFamily (Prisma) — no Redis needed
 
       logger.info({ memberId: member.id, email: member.email }, 'Member authenticated via dev-login');
 
@@ -132,7 +130,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
       family: tokenFamily,
     });
 
-    await redis.set(`refresh:${tokenFamily}`, member.id, 'EX', 30 * 24 * 60 * 60);
+    // Token family stored in member.refreshTokenFamily (Prisma) — no Redis needed
 
     logger.info({ memberId: member.id, email: member.email }, 'Member authenticated');
 
@@ -177,14 +175,6 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
       throw new AuthError('Invalid refresh token');
     }
 
-    const storedMemberId = await redis.get(`refresh:${payload.family}`);
-    if (!storedMemberId || storedMemberId !== payload.sub) {
-      // Token family compromise detected — revoke entire family
-      await redis.del(`refresh:${payload.family}`);
-      logger.warn({ family: payload.family }, 'Refresh token replay detected');
-      throw new AuthError('Token revoked — please re-authenticate');
-    }
-
     const member = await prisma.member.findUnique({
       where: { id: payload.sub },
     });
@@ -192,10 +182,19 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
       throw new AuthError('Member not found or inactive');
     }
 
+    // Verify token family matches (replay detection)
+    if (member.refreshTokenFamily !== payload.family) {
+      logger.warn({ family: payload.family, memberId: member.id }, 'Refresh token replay detected');
+      // Revoke by rotating to a new family
+      await prisma.member.update({
+        where: { id: member.id },
+        data: { refreshTokenFamily: randomUUID() },
+      });
+      throw new AuthError('Token revoked — please re-authenticate');
+    }
+
     // Rotate token family
     const newFamily = randomUUID();
-    await redis.del(`refresh:${payload.family}`);
-    await redis.set(`refresh:${newFamily}`, member.id, 'EX', 30 * 24 * 60 * 60);
     await prisma.member.update({
       where: { id: member.id },
       data: { refreshTokenFamily: newFamily },

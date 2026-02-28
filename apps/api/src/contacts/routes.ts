@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { contactCreateSchema, contactUpdateSchema, contactFilterSchema } from '@fpos/shared';
 import { requireAuth, requireAdmin } from '../auth/middleware.js';
 import * as contactService from './service.js';
-import { getResearchQueue, getNotionSyncQueue } from '../jobs/queues.js';
+import { dispatchResearch, dispatchNotionSync } from '../jobs/dispatcher.js';
 import { logger } from '../utils/logger.js';
 
 export async function contactRoutes(app: FastifyInstance): Promise<void> {
@@ -30,13 +30,9 @@ export async function contactRoutes(app: FastifyInstance): Promise<void> {
       'Contact created'
     );
 
-    // Fire-and-forget: enqueue research and Notion sync jobs
-    getResearchQueue()
-      .add('research', { contactId: contact.id })
-      .catch((err) => logger.error({ err, contactId: contact.id }, 'Failed to enqueue research job'));
-    getNotionSyncQueue()
-      .add('sync-contact', { type: 'contact', entityId: contact.id })
-      .catch((err) => logger.error({ err, contactId: contact.id }, 'Failed to enqueue Notion sync job'));
+    // Fire-and-forget: run research and Notion sync inline
+    dispatchResearch(contact.id);
+    dispatchNotionSync('contact', contact.id);
 
     reply.status(201);
     return contact;

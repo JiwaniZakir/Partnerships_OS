@@ -4,7 +4,7 @@ import { requireAdmin } from '../auth/middleware.js';
 import { discoverForEvent, analyzeNetworkGaps } from '../graph/discovery.service.js';
 import { getContactStats } from '../contacts/service.js';
 import { getLeaderboard } from '../members/service.js';
-import { getResearchQueue, getNotionSyncQueue } from '../jobs/worker.js';
+import { getActiveJobCount } from '../jobs/dispatcher.js';
 import { discoverSchema } from '@fpos/shared';
 
 export async function adminRoutes(app: FastifyInstance): Promise<void> {
@@ -26,21 +26,6 @@ export async function adminRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.get('/health/queues', async () => {
-    try {
-      const researchQueue = getResearchQueue();
-      const notionQueue = getNotionSyncQueue();
-
-      const [researchCounts, notionCounts] = await Promise.all([
-        researchQueue.getJobCounts(),
-        notionQueue.getJobCounts(),
-      ]);
-
-      return {
-        research: researchCounts,
-        notionSync: notionCounts,
-      };
-    } catch {
-      return { error: 'Queues not available' };
-    }
+    return { activeJobs: getActiveJobCount() };
   });
 }

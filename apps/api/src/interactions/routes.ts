@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { interactionCreateSchema, interactionFilterSchema } from '@fpos/shared';
 import { requireAuth } from '../auth/middleware.js';
 import * as interactionService from './service.js';
-import { getNotionSyncQueue } from '../jobs/queues.js';
+import { dispatchNotionSync } from '../jobs/dispatcher.js';
 import { logger } from '../utils/logger.js';
 
 export async function interactionRoutes(app: FastifyInstance): Promise<void> {
@@ -29,10 +29,8 @@ export async function interactionRoutes(app: FastifyInstance): Promise<void> {
       'Interaction logged'
     );
 
-    // Fire-and-forget: enqueue Notion sync job for the interaction
-    getNotionSyncQueue()
-      .add('sync-interaction', { type: 'interaction', entityId: interaction.id })
-      .catch((err) => logger.error({ err, interactionId: interaction.id }, 'Failed to enqueue Notion sync job'));
+    // Fire-and-forget: sync interaction to Notion
+    dispatchNotionSync('interaction', interaction.id);
 
     reply.status(201);
     return interaction;

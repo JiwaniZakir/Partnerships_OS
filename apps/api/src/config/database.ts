@@ -6,7 +6,8 @@ import { logger } from '../utils/logger.js';
 
 let prisma: PrismaClient;
 let neo4jDriver: Driver;
-let redis: Redis;
+let redis: Redis | null = null;
+let redisAvailable = false;
 
 export function getPrisma(): PrismaClient {
   if (!prisma) {
@@ -28,14 +29,30 @@ export function getNeo4j(): Driver {
   return neo4jDriver;
 }
 
-export function getRedis(): Redis {
-  if (!redis) {
-    redis = new Redis(getEnv().REDIS_URL, {
+export function getRedis(): Redis | null {
+  if (redis) return redis;
+  const url = getEnv().REDIS_URL;
+  if (!url) return null;
+  try {
+    redis = new Redis(url, {
       maxRetriesPerRequest: null,
       enableReadyCheck: false,
+      lazyConnect: true,
     });
+    redis.on('error', (err) => {
+      logger.warn({ err: err.message }, 'Redis error — falling back to in-memory');
+      redisAvailable = false;
+    });
+    redis.on('ready', () => { redisAvailable = true; });
+    redis.connect().catch(() => { redisAvailable = false; });
+  } catch {
+    redis = null;
   }
   return redis;
+}
+
+export function isRedisAvailable(): boolean {
+  return redisAvailable;
 }
 
 export async function closeConnections(): Promise<void> {

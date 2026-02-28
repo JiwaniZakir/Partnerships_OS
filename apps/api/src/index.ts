@@ -17,8 +17,7 @@ import { voiceRoutes } from './voice/routes.js';
 import { notionRoutes } from './notion/routes.js';
 import { adminRoutes } from './admin/routes.js';
 import { initNeo4jSchema } from './graph/neo4j.service.js';
-import { initWorkers, closeWorkers } from './jobs/worker.js';
-import { initScheduledJobs, stopScheduledJobs } from './jobs/scheduled.js';
+import { registerJobHandler } from './jobs/dispatcher.js';
 import { stopSessionCleanup } from './voice/agent.js';
 
 async function main(): Promise<void> {
@@ -60,35 +59,29 @@ async function main(): Promise<void> {
     maxAge: 86400,
   });
 
+  // Rate limiting — in-memory (no Redis dependency)
   await app.register(rateLimit, {
     max: 100,
     timeWindow: '1 minute',
-    redis: getRedis(),
-    keyGenerator: (request) => {
-      return request.member?.sub || request.ip;
-    },
+    keyGenerator: (request) => request.member?.sub || request.ip,
   });
 
-  // Stricter rate limit for auth endpoints
   await app.register(
     async function authRateLimitPlugin(instance) {
       await instance.register(rateLimit, {
         max: 10,
         timeWindow: '5 minutes',
-        redis: getRedis(),
         keyGenerator: (request) => `auth:${request.ip}`,
       });
     },
     { prefix: '/auth' }
   );
 
-  // Stricter rate limit for research endpoints (expensive operations)
   await app.register(
     async function researchRateLimitPlugin(instance) {
       await instance.register(rateLimit, {
         max: 20,
         timeWindow: '1 minute',
-        redis: getRedis(),
         keyGenerator: (request) => `research:${request.member?.sub || request.ip}`,
       });
     },
@@ -161,11 +154,16 @@ async function main(): Promise<void> {
       checks.neo4j = 'error';
     }
 
-    try {
-      await getRedis().ping();
-      checks.redis = 'ok';
-    } catch {
-      checks.redis = 'error';
+    const redisClient = getRedis();
+    if (redisClient) {
+      try {
+        await redisClient.ping();
+        checks.redis = 'ok';
+      } catch {
+        checks.redis = 'error';
+      }
+    } else {
+      checks.redis = 'disabled';
     }
 
     const apiKeys = {
@@ -201,19 +199,19 @@ async function main(): Promise<void> {
     logger.warn({ err }, 'Neo4j schema init failed — graph features may be unavailable');
   }
 
-  try {
-    initWorkers();
-    logger.info('BullMQ workers initialized');
-  } catch (err) {
-    logger.warn({ err }, 'BullMQ worker init failed — background jobs may be unavailable');
-  }
+  // Register inline job handlers (replaces BullMQ workers)
+  registerJobHandler('research', async (data) => {
+    const { runResearchPipeline } = await import('./research/pipeline.js');
+    await runResearchPipeline(data.contactId as string);
+  });
 
-  try {
-    initScheduledJobs();
-    logger.info('Scheduled jobs initialized');
-  } catch (err) {
-    logger.warn({ err }, 'Scheduled jobs init failed — cron tasks may be unavailable');
-  }
+  registerJobHandler('notion-sync', async (data) => {
+    const { syncContactToNotion, syncInteractionToNotion } = await import('./notion/sync.service.js');
+    if (data.type === 'contact') await syncContactToNotion(data.entityId as string);
+    else if (data.type === 'interaction') await syncInteractionToNotion(data.entityId as string);
+  });
+
+  logger.info('Inline job handlers registered');
 
   // Start server
   const port = env.API_PORT;
@@ -223,9 +221,7 @@ async function main(): Promise<void> {
   // Graceful shutdown
   const shutdown = async (signal: string): Promise<void> => {
     logger.info(`${signal} received — shutting down`);
-    stopScheduledJobs();
     stopSessionCleanup();
-    await closeWorkers();
     await app.close();
     await closeConnections();
     process.exit(0);
