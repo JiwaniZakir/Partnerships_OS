@@ -1,7 +1,5 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
 interface ApprovedMember {
   email: string;
@@ -15,8 +13,8 @@ let lastLoadedAt: number = 0;
 let refreshInProgress = false;
 
 function getFilePath(): string {
-  const __dirname = dirname(fileURLToPath(import.meta.url));
-  return resolve(__dirname, '../../../../config/approved-members.md');
+  // process.cwd() = /app in Docker, monorepo root in development — both have config/ here
+  return resolve(process.cwd(), 'config/approved-members.md');
 }
 
 function parseApprovedMembers(content: string): ApprovedMember[] {

@@ -51,3 +51,6 @@ redisdata/
 # Generated
 *.generated.*
 .vercel
+
+# TypeScript incremental build cache
+**/*.tsbuildinfo

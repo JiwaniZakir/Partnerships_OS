@@ -4,7 +4,7 @@
 
 ## Admins (Full dashboard + mobile access)
 - admin@example.com
-- user@example.com
+- zakir@foundryphl.com
 
 ## Members (Mobile app access)
 <!-- Add member emails below as they join -->

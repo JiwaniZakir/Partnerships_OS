@@ -13,12 +13,11 @@ import { useAuthStore } from '../stores/auth.store';
 import { devLogin } from '../services/auth';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
-const isDev = API_URL.includes('localhost') || __DEV__;
 
 export default function LoginScreen() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuthStore();
-  const [email, setEmail] = useState('admin@example.com');
+  const [email, setEmail] = useState('');
   const [devLoading, setDevLoading] = useState(false);
 
   useEffect(() => {
@@ -27,33 +26,36 @@ export default function LoginScreen() {
     }
   }, [isAuthenticated]);
 
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#F1EFE7" />
-      </View>
-    );
-  }
-
-  const handleGoogleSignIn = async () => {
-    // In production, use @react-native-google-signin/google-signin
-    // Requires native EAS build — not available in Expo Go
+  const handleGoogleSignIn = () => {
     Alert.alert(
       'Google Sign-In',
-      'Google Sign-In requires a native build via EAS. Use Dev Login for local testing.'
+      'To enable Google Sign-In:\n\n1. Create a Google OAuth 2.0 Web Client ID\n2. Add it to .env as EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID\n\nUse Dev Login below to test the app now.',
+      [{ text: 'OK' }],
     );
   };
 
   const handleDevLogin = async () => {
+    if (!email.trim()) {
+      Alert.alert('Email Required', 'Enter your approved email address.');
+      return;
+    }
     setDevLoading(true);
     try {
-      await devLogin(email);
+      await devLogin(email.trim());
     } catch (err: any) {
-      Alert.alert('Login Failed', err.message || 'Check that the API is running.');
+      Alert.alert('Login Failed', err.message || 'Check that your email is in the approved list.');
     } finally {
       setDevLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#6366F1" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -63,52 +65,46 @@ export default function LoginScreen() {
         <Text style={styles.subtitle}>PARTNERSHIPS OS</Text>
       </View>
 
-      <View style={styles.content}>
-        <Text style={styles.tagline}>
-          Your AI-powered partnership intelligence platform
-        </Text>
-      </View>
+      <Text style={styles.tagline}>
+        Your AI-powered partnership intelligence platform
+      </Text>
 
       <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn}>
         <Text style={styles.googleButtonText}>Sign in with Google</Text>
       </TouchableOpacity>
 
-      {isDev && (
-        <>
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or</Text>
-            <View style={styles.dividerLine} />
-          </View>
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>or dev login</Text>
+        <View style={styles.dividerLine} />
+      </View>
 
-          <TextInput
-            style={styles.emailInput}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="email@your-domain.com"
-            placeholderTextColor="#6B6560"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+      <TextInput
+        style={styles.emailInput}
+        value={email}
+        onChangeText={setEmail}
+        placeholder="your@approved-email.com"
+        placeholderTextColor="#555"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
 
-          <TouchableOpacity
-            style={[styles.devButton, devLoading && styles.devButtonDisabled]}
-            onPress={handleDevLogin}
-            disabled={devLoading}
-          >
-            {devLoading ? (
-              <ActivityIndicator size="small" color="#6366F1" />
-            ) : (
-              <Text style={styles.devButtonText}>Dev Login</Text>
-            )}
-          </TouchableOpacity>
-        </>
-      )}
+      <TouchableOpacity
+        style={[styles.devButton, devLoading && styles.devButtonDisabled]}
+        onPress={handleDevLogin}
+        disabled={devLoading}
+      >
+        {devLoading ? (
+          <ActivityIndicator size="small" color="#6366F1" />
+        ) : (
+          <Text style={styles.devButtonText}>Dev Login</Text>
+        )}
+      </TouchableOpacity>
 
-      <Text style={styles.restriction}>
-        Restricted to approved domain accounts
-      </Text>
+      <Text style={styles.hint}>approved emails: admin@example.com</Text>
+
+      <Text style={styles.apiUrl}>↗ {API_URL}</Text>
     </View>
   );
 }
@@ -123,14 +119,13 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 32,
   },
   logoLetter: {
     fontStyle: 'italic',
     fontSize: 100,
     color: '#F1EFE7',
     lineHeight: 110,
-    marginBottom: 4,
   },
   logo: {
     color: '#F1EFE7',
@@ -140,20 +135,19 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   subtitle: {
-    color: '#6B6560',
+    color: '#555',
     fontSize: 11,
     fontWeight: '600',
     letterSpacing: 4,
     marginTop: 6,
   },
-  content: {
-    marginBottom: 48,
-  },
   tagline: {
-    color: '#9CA3AF',
-    fontSize: 15,
+    color: '#6B7280',
+    fontSize: 14,
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 20,
+    marginBottom: 40,
+    maxWidth: 280,
   },
   googleButton: {
     backgroundColor: '#F1EFE7',
@@ -180,18 +174,18 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#2A2520',
+    backgroundColor: '#222',
   },
   dividerText: {
-    color: '#6B6560',
+    color: '#555',
     fontSize: 12,
   },
   emailInput: {
     width: '100%',
     maxWidth: 320,
-    backgroundColor: '#141210',
+    backgroundColor: '#111',
     borderWidth: 1,
-    borderColor: '#2A2520',
+    borderColor: '#222',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -204,22 +198,27 @@ const styles = StyleSheet.create({
     maxWidth: 320,
     borderWidth: 1,
     borderColor: '#6366F1',
-    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+    backgroundColor: 'rgba(99,102,241,0.1)',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
+    minHeight: 50,
+    justifyContent: 'center',
   },
-  devButtonDisabled: {
-    opacity: 0.5,
-  },
+  devButtonDisabled: { opacity: 0.5 },
   devButtonText: {
     color: '#6366F1',
     fontSize: 15,
     fontWeight: '600',
   },
-  restriction: {
-    color: '#6B7280',
-    fontSize: 12,
-    marginTop: 20,
+  hint: {
+    color: '#374151',
+    fontSize: 11,
+    marginTop: 16,
+  },
+  apiUrl: {
+    color: '#1F2937',
+    fontSize: 10,
+    marginTop: 6,
   },
 });

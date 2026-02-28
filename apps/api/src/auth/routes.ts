@@ -26,8 +26,13 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   const prisma = getPrisma();
   const redis = getRedis();
 
-  // Dev-only login bypass — no Google OAuth needed
-  if (process.env.NODE_ENV === 'development') {
+  // Dev login bypass — enabled in development OR when DEV_LOGIN_ENABLED=true
+  // Safe: still restricted to approved members list
+  const devLoginEnabled =
+    process.env.NODE_ENV === 'development' ||
+    process.env.DEV_LOGIN_ENABLED === 'true';
+
+  if (devLoginEnabled) {
     app.post('/auth/dev-login', async (request) => {
       const body = devLoginSchema.parse(request.body);
       const email = body.email.toLowerCase();
