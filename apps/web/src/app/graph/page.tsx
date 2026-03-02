@@ -22,7 +22,7 @@ export default function GraphPage() {
   };
 
   return (
-    <div className="flex h-screen bg-[#0A0A0A]">
+    <div className="flex h-screen bg-[#F1EFE7]">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
@@ -38,7 +38,7 @@ export default function GraphPage() {
           {/* Filter Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-[#1A1A1A]/90 backdrop-blur rounded-lg border border-[#2A2A2A] px-3 py-2 text-sm font-medium text-[#A0998A] hover:text-[#F1EFE7] hover:border-[#3A3A3A] transition-colors"
+            className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-xl border border-[#E5E0D8] px-3.5 py-2 text-sm font-medium text-[#6B6560] hover:text-[#1A1A1A] hover:border-[#C4BEB4] transition-colors shadow-sm"
           >
             <Filter className="w-4 h-4" />
             Filters

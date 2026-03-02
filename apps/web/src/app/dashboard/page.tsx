@@ -22,18 +22,18 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { queryKeys, api } from '@/lib/queries';
 import { formatRelativeTime } from '@/lib/utils';
 
-const PIE_COLORS = ['#ffffff', '#888888', '#555555', '#333333', '#222222', '#1a1a1a', '#141414', '#0f0f0f'];
+const PIE_COLORS = ['#1A1A1A', '#6B6560', '#A09A90', '#C4BEB4', '#E5E0D8', '#F1EFE7', '#FAFAF7', '#FFFFFF'];
 
 const chartTooltipStyle = {
   contentStyle: {
-    backgroundColor: '#0a0a0a',
-    border: '1px solid #1a1a1a',
-    borderRadius: '4px',
-    color: '#ffffff',
+    backgroundColor: '#FFFFFF',
+    border: '1px solid #E5E0D8',
+    borderRadius: '8px',
+    color: '#1A1A1A',
     fontSize: '12px',
-    fontFamily: 'JetBrains Mono, monospace',
+    fontFamily: 'Inter, sans-serif',
   },
-  itemStyle: { color: '#ffffff' },
+  itemStyle: { color: '#1A1A1A' },
 };
 
 export default function DashboardPage() {
@@ -56,14 +56,14 @@ export default function DashboardPage() {
   })) || [];
 
   return (
-    <div className="flex h-screen bg-black">
+    <div className="flex h-screen bg-[#F1EFE7]">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-white tracking-tight lowercase">dashboard</h1>
-            <p className="text-sm text-[#555555] font-mono">
+            <h1 className="font-serif italic text-2xl text-[#1A1A1A]">Dashboard</h1>
+            <p className="text-sm text-[#A09A90]">
               {new Date().toLocaleDateString('en-US', {
                 weekday: 'long',
                 month: 'long',
@@ -76,43 +76,43 @@ export default function DashboardPage() {
             <>
               {/* Stats Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <StatCard title="total contacts" value={stats?.total ?? 0} icon={Users} />
-                <StatCard title="added this month" value={stats?.addedThisMonth ?? 0} icon={UserPlus} />
-                <StatCard title="total partnerships" value={stats?.byType?.reduce((sum: number, t: any) => sum + t._count, 0) ?? 0} icon={Handshake} />
-                <StatCard title="contact types" value={stats?.byType?.length ?? 0} icon={Layers} />
+                <StatCard title="Total Contacts" value={stats?.total ?? 0} icon={Users} />
+                <StatCard title="Added This Month" value={stats?.addedThisMonth ?? 0} icon={UserPlus} />
+                <StatCard title="Total Partnerships" value={stats?.byType?.reduce((sum: number, t: any) => sum + t._count, 0) ?? 0} icon={Handshake} />
+                <StatCard title="Contact Types" value={stats?.byType?.length ?? 0} icon={Layers} />
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 {/* Activity Feed */}
                 <Card className="lg:col-span-2">
                   <CardHeader className="flex-row items-center justify-between">
-                    <CardTitle>recent activity</CardTitle>
-                    <TrendingUp className="w-4 h-4 text-[#555555]" />
+                    <CardTitle>Recent Activity</CardTitle>
+                    <TrendingUp className="w-4 h-4 text-[#A09A90]" />
                   </CardHeader>
                   <CardContent>
                     {interactions.length > 0 ? (
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         {interactions.map((inter: any) => (
                           <div
                             key={inter.id}
-                            className="flex items-start gap-3 py-2.5 border-b border-[#1a1a1a] last:border-0"
+                            className="flex items-start gap-3 py-3 px-3 -mx-3 rounded-lg hover:bg-[#FAFAF7] transition-colors"
                           >
-                            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#888888] flex-shrink-0" />
+                            <div className="mt-2 w-1.5 h-1.5 rounded-full bg-[#C4BEB4] flex-shrink-0" />
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm text-white font-mono">
+                              <p className="text-sm text-[#1A1A1A]">
                                 <span className="font-medium">{inter.member?.name}</span>
                                 {' logged a '}
-                                <span className="text-xs text-[#888888]">
-                                  [{inter.type}]
+                                <span className="text-[#6B6560]">
+                                  {inter.type.toLowerCase().replace(/_/g, ' ')}
                                 </span>
                                 {' with '}
                                 <span className="font-medium">{inter.contact?.fullName}</span>
                               </p>
                               {inter.summary && (
-                                <p className="text-xs text-[#555555] mt-0.5 truncate">{inter.summary}</p>
+                                <p className="text-xs text-[#A09A90] mt-0.5 truncate">{inter.summary}</p>
                               )}
                             </div>
-                            <span className="text-xs text-[#555555] flex-shrink-0 font-mono">
+                            <span className="text-xs text-[#A09A90] flex-shrink-0 mt-0.5">
                               {formatRelativeTime(inter.date)}
                             </span>
                           </div>
@@ -120,8 +120,8 @@ export default function DashboardPage() {
                       </div>
                     ) : (
                       <div className="text-center py-12">
-                        <TrendingUp className="w-8 h-8 text-[#1a1a1a] mx-auto mb-3" />
-                        <p className="text-sm text-[#555555] font-mono">[no activity yet]</p>
+                        <TrendingUp className="w-8 h-8 text-[#A09A90] mx-auto mb-3" />
+                        <p className="text-sm text-[#A09A90]">No activity yet</p>
                       </div>
                     )}
                   </CardContent>
@@ -130,29 +130,29 @@ export default function DashboardPage() {
                 {/* Leaderboard */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>top onboarders</CardTitle>
+                    <CardTitle>Top Onboarders</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {stats?.leaderboard?.length ? (
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         {stats.leaderboard.map((m: any) => (
-                          <div key={m.rank} className="flex items-center gap-3 py-2.5 border-b border-[#1a1a1a] last:border-0">
-                            <span className={`text-sm font-bold w-6 text-center font-mono ${
-                              m.rank === 1 ? 'text-white' : m.rank === 2 ? 'text-[#888888]' : m.rank === 3 ? 'text-[#555555]' : 'text-[#333333]'
+                          <div key={m.rank} className="flex items-center gap-3 py-2.5 px-3 -mx-3 rounded-lg hover:bg-[#FAFAF7] transition-colors">
+                            <span className={`text-sm font-semibold w-6 text-center ${
+                              m.rank === 1 ? 'text-[#1A1A1A]' : 'text-[#A09A90]'
                             }`}>
-                              #{m.rank}
+                              {m.rank}
                             </span>
                             <Avatar name={m.name} size="sm" />
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-white truncate font-mono lowercase">{m.name.toLowerCase()}</p>
-                              <p className="text-xs text-[#555555] font-mono lowercase">[{m.role?.toLowerCase() ?? 'member'}]</p>
+                              <p className="text-sm font-medium text-[#1A1A1A] truncate">{m.name}</p>
+                              <p className="text-xs text-[#A09A90]">{m.role ?? 'Member'}</p>
                             </div>
-                            <span className="text-sm font-bold text-[#888888] font-mono">{m.contactCount}</span>
+                            <span className="text-sm font-semibold text-[#1A1A1A]" style={{ fontVariantNumeric: 'tabular-nums' }}>{m.contactCount}</span>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-[#555555] py-4 text-center font-mono">[no data yet]</p>
+                      <p className="text-sm text-[#A09A90] py-4 text-center">No data yet</p>
                     )}
                   </CardContent>
                 </Card>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>contacts by type</CardTitle>
+                    <CardTitle>Contacts by Type</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {pieData.length > 0 ? (
@@ -181,34 +181,34 @@ export default function DashboardPage() {
                           {pieData.map((entry: any, i: number) => (
                             <div key={entry.name} className="flex items-center gap-2">
                               <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
-                              <span className="text-xs text-[#888888] capitalize truncate font-mono">{entry.name.toLowerCase()}</span>
-                              <span className="text-xs font-semibold text-white ml-auto font-mono">{entry.value}</span>
+                              <span className="text-xs text-[#6B6560] capitalize truncate">{entry.name.toLowerCase()}</span>
+                              <span className="text-xs font-semibold text-[#1A1A1A] ml-auto">{entry.value}</span>
                             </div>
                           ))}
                         </div>
                       </div>
                     ) : (
-                      <p className="text-sm text-[#555555] py-8 text-center font-mono">[no contacts yet]</p>
+                      <p className="text-sm text-[#A09A90] py-8 text-center">No contacts yet</p>
                     )}
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>contacts by member</CardTitle>
+                    <CardTitle>Contacts by Member</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {stats?.leaderboard?.length ? (
                       <ResponsiveContainer width="100%" height={200}>
-                        <BarChart data={stats.leaderboard.map((m: any) => ({ name: m.name.split(' ')[0].toLowerCase(), contacts: m.contactCount }))} margin={{ left: -10 }}>
-                          <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#555555', fontFamily: 'JetBrains Mono, monospace' }} axisLine={false} tickLine={false} />
-                          <YAxis tick={{ fontSize: 12, fill: '#555555', fontFamily: 'JetBrains Mono, monospace' }} axisLine={false} tickLine={false} />
+                        <BarChart data={stats.leaderboard.map((m: any) => ({ name: m.name.split(' ')[0], contacts: m.contactCount }))} margin={{ left: -10 }}>
+                          <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#6B6560', fontFamily: 'Inter, sans-serif' }} axisLine={false} tickLine={false} />
+                          <YAxis tick={{ fontSize: 12, fill: '#A09A90', fontFamily: 'Inter, sans-serif' }} axisLine={false} tickLine={false} />
                           <RTooltip {...chartTooltipStyle} />
-                          <Bar dataKey="contacts" fill="#888888" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="contacts" fill="#1A1A1A" radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     ) : (
-                      <p className="text-sm text-[#555555] py-8 text-center font-mono">[no data yet]</p>
+                      <p className="text-sm text-[#A09A90] py-8 text-center">No data yet</p>
                     )}
                   </CardContent>
                 </Card>
@@ -224,14 +224,14 @@ export default function DashboardPage() {
 function StatCard({ title, value, icon: Icon }: { title: string; value: number; icon: React.ComponentType<{ className?: string }> }) {
   return (
     <Card>
-      <CardContent className="p-5">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm text-[#888888] font-mono lowercase">{title}</p>
-          <div className="p-2 rounded-sm bg-black">
-            <Icon className="w-4 h-4 text-[#555555]" />
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm text-[#6B6560]">{title}</p>
+          <div className="p-2 rounded-lg bg-[#F1EFE7]">
+            <Icon className="w-4 h-4 text-[#6B6560]" />
           </div>
         </div>
-        <p className="text-3xl font-bold text-white font-mono">{value.toLocaleString()}</p>
+        <p className="text-3xl font-semibold tracking-tight text-[#1A1A1A]" style={{ fontVariantNumeric: 'tabular-nums' }}>{value.toLocaleString()}</p>
       </CardContent>
     </Card>
   );

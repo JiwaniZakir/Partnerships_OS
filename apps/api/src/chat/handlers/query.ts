@@ -1,11 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { semanticSearch } from '../../research/embeddings.js';
 import { getPrisma } from '../../config/database.js';
-import type { VoiceSession } from '../agent.js';
+import type { ChatContext } from '../agent.js';
 import { logger } from '../../utils/logger.js';
 
 export async function handleQuery(
-  session: VoiceSession,
+  ctx: ChatContext,
   message: string
 ): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY;

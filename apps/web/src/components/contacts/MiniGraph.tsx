@@ -112,8 +112,10 @@ export function MiniGraph({ contactId }: MiniGraphProps) {
   if (empty) {
     return (
       <div className="flex flex-col items-center justify-center py-8">
-        <Network className="w-6 h-6 text-[#2A2A2A] mb-2" />
-        <p className="text-xs text-[#6B6560]">No graph data</p>
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F1EFE7] mb-3">
+          <Network className="w-5 h-5 text-[#A09A90]" />
+        </div>
+        <p className="text-xs text-[#A09A90]">No graph data</p>
       </div>
     );
   }

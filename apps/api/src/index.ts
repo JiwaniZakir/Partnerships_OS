@@ -13,12 +13,11 @@ import { interactionRoutes } from './interactions/routes.js';
 import { memberRoutes } from './members/routes.js';
 import { graphRoutes } from './graph/routes.js';
 import { researchRoutes } from './research/routes.js';
-import { voiceRoutes } from './voice/routes.js';
+import { chatRoutes } from './chat/routes.js';
 import { notionRoutes } from './notion/routes.js';
 import { adminRoutes } from './admin/routes.js';
 import { initNeo4jSchema } from './graph/neo4j.service.js';
 import { registerJobHandler } from './jobs/dispatcher.js';
-import { stopSessionCleanup } from './voice/agent.js';
 
 async function main(): Promise<void> {
   loadEnv();
@@ -86,6 +85,18 @@ async function main(): Promise<void> {
       });
     },
     { prefix: '/contacts' }
+  );
+
+  // Chat endpoints trigger expensive LLM API calls — strict rate limit
+  await app.register(
+    async function chatRateLimitPlugin(instance) {
+      await instance.register(rateLimit, {
+        max: 20,
+        timeWindow: '1 minute',
+        keyGenerator: (request) => `chat:${request.member?.sub || request.ip}`,
+      });
+    },
+    { prefix: '/chat' }
   );
 
   // Global error handler
@@ -194,7 +205,7 @@ async function main(): Promise<void> {
   await app.register(memberRoutes);
   await app.register(graphRoutes);
   await app.register(researchRoutes);
-  await app.register(voiceRoutes);
+  await app.register(chatRoutes);
   await app.register(notionRoutes);
   await app.register(adminRoutes);
 
@@ -228,7 +239,6 @@ async function main(): Promise<void> {
   // Graceful shutdown
   const shutdown = async (signal: string): Promise<void> => {
     logger.info(`${signal} received — shutting down`);
-    stopSessionCleanup();
     await app.close();
     await closeConnections();
     process.exit(0);

@@ -11,11 +11,11 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#0A0A0A' },
+          contentStyle: { backgroundColor: '#F1EFE7' },
           animation: 'fade',
         }}
       />

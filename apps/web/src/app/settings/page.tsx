@@ -59,14 +59,14 @@ export default function SettingsPage() {
   });
 
   return (
-    <div className="flex h-screen bg-[#0A0A0A]">
+    <div className="flex h-screen bg-[#F1EFE7]">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center gap-3 mb-6">
             <SettingsIcon className="w-6 h-6 text-[#6B6560]" />
-            <h1 className="font-serif italic text-2xl text-[#F1EFE7]">Settings</h1>
+            <h1 className="font-serif italic text-2xl text-[#1A1A1A]">Settings</h1>
           </div>
 
           <div className="max-w-3xl space-y-6">
@@ -156,10 +156,10 @@ export default function SettingsPage() {
                   </Button>
                 </div>
                 {addMemberMutation.isSuccess && (
-                  <p className="text-xs text-emerald-400 mb-3">Member added successfully.</p>
+                  <p className="text-xs text-[#2D6A4F] mb-3">Member added successfully.</p>
                 )}
                 {addMemberMutation.isError && (
-                  <p className="text-xs text-red-400 mb-3">Failed to add member.</p>
+                  <p className="text-xs text-[#C1121F] mb-3">Failed to add member.</p>
                 )}
                 <p className="text-xs text-[#6B6560]">
                   Only approved domain email addresses can be added as members.
@@ -188,10 +188,10 @@ export default function SettingsPage() {
 
 function StatusRow({ label, ok }: { label: string; ok?: boolean }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-[#2A2A2A] last:border-0">
-      <span className="text-sm text-[#A0998A]">{label}</span>
-      <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md ${
-        ok ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'
+    <div className="flex items-center justify-between py-2.5 border-b border-[#E5E0D8] last:border-0">
+      <span className="text-sm text-[#1A1A1A]">{label}</span>
+      <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${
+        ok ? 'bg-[#2D6A4F]/10 text-[#2D6A4F]' : 'bg-[#C1121F]/10 text-[#C1121F]'
       }`}>
         {ok ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
         {ok ? 'Configured' : 'Not Set'}
@@ -203,10 +203,10 @@ function StatusRow({ label, ok }: { label: string; ok?: boolean }) {
 function HealthRow({ label, status }: { label: string; status?: string }) {
   const ok = status === 'ok';
   return (
-    <div className="flex items-center justify-between py-2 border-b border-[#2A2A2A] last:border-0">
-      <span className="text-sm text-[#A0998A]">{label}</span>
-      <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md ${
-        ok ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'
+    <div className="flex items-center justify-between py-2.5 border-b border-[#E5E0D8] last:border-0">
+      <span className="text-sm text-[#1A1A1A]">{label}</span>
+      <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${
+        ok ? 'bg-[#2D6A4F]/10 text-[#2D6A4F]' : 'bg-[#8B6914]/10 text-[#8B6914]'
       }`}>
         {ok ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
         {ok ? 'Healthy' : status || 'Unknown'}
@@ -217,13 +217,13 @@ function HealthRow({ label, status }: { label: string; status?: string }) {
 
 function QueueCard({ title, counts }: { title: string; counts: Record<string, number> }) {
   return (
-    <div className="bg-[#141414] rounded-lg p-4">
-      <h3 className="text-sm font-semibold text-[#F1EFE7] mb-3">{title}</h3>
-      <div className="grid grid-cols-2 gap-2 text-center">
-        <div><p className="text-lg font-bold text-[#C4B99A]">{counts.active || 0}</p><p className="text-[10px] text-[#6B6560] uppercase">Active</p></div>
-        <div><p className="text-lg font-bold text-amber-400">{counts.waiting || 0}</p><p className="text-[10px] text-[#6B6560] uppercase">Waiting</p></div>
-        <div><p className="text-lg font-bold text-emerald-400">{counts.completed || 0}</p><p className="text-[10px] text-[#6B6560] uppercase">Done</p></div>
-        <div><p className="text-lg font-bold text-red-400">{counts.failed || 0}</p><p className="text-[10px] text-[#6B6560] uppercase">Failed</p></div>
+    <div className="bg-[#FAFAF7] rounded-xl p-5 border border-[#E5E0D8]">
+      <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4">{title}</h3>
+      <div className="grid grid-cols-2 gap-3 text-center">
+        <div className="bg-white rounded-lg p-2.5"><p className="text-lg font-semibold text-[#1A1A1A]" style={{ fontVariantNumeric: 'tabular-nums' }}>{counts.active || 0}</p><p className="text-[10px] text-[#A09A90] uppercase tracking-wider mt-0.5">Active</p></div>
+        <div className="bg-white rounded-lg p-2.5"><p className="text-lg font-semibold text-[#8B6914]" style={{ fontVariantNumeric: 'tabular-nums' }}>{counts.waiting || 0}</p><p className="text-[10px] text-[#A09A90] uppercase tracking-wider mt-0.5">Waiting</p></div>
+        <div className="bg-white rounded-lg p-2.5"><p className="text-lg font-semibold text-[#2D6A4F]" style={{ fontVariantNumeric: 'tabular-nums' }}>{counts.completed || 0}</p><p className="text-[10px] text-[#A09A90] uppercase tracking-wider mt-0.5">Done</p></div>
+        <div className="bg-white rounded-lg p-2.5"><p className="text-lg font-semibold text-[#C1121F]" style={{ fontVariantNumeric: 'tabular-nums' }}>{counts.failed || 0}</p><p className="text-[10px] text-[#A09A90] uppercase tracking-wider mt-0.5">Failed</p></div>
       </div>
     </div>
   );

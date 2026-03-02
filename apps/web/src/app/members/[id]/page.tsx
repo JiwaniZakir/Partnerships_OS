@@ -17,7 +17,8 @@ import { formatDate, warmthToStars, contactTypeColor } from '@/lib/utils';
 import { ArrowLeft, Mail, Calendar, Users, MessageSquare } from 'lucide-react';
 
 const chartTooltipStyle = {
-  contentStyle: { backgroundColor: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: '8px', color: '#F1EFE7', fontSize: '12px' },
+  contentStyle: { backgroundColor: '#FFFFFF', border: '1px solid #E5E0D8', borderRadius: '8px', color: '#1A1A1A', fontSize: '12px', fontFamily: 'Inter, sans-serif' },
+  itemStyle: { color: '#1A1A1A' },
 };
 
 export default function MemberDetailPage() {
@@ -56,7 +57,7 @@ export default function MemberDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen bg-[#0A0A0A]">
+      <div className="flex h-screen bg-[#F1EFE7]">
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <Header />
@@ -75,7 +76,7 @@ export default function MemberDetailPage() {
 
   if (!member) {
     return (
-      <div className="flex h-screen bg-[#0A0A0A]">
+      <div className="flex h-screen bg-[#F1EFE7]">
         <Sidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -88,14 +89,14 @@ export default function MemberDetailPage() {
   }
 
   return (
-    <div className="flex h-screen bg-[#0A0A0A]">
+    <div className="flex h-screen bg-[#F1EFE7]">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto p-6">
           <button
             onClick={() => router.push('/members')}
-            className="inline-flex items-center gap-1.5 text-sm text-[#6B6560] hover:text-[#F1EFE7] mb-4 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-[#6B6560] hover:text-[#1A1A1A] mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to members
@@ -107,23 +108,23 @@ export default function MemberDetailPage() {
               <Avatar name={member.name} size="xl" />
               <div className="flex-1">
                 <div className="flex items-center gap-3">
-                  <h1 className="font-serif italic text-2xl text-[#F1EFE7]">{member.name}</h1>
+                  <h1 className="font-serif italic text-2xl text-[#1A1A1A]">{member.name}</h1>
                   {member.isAdmin && <Badge variant="admin">Admin</Badge>}
                 </div>
-                <p className="text-[#A0998A] mt-1">{member.role}</p>
+                <p className="text-[#6B6560] mt-1">{member.role}</p>
                 <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-[#6B6560]">
                   <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /><span className="truncate max-w-[200px]">{member.email}</span></span>
                   <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />Joined {formatDate(member.joinedAt)}</span>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4 flex-shrink-0 w-full sm:w-auto">
-                <div className="bg-[#141414] rounded-lg px-6 py-4 text-center">
-                  <p className="text-3xl font-bold text-[#F1EFE7]">{member.contactCount || 0}</p>
-                  <p className="text-xs text-[#6B6560] flex items-center justify-center gap-1"><Users className="w-3 h-3" />Contacts</p>
+              <div className="grid grid-cols-2 gap-3 flex-shrink-0 w-full sm:w-auto">
+                <div className="bg-[#F1EFE7] rounded-xl px-6 py-4 text-center">
+                  <p className="text-3xl font-semibold text-[#1A1A1A]" style={{ fontVariantNumeric: 'tabular-nums' }}>{member.contactCount || 0}</p>
+                  <p className="text-xs text-[#A09A90] flex items-center justify-center gap-1 mt-1"><Users className="w-3 h-3" />Contacts</p>
                 </div>
-                <div className="bg-[#141414] rounded-lg px-6 py-4 text-center">
-                  <p className="text-3xl font-bold text-[#F1EFE7]">{member.interactionCount || 0}</p>
-                  <p className="text-xs text-[#6B6560] flex items-center justify-center gap-1"><MessageSquare className="w-3 h-3" />Interactions</p>
+                <div className="bg-[#F1EFE7] rounded-xl px-6 py-4 text-center">
+                  <p className="text-3xl font-semibold text-[#1A1A1A]" style={{ fontVariantNumeric: 'tabular-nums' }}>{member.interactionCount || 0}</p>
+                  <p className="text-xs text-[#A09A90] flex items-center justify-center gap-1 mt-1"><MessageSquare className="w-3 h-3" />Interactions</p>
                 </div>
               </div>
             </div>
@@ -138,9 +139,9 @@ export default function MemberDetailPage() {
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={genreData} layout="vertical" margin={{ left: 10 }}>
                       <XAxis type="number" tick={{ fontSize: 12, fill: '#6B6560' }} axisLine={false} tickLine={false} />
-                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#A0998A' }} axisLine={false} tickLine={false} width={80} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#A09A90' }} axisLine={false} tickLine={false} width={80} />
                       <RTooltip {...chartTooltipStyle} />
-                      <Bar dataKey="count" fill="#C4B99A" radius={[0, 4, 4, 0]} />
+                      <Bar dataKey="count" fill="#1A1A1A" radius={[0, 4, 4, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
@@ -156,13 +157,13 @@ export default function MemberDetailPage() {
                 {Array.isArray(contacts) && contacts.length > 0 ? (
                   <div className="space-y-1">
                     {contacts.slice(0, 8).map((c: any) => (
-                      <Link key={c.id} href={`/contacts/${c.id}`} className="flex items-center gap-3 py-2 hover:bg-[#141414] rounded-lg px-2 transition-colors">
+                      <Link key={c.id} href={`/contacts/${c.id}`} className="flex items-center gap-3 py-2 hover:bg-white rounded-lg px-2 transition-colors">
                         <Avatar name={c.fullName} size="sm" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-[#F1EFE7] truncate">{c.fullName}</p>
+                          <p className="text-sm font-medium text-[#1A1A1A] truncate">{c.fullName}</p>
                           <p className="text-xs text-[#6B6560] truncate">{c.title} at {c.organization}</p>
                         </div>
-                        <span className="text-xs text-[#C4B99A]">{warmthToStars(c.warmthScore)}</span>
+                        <span className="text-xs text-[#6B6560]">{warmthToStars(c.warmthScore)}</span>
                       </Link>
                     ))}
                   </div>
@@ -180,27 +181,27 @@ export default function MemberDetailPage() {
               <CardContent>
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-[#2A2A2A]">
-                      <th className="text-left px-3 py-2 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider">Name</th>
-                      <th className="text-left px-3 py-2 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider">Organization</th>
-                      <th className="text-left px-3 py-2 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider">Type</th>
-                      <th className="text-left px-3 py-2 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider">Warmth</th>
-                      <th className="text-left px-3 py-2 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider">Added</th>
+                    <tr className="border-b border-[#E5E0D8]">
+                      <th className="text-left px-3 py-2 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider">Name</th>
+                      <th className="text-left px-3 py-2 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider">Organization</th>
+                      <th className="text-left px-3 py-2 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider">Type</th>
+                      <th className="text-left px-3 py-2 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider">Warmth</th>
+                      <th className="text-left px-3 py-2 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider">Added</th>
                     </tr>
                   </thead>
                   <tbody>
                     {contacts.map((c: any) => (
-                      <tr key={c.id} className="border-b border-[#2A2A2A] last:border-0 hover:bg-[#141414] transition-colors">
+                      <tr key={c.id} className="border-b border-[#E5E0D8] last:border-0 hover:bg-[#FAFAF7] transition-colors">
                         <td className="px-3 py-2.5">
-                          <Link href={`/contacts/${c.id}`} className="text-sm font-medium text-[#F1EFE7] hover:text-[#C4B99A] transition-colors">{c.fullName}</Link>
+                          <Link href={`/contacts/${c.id}`} className="text-sm font-medium text-[#1A1A1A] hover:text-[#6B6560] transition-colors">{c.fullName}</Link>
                         </td>
-                        <td className="px-3 py-2.5 text-sm text-[#A0998A]">{c.organization}</td>
+                        <td className="px-3 py-2.5 text-sm text-[#6B6560]">{c.organization}</td>
                         <td className="px-3 py-2.5">
-                          <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-md ${contactTypeColor(c.contactType)}`}>
+                          <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${contactTypeColor(c.contactType)}`}>
                             {c.contactType?.replace(/_/g, ' ')}
                           </span>
                         </td>
-                        <td className="px-3 py-2.5 text-sm text-[#C4B99A]">{warmthToStars(c.warmthScore)}</td>
+                        <td className="px-3 py-2.5 text-sm text-[#6B6560]">{warmthToStars(c.warmthScore)}</td>
                         <td className="px-3 py-2.5 text-sm text-[#6B6560]">{formatDate(c.createdAt)}</td>
                       </tr>
                     ))}

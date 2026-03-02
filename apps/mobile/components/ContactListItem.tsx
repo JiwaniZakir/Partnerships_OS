@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { colors, spacing, radius, fontSize } from '../constants/theme';
 
 interface ContactListItemProps {
   fullName: string;
@@ -27,10 +28,10 @@ export function ContactListItem({
 
   const warmthColor =
     warmthScore >= 0.7
-      ? '#22C55E'
+      ? colors.success
       : warmthScore >= 0.4
-        ? '#EAB308'
-        : '#6B7280';
+        ? colors.warmGold
+        : colors.foregroundTertiary;
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
@@ -38,15 +39,20 @@ export function ContactListItem({
         <Text style={styles.initials}>{initials}</Text>
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>{fullName}</Text>
-        <Text style={styles.detail}>
+        <Text style={styles.name} numberOfLines={1}>{fullName}</Text>
+        <Text style={styles.detail} numberOfLines={1}>
           {title ? `${title} at ` : ''}
           {organization}
         </Text>
       </View>
       <View style={styles.right}>
-        <View style={[styles.warmthDot, { backgroundColor: warmthColor }]} />
-        <Text style={styles.type}>{contactType}</Text>
+        <View style={styles.warmthRow}>
+          <View style={[styles.warmthDot, { backgroundColor: warmthColor }]} />
+          <Text style={styles.warmthPercent}>{Math.round(warmthScore * 100)}%</Text>
+        </View>
+        <View style={styles.typeBadge}>
+          <Text style={styles.typeText}>{contactType}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -57,50 +63,73 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#1F1F1F',
+    paddingHorizontal: spacing.xl,
+    marginHorizontal: spacing.xl,
+    marginBottom: spacing.sm,
+    backgroundColor: colors.backgroundCard,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: radius.lg,
   },
   avatar: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#2A2823',
+    backgroundColor: colors.backgroundSubtle,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: spacing.md,
   },
   initials: {
-    color: '#F1EFE7',
-    fontSize: 16,
+    color: colors.foregroundSecondary,
+    fontSize: 14,
     fontWeight: '600',
   },
   info: {
     flex: 1,
+    marginRight: spacing.sm,
   },
   name: {
-    color: '#FAFAFA',
-    fontSize: 16,
+    color: colors.foreground,
+    fontSize: fontSize.md,
     fontWeight: '600',
+    lineHeight: 20,
   },
   detail: {
-    color: '#9CA3AF',
-    fontSize: 13,
+    color: colors.foregroundSecondary,
+    fontSize: fontSize.sm,
     marginTop: 2,
+    lineHeight: 18,
   },
   right: {
     alignItems: 'flex-end',
-    marginLeft: 8,
+    gap: spacing.xs,
+  },
+  warmthRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   warmthDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginBottom: 4,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
-  type: {
-    color: '#6B7280',
-    fontSize: 11,
+  warmthPercent: {
+    color: colors.foregroundMuted,
+    fontSize: fontSize.xs,
+    fontWeight: '500',
+  },
+  typeBadge: {
+    backgroundColor: colors.backgroundSubtle,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: radius.sm,
+  },
+  typeText: {
+    color: colors.foregroundMuted,
+    fontSize: 10,
+    fontWeight: '500',
     textTransform: 'capitalize',
   },
 });

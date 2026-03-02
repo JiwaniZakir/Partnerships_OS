@@ -35,7 +35,7 @@ function TabsList({ className, children, _value, _onValueChange, ...props }: Tab
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1 rounded-lg bg-[#141414] p-1',
+        'inline-flex items-center gap-1 rounded-xl bg-white border border-[#E5E0D8] p-1',
         className
       )}
       {...props}
@@ -71,10 +71,10 @@ function TabsTrigger({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+        'inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all',
         isActive
-          ? 'bg-[#2A2A2A] text-[#F1EFE7]'
-          : 'text-[#6B6560] hover:text-[#A0998A]',
+          ? 'bg-[#F1EFE7] text-[#1A1A1A] shadow-sm'
+          : 'text-[#6B6560] hover:text-[#1A1A1A] hover:bg-[#FAFAF7]',
         className
       )}
       onClick={() => _onValueChange?.(value)}

@@ -7,11 +7,14 @@ import {
   StyleSheet,
   RefreshControl,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ContactListItem } from '../../components/ContactListItem';
 import { api } from '../../services/api';
+import { useAuthStore } from '../../stores/auth.store';
+import { colors, spacing, radius, fontSize } from '../../constants/theme';
 
 interface Contact {
   id: string;
@@ -22,18 +25,23 @@ interface Contact {
   contactType: string;
 }
 
+type FilterMode = 'all' | 'mine';
+
 export default function ContactsScreen() {
   const router = useRouter();
+  const member = useAuthStore((s) => s.member);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [total, setTotal] = useState(0);
+  const [filter, setFilter] = useState<FilterMode>('all');
 
   const fetchContacts = useCallback(async (searchTerm?: string) => {
     try {
       const params = new URLSearchParams({ limit: '50' });
       if (searchTerm) params.set('search', searchTerm);
+      if (filter === 'mine' && member?.id) params.set('onboardedById', member.id);
 
       const data = await api.get<{
         contacts: Contact[];
@@ -48,7 +56,7 @@ export default function ContactsScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [filter, member?.id]);
 
   useEffect(() => {
     fetchContacts();
@@ -69,31 +77,72 @@ export default function ContactsScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <ActivityIndicator size="large" color="#F1EFE7" style={{ marginTop: 40 }} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.foreground} />
+        </View>
       </SafeAreaView>
     );
   }
 
+  const renderHeader = () => (
+    <View>
+      {/* Title row */}
+      <View style={styles.header}>
+        <Text style={styles.title}>Contacts</Text>
+        <View style={styles.countBadge}>
+          <Text style={styles.countText}>{total}</Text>
+        </View>
+      </View>
+
+      {/* Filter tabs */}
+      <View style={styles.filterRow}>
+        <TouchableOpacity
+          style={[styles.filterTab, filter === 'all' && styles.filterTabActive]}
+          onPress={() => setFilter('all')}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>
+            All
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.filterTab, filter === 'mine' && styles.filterTabActive]}
+          onPress={() => setFilter('mine')}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.filterText, filter === 'mine' && styles.filterTextActive]}>
+            My Contacts
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Search bar */}
+      <View style={styles.searchContainer}>
+        <View style={styles.searchInputWrapper}>
+          <Text style={styles.searchIcon}>{'\u2315'}</Text>
+          <TextInput
+            style={styles.searchInput}
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Search by name, company, or role..."
+            placeholderTextColor={colors.foregroundTertiary}
+          />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => setSearch('')} activeOpacity={0.7}>
+              <Text style={styles.searchClear}>{'\u2715'}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>My Contacts</Text>
-        <Text style={styles.count}>{total} total</Text>
-      </View>
-
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          value={search}
-          onChangeText={setSearch}
-          placeholder="Search contacts..."
-          placeholderTextColor="#6B7280"
-        />
-      </View>
-
       <FlatList
         data={contacts}
         keyExtractor={(item) => item.id}
+        ListHeaderComponent={renderHeader}
         renderItem={({ item }) => (
           <ContactListItem
             fullName={item.fullName}
@@ -108,18 +157,23 @@ export default function ContactsScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#F1EFE7"
+            tintColor={colors.foreground}
           />
         }
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyText}>
+            <Text style={styles.emptyTitle}>
+              {search ? 'No results' : 'No contacts yet'}
+            </Text>
+            <Text style={styles.emptySubtitle}>
               {search
-                ? 'No contacts match your search'
-                : 'No contacts yet. Use the voice agent to add your first!'}
+                ? `No contacts match "${search}". Try a different search term.`
+                : 'Your network is empty. Use the Add tab to start building it.'}
             </Text>
           </View>
         }
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
   );
@@ -128,44 +182,117 @@ export default function ContactsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: colors.background,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  listContent: {
+    paddingBottom: spacing.xl,
+  },
+
+  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
   },
   title: {
-    color: '#FAFAFA',
-    fontSize: 24,
+    color: colors.foreground,
+    fontSize: fontSize.xxl,
     fontWeight: '700',
   },
-  count: {
-    color: '#6B7280',
-    fontSize: 14,
+  countBadge: {
+    backgroundColor: colors.foreground,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: radius.pill,
   },
+  countText: {
+    color: '#FFFFFF',
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+  },
+
+  // Filter Tabs
+  filterRow: {
+    flexDirection: 'row',
+    paddingHorizontal: spacing.xl,
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  filterTab: {
+    paddingHorizontal: 18,
+    paddingVertical: 9,
+    borderRadius: radius.pill,
+    backgroundColor: colors.backgroundCard,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  filterTabActive: {
+    backgroundColor: colors.foreground,
+    borderColor: colors.foreground,
+  },
+  filterText: {
+    color: colors.foregroundSecondary,
+    fontSize: fontSize.sm,
+    fontWeight: '500',
+  },
+  filterTextActive: {
+    color: '#FFFFFF',
+  },
+
+  // Search
   searchContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.lg,
+  },
+  searchInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.backgroundCard,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.lg,
+  },
+  searchIcon: {
+    color: colors.foregroundMuted,
+    fontSize: 18,
+    marginRight: spacing.sm,
   },
   searchInput: {
-    backgroundColor: '#1F1F1F',
-    color: '#FAFAFA',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 15,
+    flex: 1,
+    color: colors.foreground,
+    paddingVertical: 13,
+    fontSize: fontSize.md,
   },
+  searchClear: {
+    color: colors.foregroundMuted,
+    fontSize: 14,
+    padding: spacing.xs,
+  },
+
+  // Empty State
   empty: {
     paddingTop: 60,
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: 40,
   },
-  emptyText: {
-    color: '#6B7280',
-    fontSize: 15,
+  emptyTitle: {
+    color: colors.foreground,
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    marginBottom: spacing.sm,
+  },
+  emptySubtitle: {
+    color: colors.foregroundSecondary,
+    fontSize: fontSize.md,
     textAlign: 'center',
     lineHeight: 22,
   },

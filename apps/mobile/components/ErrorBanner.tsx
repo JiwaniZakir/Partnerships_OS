@@ -50,10 +50,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   errorBg: {
-    backgroundColor: '#7F1D1D',
+    backgroundColor: '#C1121F',
   },
   successBg: {
-    backgroundColor: '#14532D',
+    backgroundColor: '#2D6A4F',
   },
   message: {
     flex: 1,

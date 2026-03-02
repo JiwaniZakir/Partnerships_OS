@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { api } from '../../services/api';
+import { colors, spacing, radius, fontSize } from '../../constants/theme';
 
 interface ContactDetail {
   id: string;
@@ -64,9 +65,27 @@ export default function ContactDetailScreen() {
     fetchContact();
   }, [id]);
 
-  const renderWarmthStars = (score: number) => {
-    const filled = Math.round(score * 5);
-    return Array.from({ length: 5 }, (_, i) => (i < filled ? '\u2605' : '\u2606')).join('');
+  const renderWarmthBar = (score: number) => {
+    const percentage = Math.round(score * 100);
+    return (
+      <View style={styles.warmthContainer}>
+        <View style={styles.warmthBarBg}>
+          <View
+            style={[
+              styles.warmthBarFill,
+              {
+                width: `${percentage}%`,
+                backgroundColor:
+                  score >= 0.7 ? colors.success :
+                  score >= 0.4 ? colors.warmGold :
+                  colors.foregroundMuted,
+              },
+            ]}
+          />
+        </View>
+        <Text style={styles.warmthLabel}>{percentage}% warmth</Text>
+      </View>
+    );
   };
 
   const openLink = (url: string) => {
@@ -76,7 +95,9 @@ export default function ContactDetailScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <ActivityIndicator size="large" color="#F1EFE7" style={{ marginTop: 40 }} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.foreground} />
+        </View>
       </SafeAreaView>
     );
   }
@@ -84,13 +105,15 @@ export default function ContactDetailScreen() {
   if (error || !contact) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Text style={styles.backText}>{'\u2190'} Back</Text>
+        <View style={styles.nav}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton} activeOpacity={0.7}>
+            <Text style={styles.backIcon}>{'\u2190'}</Text>
+            <Text style={styles.backText}>Back</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error || 'Contact not found'}</Text>
+          <Text style={styles.errorTitle}>Unable to load</Text>
+          <Text style={styles.errorText}>{error || 'This contact could not be found.'}</Text>
         </View>
       </SafeAreaView>
     );
@@ -103,85 +126,81 @@ export default function ContactDetailScreen() {
     .slice(0, 2)
     .toUpperCase();
 
+  const contactLinks = [
+    contact.email && { label: 'Email', value: contact.email, url: `mailto:${contact.email}` },
+    contact.phone && { label: 'Phone', value: contact.phone, url: `tel:${contact.phone}` },
+    contact.linkedinUrl && { label: 'LinkedIn', value: 'View Profile', url: contact.linkedinUrl },
+    contact.twitterUrl && { label: 'Twitter', value: 'View Profile', url: contact.twitterUrl },
+    contact.personalWebsite && { label: 'Website', value: contact.personalWebsite, url: contact.personalWebsite },
+  ].filter(Boolean) as { label: string; value: string; url: string }[];
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backText}>{'\u2190'} Back</Text>
+      {/* Navigation */}
+      <View style={styles.nav}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton} activeOpacity={0.7}>
+          <Text style={styles.backIcon}>{'\u2190'}</Text>
+          <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Avatar and Name */}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Profile Header */}
         <View style={styles.profileHeader}>
           <View style={styles.avatar}>
             <Text style={styles.initials}>{initials}</Text>
           </View>
           <Text style={styles.name}>{contact.fullName}</Text>
-          <Text style={styles.titleOrg}>
-            {contact.title ? `${contact.title} @ ${contact.organization}` : contact.organization}
-          </Text>
-          <Text style={styles.warmth}>{renderWarmthStars(contact.warmthScore)}</Text>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{contact.contactType}</Text>
+          {(contact.title || contact.organization) && (
+            <Text style={styles.titleOrg}>
+              {contact.title ? `${contact.title} at ${contact.organization}` : contact.organization}
+            </Text>
+          )}
+
+          {/* Badges row */}
+          <View style={styles.badgeRow}>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{contact.contactType}</Text>
+            </View>
+            {contact.organizationType && (
+              <View style={[styles.badge, styles.badgeSecondary]}>
+                <Text style={styles.badgeText}>{contact.organizationType}</Text>
+              </View>
+            )}
           </View>
+
+          {/* Warmth */}
+          {renderWarmthBar(contact.warmthScore)}
         </View>
 
-        {/* Contact Info */}
-        {(contact.email || contact.phone || contact.linkedinUrl) && (
+        {/* Contact Links */}
+        {contactLinks.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Contact</Text>
             <View style={styles.card}>
-              {contact.email && (
+              {contactLinks.map((link, i) => (
                 <TouchableOpacity
-                  onPress={() => openLink(`mailto:${contact.email}`)}
-                  style={styles.contactRow}
+                  key={link.label}
+                  onPress={() => openLink(link.url)}
+                  style={[
+                    styles.contactRow,
+                    i === contactLinks.length - 1 && styles.contactRowLast,
+                  ]}
+                  activeOpacity={0.7}
                 >
-                  <Text style={styles.contactLabel}>Email</Text>
-                  <Text style={styles.contactLink}>{contact.email}</Text>
+                  <Text style={styles.contactLabel}>{link.label}</Text>
+                  <Text style={styles.contactValue} numberOfLines={1}>{link.value}</Text>
                 </TouchableOpacity>
-              )}
-              {contact.phone && (
-                <TouchableOpacity
-                  onPress={() => openLink(`tel:${contact.phone}`)}
-                  style={styles.contactRow}
-                >
-                  <Text style={styles.contactLabel}>Phone</Text>
-                  <Text style={styles.contactLink}>{contact.phone}</Text>
-                </TouchableOpacity>
-              )}
-              {contact.linkedinUrl && (
-                <TouchableOpacity
-                  onPress={() => openLink(contact.linkedinUrl!)}
-                  style={styles.contactRow}
-                >
-                  <Text style={styles.contactLabel}>LinkedIn</Text>
-                  <Text style={styles.contactLink}>View Profile</Text>
-                </TouchableOpacity>
-              )}
-              {contact.twitterUrl && (
-                <TouchableOpacity
-                  onPress={() => openLink(contact.twitterUrl!)}
-                  style={styles.contactRow}
-                >
-                  <Text style={styles.contactLabel}>Twitter</Text>
-                  <Text style={styles.contactLink}>View Profile</Text>
-                </TouchableOpacity>
-              )}
-              {contact.personalWebsite && (
-                <TouchableOpacity
-                  onPress={() => openLink(contact.personalWebsite!)}
-                  style={styles.contactRow}
-                >
-                  <Text style={styles.contactLabel}>Website</Text>
-                  <Text style={styles.contactLink}>{contact.personalWebsite}</Text>
-                </TouchableOpacity>
-              )}
+              ))}
             </View>
           </View>
         )}
 
-        {/* Research Summary */}
+        {/* AI Research Profile */}
         {contact.researchSummary && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>AI Research Profile</Text>
@@ -197,20 +216,35 @@ export default function ContactDetailScreen() {
             <Text style={styles.sectionTitle}>Key Achievements</Text>
             <View style={styles.card}>
               {contact.keyAchievements.map((achievement, i) => (
-                <Text key={i} style={styles.listItem}>
-                  {'\u2022'} {achievement}
-                </Text>
+                <View key={i} style={styles.achievementRow}>
+                  <View style={styles.achievementDot} />
+                  <Text style={styles.achievementText}>{achievement}</Text>
+                </View>
               ))}
             </View>
           </View>
         )}
 
-        {/* Potential Value */}
+        {/* Why They Matter */}
         {contact.potentialValue && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Why They Matter</Text>
-            <View style={styles.card}>
+            <View style={[styles.card, styles.highlightCard]}>
               <Text style={styles.bodyText}>{contact.potentialValue}</Text>
+            </View>
+          </View>
+        )}
+
+        {/* Mutual Interests */}
+        {contact.mutualInterests && contact.mutualInterests.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Mutual Interests</Text>
+            <View style={styles.tagContainer}>
+              {contact.mutualInterests.map((interest, i) => (
+                <View key={i} style={styles.tag}>
+                  <Text style={styles.tagText}>{interest}</Text>
+                </View>
+              ))}
             </View>
           </View>
         )}
@@ -218,13 +252,21 @@ export default function ContactDetailScreen() {
         {/* Interaction History */}
         {contact.interactions && contact.interactions.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Interaction History</Text>
+            <Text style={styles.sectionTitle}>
+              Interactions ({contact.interactions.length})
+            </Text>
             {contact.interactions.map((interaction) => (
               <View key={interaction.id} style={[styles.card, styles.interactionCard]}>
                 <View style={styles.interactionHeader}>
-                  <Text style={styles.interactionType}>{interaction.type}</Text>
+                  <View style={styles.interactionTypeBadge}>
+                    <Text style={styles.interactionTypeText}>{interaction.type}</Text>
+                  </View>
                   <Text style={styles.interactionDate}>
-                    {new Date(interaction.date).toLocaleDateString()}
+                    {new Date(interaction.date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
                   </Text>
                 </View>
                 <Text style={styles.bodyText}>{interaction.summary}</Text>
@@ -241,12 +283,25 @@ export default function ContactDetailScreen() {
         {/* Onboarded By */}
         {contact.onboardedBy && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Onboarded By</Text>
+            <Text style={styles.sectionTitle}>Added to Network</Text>
             <View style={styles.card}>
-              <Text style={styles.bodyText}>{contact.onboardedBy.name}</Text>
-              <Text style={styles.metaText}>
-                Added {new Date(contact.createdAt).toLocaleDateString()}
-              </Text>
+              <View style={styles.onboardedRow}>
+                <View style={styles.onboardedAvatar}>
+                  <Text style={styles.onboardedAvatarText}>
+                    {contact.onboardedBy.name[0]?.toUpperCase() || '?'}
+                  </Text>
+                </View>
+                <View>
+                  <Text style={styles.onboardedName}>{contact.onboardedBy.name}</Text>
+                  <Text style={styles.onboardedDate}>
+                    {new Date(contact.createdAt).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
         )}
@@ -260,157 +315,308 @@ export default function ContactDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: colors.background,
   },
-  header: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#2A2A2A',
-  },
-  backButton: {
-    paddingVertical: 4,
-  },
-  backText: {
-    color: '#F1EFE7',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-  },
-  errorContainer: {
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  errorText: {
-    color: '#EF4444',
-    fontSize: 16,
+
+  // Navigation
+  nav: {
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.borderLight,
   },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
+    gap: spacing.sm,
+  },
+  backIcon: {
+    color: colors.foreground,
+    fontSize: 20,
+  },
+  backText: {
+    color: colors.foreground,
+    fontSize: fontSize.md,
+    fontWeight: '500',
+  },
+
+  // Scroll
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.xl,
+  },
+
+  // Error
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  errorTitle: {
+    color: colors.foreground,
+    fontSize: fontSize.lg,
+    fontWeight: '600',
+    marginBottom: spacing.sm,
+  },
+  errorText: {
+    color: colors.foregroundSecondary,
+    fontSize: fontSize.md,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+
+  // Profile Header
   profileHeader: {
     alignItems: 'center',
-    paddingVertical: 32,
+    paddingTop: spacing.xxxl,
+    paddingBottom: spacing.xxl,
   },
   avatar: {
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: '#2A2823',
+    backgroundColor: colors.foreground,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   initials: {
-    color: '#F1EFE7',
-    fontSize: 32,
-    fontWeight: '700',
+    color: '#FFFFFF',
+    fontSize: 30,
+    fontWeight: '600',
   },
   name: {
-    color: '#F1EFE7',
-    fontSize: 24,
+    color: colors.foreground,
+    fontSize: fontSize.xxl,
     fontWeight: '700',
     textAlign: 'center',
+    lineHeight: 30,
   },
   titleOrg: {
-    color: '#A0998A',
-    fontSize: 15,
-    marginTop: 4,
+    color: colors.foregroundSecondary,
+    fontSize: fontSize.md,
+    marginTop: spacing.xs,
     textAlign: 'center',
+    lineHeight: 22,
   },
-  warmth: {
-    color: '#C4B99A',
-    fontSize: 20,
-    marginTop: 8,
-    letterSpacing: 2,
+  badgeRow: {
+    flexDirection: 'row',
+    marginTop: spacing.md,
+    gap: spacing.sm,
   },
   badge: {
-    marginTop: 12,
-    backgroundColor: '#2A2823',
+    backgroundColor: colors.backgroundSubtle,
+    borderWidth: 1,
+    borderColor: colors.border,
     paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 999,
+    paddingVertical: 5,
+    borderRadius: radius.pill,
+  },
+  badgeSecondary: {
+    backgroundColor: colors.backgroundCard,
   },
   badgeText: {
-    color: '#C4B99A',
-    fontSize: 12,
-    fontWeight: '600',
+    color: colors.foregroundSecondary,
+    fontSize: fontSize.xs,
+    fontWeight: '500',
     textTransform: 'capitalize',
   },
+
+  // Warmth
+  warmthContainer: {
+    width: '100%',
+    maxWidth: 200,
+    marginTop: spacing.xl,
+    alignItems: 'center',
+  },
+  warmthBarBg: {
+    width: '100%',
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.border,
+    overflow: 'hidden',
+  },
+  warmthBarFill: {
+    height: '100%',
+    borderRadius: 2,
+  },
+  warmthLabel: {
+    color: colors.foregroundMuted,
+    fontSize: fontSize.xs,
+    fontWeight: '500',
+    marginTop: spacing.sm,
+  },
+
+  // Sections
   section: {
-    marginBottom: 20,
+    marginBottom: spacing.xxl,
   },
   sectionTitle: {
-    color: '#A0998A',
-    fontSize: 12,
+    color: colors.foregroundMuted,
+    fontSize: fontSize.xs,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 8,
+    letterSpacing: 1.2,
+    marginBottom: spacing.md,
+    paddingLeft: 2,
   },
+
+  // Cards
   card: {
-    backgroundColor: '#1A1A1A',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: colors.backgroundCard,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
+  highlightCard: {
+    borderColor: colors.warmGold,
+    borderWidth: 1,
+    backgroundColor: '#FFFDF7',
+  },
+
+  // Contact Links
   contactRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 13,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#2A2A2A',
+    borderBottomColor: colors.borderLight,
+  },
+  contactRowLast: {
+    borderBottomWidth: 0,
   },
   contactLabel: {
-    color: '#6B6560',
-    fontSize: 14,
+    color: colors.foregroundMuted,
+    fontSize: fontSize.sm,
+    fontWeight: '400',
   },
-  contactLink: {
-    color: '#F1EFE7',
-    fontSize: 14,
+  contactValue: {
+    color: colors.foreground,
+    fontSize: fontSize.sm,
     fontWeight: '500',
+    maxWidth: '60%',
+    textAlign: 'right',
   },
+
+  // Body Text
   bodyText: {
-    color: '#F1EFE7',
-    fontSize: 14,
+    color: colors.foreground,
+    fontSize: fontSize.sm,
     lineHeight: 22,
   },
-  listItem: {
-    color: '#F1EFE7',
-    fontSize: 14,
-    lineHeight: 24,
-    marginBottom: 4,
+
+  // Achievements
+  achievementRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: spacing.sm,
   },
+  achievementDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.foregroundMuted,
+    marginTop: 8,
+    marginRight: spacing.md,
+  },
+  achievementText: {
+    color: colors.foreground,
+    fontSize: fontSize.sm,
+    lineHeight: 22,
+    flex: 1,
+  },
+
+  // Tags
+  tagContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  tag: {
+    backgroundColor: colors.backgroundCard,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: radius.pill,
+  },
+  tagText: {
+    color: colors.foregroundSecondary,
+    fontSize: fontSize.sm,
+    fontWeight: '400',
+  },
+
+  // Interactions
   interactionCard: {
-    marginBottom: 10,
+    marginBottom: spacing.sm,
   },
   interactionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.md,
   },
-  interactionType: {
-    color: '#C4B99A',
-    fontSize: 13,
+  interactionTypeBadge: {
+    backgroundColor: colors.backgroundSubtle,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: radius.sm,
+  },
+  interactionTypeText: {
+    color: colors.foregroundSecondary,
+    fontSize: fontSize.xs,
     fontWeight: '600',
     textTransform: 'capitalize',
   },
   interactionDate: {
-    color: '#6B6560',
-    fontSize: 12,
+    color: colors.foregroundMuted,
+    fontSize: fontSize.xs,
   },
   interactionMember: {
-    color: '#6B6560',
-    fontSize: 12,
-    marginTop: 8,
+    color: colors.foregroundMuted,
+    fontSize: fontSize.xs,
+    marginTop: spacing.sm,
+    fontStyle: 'italic',
   },
-  metaText: {
-    color: '#6B6560',
-    fontSize: 12,
-    marginTop: 4,
+
+  // Onboarded By
+  onboardedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  onboardedAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.backgroundSubtle,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  onboardedAvatarText: {
+    color: colors.foregroundSecondary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  onboardedName: {
+    color: colors.foreground,
+    fontSize: fontSize.md,
+    fontWeight: '500',
+  },
+  onboardedDate: {
+    color: colors.foregroundMuted,
+    fontSize: fontSize.xs,
+    marginTop: 2,
   },
 });

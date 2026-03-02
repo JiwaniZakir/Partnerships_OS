@@ -16,7 +16,12 @@ const VALID_INTENTS: Intent[] = [
   'GENERAL_CHAT',
 ];
 
-export async function classifyIntent(message: string): Promise<Intent> {
+export async function classifyIntent(message: string, intentHint?: string): Promise<Intent> {
+  // If caller provides a valid intent hint, trust it
+  if (intentHint && VALID_INTENTS.includes(intentHint as Intent)) {
+    return intentHint as Intent;
+  }
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return 'GENERAL_CHAT';
 

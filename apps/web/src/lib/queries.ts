@@ -44,8 +44,8 @@ export const api = {
       if (params.page) qs.set('page', String(params.page));
       if (params.limit) qs.set('limit', String(params.limit));
       if (params.search) qs.set('search', params.search);
-      if (params.type) qs.set('type', params.type);
-      if (params.orgType) qs.set('orgType', params.orgType);
+      if (params.type) qs.set('contactType', params.type);
+      if (params.orgType) qs.set('organizationType', params.orgType);
       if (params.status) qs.set('status', params.status);
       if (params.minWarmth) qs.set('minWarmth', String(params.minWarmth));
       return fetchApi(`/contacts?${qs.toString()}`);

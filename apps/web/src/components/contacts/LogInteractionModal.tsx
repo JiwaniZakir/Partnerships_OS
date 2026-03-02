@@ -57,7 +57,7 @@ export function LogInteractionModal({ open, onOpenChange, contactId, contactName
           <DialogTitle>Log Interaction with {contactName}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-2 gap-3">
             <Select label="Type" value={type} onChange={(e) => setType(e.target.value)}>
               <option value="MEETING">Meeting</option>
@@ -70,13 +70,13 @@ export function LogInteractionModal({ open, onOpenChange, contactId, contactName
             </Select>
 
             <div>
-              <label className="block text-xs font-medium text-[#A0998A] mb-1.5">Date</label>
+              <label className="block text-xs font-medium text-[#6B6560] mb-1.5">Date</label>
               <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#A0998A] mb-1.5">Summary</label>
+            <label className="block text-xs font-medium text-[#6B6560] mb-1.5">Summary</label>
             <Textarea
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
@@ -87,7 +87,7 @@ export function LogInteractionModal({ open, onOpenChange, contactId, contactName
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#A0998A] mb-1.5">Key Takeaways (one per line)</label>
+            <label className="block text-xs font-medium text-[#6B6560] mb-1.5">Key Takeaways (one per line)</label>
             <Textarea
               value={keyTakeaways}
               onChange={(e) => setKeyTakeaways(e.target.value)}

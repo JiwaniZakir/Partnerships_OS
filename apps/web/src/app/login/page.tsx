@@ -28,24 +28,24 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0A0A0A]">
+    <div className="flex min-h-screen items-center justify-center bg-[#F1EFE7]">
       <div className="w-full max-w-sm text-center">
         <div className="mb-10">
-          <span className="font-serif italic text-[120px] leading-none text-[#F1EFE7] select-none">
+          <span className="text-[120px] leading-none text-[#1A1A1A] select-none" style={{ fontFamily: 'var(--font-serif), Playfair Display, serif', fontStyle: 'italic' }}>
             f
           </span>
         </div>
 
-        <h1 className="font-serif italic text-3xl text-[#F1EFE7] mb-1">
-          partnerships
+        <h1 className="text-3xl text-[#1A1A1A] mb-1" style={{ fontFamily: 'var(--font-serif), Playfair Display, serif', fontStyle: 'italic' }}>
+          the foundry
         </h1>
-        <p className="text-[11px] text-[#6B6560] font-medium uppercase tracking-[0.25em] mb-10">
+        <p className="text-[11px] text-[#A09A90] font-medium uppercase tracking-[0.25em] mb-10">
           partnerships os
         </p>
 
         <button
           onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-          className="flex w-full items-center justify-center gap-3 rounded-lg bg-[#F1EFE7] px-4 py-3 text-sm font-medium text-[#0A0A0A] transition-colors hover:bg-[#E5E1D8] focus:outline-none focus:ring-2 focus:ring-[#F1EFE7]/50 focus:ring-offset-2 focus:ring-offset-[#0A0A0A]"
+          className="flex w-full items-center justify-center gap-3 rounded-xl bg-[#1A1A1A] px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-[#333333] focus:outline-none focus:ring-2 focus:ring-[#1A1A1A]/20 focus:ring-offset-2 focus:ring-offset-[#F1EFE7]"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">
             <path
@@ -71,9 +71,9 @@ export default function LoginPage() {
         {isDev && (
           <>
             <div className="my-6 flex items-center gap-3">
-              <div className="h-px flex-1 bg-[#2A2520]" />
-              <span className="text-xs text-[#6B6560]">or</span>
-              <div className="h-px flex-1 bg-[#2A2520]" />
+              <div className="h-px flex-1 bg-[#E5E0D8]" />
+              <span className="text-xs text-[#A09A90]">or</span>
+              <div className="h-px flex-1 bg-[#E5E0D8]" />
             </div>
 
             <div className="space-y-3">
@@ -82,23 +82,23 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@your-domain.com"
-                className="w-full rounded-lg border border-[#2A2520] bg-[#141210] px-4 py-3 text-sm text-[#F1EFE7] placeholder-[#6B6560] focus:border-[#6366F1] focus:outline-none focus:ring-1 focus:ring-[#6366F1]"
+                className="w-full rounded-xl border border-[#E5E0D8] bg-white px-4 py-3 text-sm text-[#1A1A1A] placeholder-[#A09A90] focus:border-[#C4BEB4] focus:outline-none focus:ring-2 focus:ring-[#1A1A1A]/10"
               />
               <button
                 onClick={handleDevLogin}
                 disabled={loading}
-                className="w-full rounded-lg border border-[#6366F1] bg-[#6366F1]/10 px-4 py-3 text-sm font-medium text-[#6366F1] transition-colors hover:bg-[#6366F1]/20 disabled:opacity-50"
+                className="w-full rounded-xl border border-[#E5E0D8] bg-white px-4 py-3 text-sm font-medium text-[#1A1A1A] transition-colors hover:bg-[#FAFAF7] disabled:opacity-50"
               >
                 {loading ? 'Signing in...' : 'Dev Login'}
               </button>
               {error && (
-                <p className="text-xs text-red-400">{error}</p>
+                <p className="text-xs text-[#C1121F]">{error}</p>
               )}
             </div>
           </>
         )}
 
-        <p className="mt-6 text-xs text-[#6B6560]">
+        <p className="mt-6 text-xs text-[#A09A90]">
           Only approved domain accounts can access this platform
         </p>
       </div>

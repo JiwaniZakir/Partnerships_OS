@@ -24,9 +24,9 @@ interface GraphEdge {
 }
 
 const NODE_COLORS: Record<string, string> = {
-  member: '#F1EFE7',
-  contact: '#C4B99A',
-  organization: '#6B6560',
+  member: '#1A1A1A',
+  contact: '#6B6560',
+  organization: '#A09A90',
 };
 
 interface NetworkGraphProps {
@@ -192,7 +192,7 @@ export function NetworkGraph({ filterTypes, searchHighlight, onNodeClick }: Netw
           ctx.scale(transform.k, transform.k);
 
           // Draw edges
-          ctx.strokeStyle = 'rgba(241, 239, 231, 0.08)';
+          ctx.strokeStyle = 'rgba(26, 26, 26, 0.12)';
           ctx.lineWidth = 0.8;
           for (const edge of edges) {
             const source = edge.source as GraphNode;
@@ -216,7 +216,7 @@ export function NetworkGraph({ filterTypes, searchHighlight, onNodeClick }: Netw
             if (hoveredNode?.id === node.id || isHighlighted) {
               ctx.beginPath();
               ctx.arc(node.x, node.y!, radius + 6, 0, 2 * Math.PI);
-              ctx.fillStyle = isHighlighted ? 'rgba(241, 239, 231, 0.2)' : color + '30';
+              ctx.fillStyle = isHighlighted ? 'rgba(26, 26, 26, 0.15)' : color + '30';
               ctx.fill();
             }
 
@@ -232,7 +232,7 @@ export function NetworkGraph({ filterTypes, searchHighlight, onNodeClick }: Netw
 
             // Labels (only when zoomed in)
             if (transform.k > 0.8) {
-              ctx.fillStyle = '#A0998A';
+              ctx.fillStyle = '#6B6560';
               ctx.font = '10px Inter, sans-serif';
               ctx.textAlign = 'center';
               ctx.fillText(node.label, node.x, node.y! + radius + 14);
@@ -273,11 +273,11 @@ export function NetworkGraph({ filterTypes, searchHighlight, onNodeClick }: Netw
   }, [fetchAndRender, filterTypes]);
 
   return (
-    <div ref={containerRef} className="w-full h-full relative bg-[#0A0A0A]">
+    <div ref={containerRef} className="w-full h-full relative bg-[#F1EFE7]">
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#0A0A0A]/80 z-10">
+        <div className="absolute inset-0 flex items-center justify-center bg-[#F1EFE7]/80 z-10">
           <div className="text-center">
-            <div className="animate-spin w-8 h-8 border-2 border-[#F1EFE7] border-t-transparent rounded-full mx-auto mb-3" />
+            <div className="animate-spin w-8 h-8 border-2 border-[#1A1A1A] border-t-transparent rounded-full mx-auto mb-3" />
             <p className="text-sm text-[#6B6560]">Loading network graph...</p>
           </div>
         </div>
@@ -285,7 +285,7 @@ export function NetworkGraph({ filterTypes, searchHighlight, onNodeClick }: Netw
       <canvas ref={canvasRef} className="w-full h-full" />
 
       {/* Node count */}
-      <div className="absolute bottom-4 left-4 bg-[#1A1A1A]/90 backdrop-blur rounded-lg border border-[#2A2A2A] px-3 py-2 text-xs text-[#A0998A] flex items-center gap-2">
+      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl border border-[#E5E0D8] px-3.5 py-2 text-xs text-[#6B6560] flex items-center gap-2 shadow-sm">
         <Network className="w-3.5 h-3.5" />
         {nodeCount} nodes
       </div>
@@ -293,20 +293,20 @@ export function NetworkGraph({ filterTypes, searchHighlight, onNodeClick }: Netw
       {/* Legend */}
       <div className="absolute top-4 right-4 flex gap-2">
         {Object.entries(NODE_COLORS).map(([type, color]) => (
-          <div key={type} className="flex items-center gap-1.5 bg-[#1A1A1A]/90 backdrop-blur rounded px-2 py-1 text-xs border border-[#2A2A2A]">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-            <span className="capitalize text-[#A0998A]">{type}</span>
+          <div key={type} className="flex items-center gap-1.5 bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1.5 text-xs border border-[#E5E0D8] shadow-sm">
+            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+            <span className="capitalize text-[#6B6560]">{type}</span>
           </div>
         ))}
       </div>
 
       {/* Hovered node tooltip */}
       {hoveredNode && !onNodeClick && (
-        <div className="absolute bottom-4 right-4 bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] shadow-xl p-3 max-w-xs z-20">
-          <p className="text-sm font-semibold text-[#F1EFE7]">{hoveredNode.label}</p>
-          <p className="text-xs text-[#6B6560] capitalize">{hoveredNode.type}</p>
+        <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl border border-[#E5E0D8] shadow-lg p-4 max-w-xs z-20">
+          <p className="text-sm font-medium text-[#1A1A1A]">{hoveredNode.label}</p>
+          <p className="text-xs text-[#A09A90] capitalize mt-0.5">{hoveredNode.type}</p>
           {hoveredNode.properties.organization && (
-            <p className="text-xs text-[#A0998A] mt-1">
+            <p className="text-xs text-[#6B6560] mt-1">
               {hoveredNode.properties.title} at {hoveredNode.properties.organization}
             </p>
           )}
@@ -317,8 +317,11 @@ export function NetworkGraph({ filterTypes, searchHighlight, onNodeClick }: Netw
       {!loading && nodeCount === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <Network className="w-10 h-10 text-[#2A2A2A] mx-auto mb-3" />
-            <p className="text-sm text-[#6B6560]">No graph data yet. Add contacts to see your network.</p>
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white border border-[#E5E0D8] mx-auto mb-4">
+              <Network className="w-6 h-6 text-[#A09A90]" />
+            </div>
+            <p className="text-sm font-medium text-[#1A1A1A] mb-1">No graph data yet</p>
+            <p className="text-sm text-[#A09A90]">Add contacts to see your network.</p>
           </div>
         </div>
       )}

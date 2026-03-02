@@ -1,57 +1,76 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #000000;
-  --color-background-card: #0a0a0a;
-  --color-background-elevated: #111111;
-  --color-border: #1a1a1a;
-  --color-foreground: #ffffff;
-  --color-foreground-secondary: #888888;
-  --color-foreground-muted: #444444;
-  --color-primary: #ffffff;
-  --color-primary-foreground: #000000;
-  --color-accent: #ffffff;
-  --color-destructive: #ef4444;
-  --color-ring: #ffffff;
+  --color-background: #F1EFE7;
+  --color-background-card: #FFFFFF;
+  --color-background-elevated: #FAFAF7;
+  --color-border: #E5E0D8;
+  --color-foreground: #1A1A1A;
+  --color-foreground-secondary: #6B6560;
+  --color-foreground-muted: #A09A90;
+  --color-primary: #1A1A1A;
+  --color-primary-foreground: #FFFFFF;
+  --color-accent: #1A1A1A;
+  --color-destructive: #C1121F;
+  --color-ring: #1A1A1A;
 
-  --color-chart-1: #ffffff;
-  --color-chart-2: #888888;
-  --color-chart-3: #555555;
-  --color-chart-4: #333333;
-  --color-chart-5: #222222;
+  --color-chart-1: #1A1A1A;
+  --color-chart-2: #6B6560;
+  --color-chart-3: #A09A90;
+  --color-chart-4: #C4BEB4;
+  --color-chart-5: #E5E0D8;
 
-  --color-node-member: #ffffff;
-  --color-node-contact: #888888;
-  --color-node-org: #444444;
+  --color-node-member: #1A1A1A;
+  --color-node-contact: #6B6560;
+  --color-node-org: #A09A90;
 }
 
 :root {
-  --background: #000000;
-  --background-card: #0a0a0a;
-  --background-elevated: #111111;
-  --border: #1a1a1a;
-  --foreground: #ffffff;
-  --foreground-secondary: #888888;
-  --foreground-muted: #444444;
-  --primary: #ffffff;
-  --primary-foreground: #000000;
-  --accent: #ffffff;
-  --destructive: #ef4444;
-  --ring: #ffffff;
-  --radius: 0.25rem;
+  --background: #F1EFE7;
+  --background-card: #FFFFFF;
+  --background-elevated: #FAFAF7;
+  --border: #E5E0D8;
+  --foreground: #1A1A1A;
+  --foreground-secondary: #6B6560;
+  --foreground-muted: #A09A90;
+  --primary: #1A1A1A;
+  --primary-foreground: #FFFFFF;
+  --accent: #1A1A1A;
+  --destructive: #C1121F;
+  --ring: #1A1A1A;
+  --radius: 0.75rem;
 }
 
 body {
-  background-color: #000000;
-  color: #ffffff;
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  background-color: #F1EFE7;
+  color: #1A1A1A;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus visible global style */
+:focus-visible {
+  outline: 2px solid rgba(26, 26, 26, 0.2);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 /* Scrollbar styling */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: #2a2a2a; }
+::-webkit-scrollbar-thumb { background: #E5E0D8; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #C4BEB4; }
+
+/* Font mapping */
+.font-serif {
+  font-family: var(--font-serif), 'Playfair Display', serif;
+}
+
+/* Selection color */
+::selection {
+  background-color: rgba(26, 26, 26, 0.12);
+}
 
 /* Skeleton shimmer */
 @keyframes shimmer {
@@ -59,16 +78,7 @@ body {
   100% { background-position: 200% 0; }
 }
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #0a0a0a 25%, #111111 50%, #0a0a0a 75%);
+  background: linear-gradient(90deg, #FAFAF7 25%, #FFFFFF 50%, #FAFAF7 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
-
-/* bracket tag style used across the UI */
-.bracket-tag {
-  font-family: inherit;
-  font-size: 0.75rem;
-  color: #888888;
-}
-.bracket-tag::before { content: '['; }
-.bracket-tag::after { content: ']'; }

@@ -36,11 +36,11 @@ class ErrorBoundaryClass extends Component<Props, State> {
 
       return (
         <div className="flex items-center justify-center p-8">
-          <div className="w-full max-w-sm rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-6 text-center">
+          <div className="w-full max-w-sm rounded-xl border border-[#E5E0D8] bg-white p-6 text-center">
             <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-red-500/15">
               <AlertTriangle className="h-5 w-5 text-red-400" />
             </div>
-            <h3 className="mb-1.5 text-sm font-semibold text-[#F1EFE7]">
+            <h3 className="mb-1.5 text-sm font-semibold text-[#1A1A1A]">
               Something went wrong
             </h3>
             <p className="mb-4 text-xs text-[#6B6560]">
@@ -48,7 +48,7 @@ class ErrorBoundaryClass extends Component<Props, State> {
             </p>
             <button
               onClick={this.handleReset}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#F1EFE7] px-4 py-2 text-xs font-medium text-[#0A0A0A] hover:bg-[#E5E1D8] transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#1A1A1A] px-4 py-2 text-xs font-medium text-white hover:bg-[#333333] transition-colors"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               Try again

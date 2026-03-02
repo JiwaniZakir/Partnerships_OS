@@ -18,12 +18,12 @@ export function GraphSearch({ value, onChange }: GraphSearchProps) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Search nodes..."
-          className="w-full h-9 pl-9 pr-8 rounded-lg border border-[#2A2A2A] bg-[#1A1A1A]/95 backdrop-blur text-sm text-[#F1EFE7] placeholder:text-[#6B6560] focus:outline-none focus:ring-2 focus:ring-[#F1EFE7]/20"
+          className="w-full h-9 pl-9 pr-8 rounded-xl border border-[#E5E0D8] bg-white/95 backdrop-blur-sm text-sm text-[#1A1A1A] placeholder:text-[#A09A90] focus:outline-none focus:ring-2 focus:ring-[#1A1A1A]/10 focus:border-[#C4BEB4] shadow-sm transition-colors"
         />
         {value && (
           <button
             onClick={() => onChange('')}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 hover:bg-[#2A2A2A] rounded"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 hover:bg-[#F1EFE7] rounded"
           >
             <X className="w-3.5 h-3.5 text-[#6B6560]" />
           </button>

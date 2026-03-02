@@ -27,7 +27,7 @@ function Dialog({ open, onOpenChange, children }: DialogProps) {
   return (
     <div className="fixed inset-0 z-50">
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 bg-white/60 backdrop-blur-sm"
         onClick={() => onOpenChange(false)}
       />
       <div className="fixed inset-0 flex items-center justify-center p-4">
@@ -46,7 +46,7 @@ function DialogContent({
   return (
     <div
       className={cn(
-        'relative z-50 w-full max-w-lg rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-6 shadow-2xl',
+        'relative z-50 w-full max-w-lg rounded-xl border border-[#E5E0D8] bg-white p-6 shadow-2xl',
         className
       )}
       onClick={(e) => e.stopPropagation()}
@@ -55,7 +55,7 @@ function DialogContent({
       {onClose && (
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-[#6B6560] hover:text-[#F1EFE7] transition-colors"
+          className="absolute right-4 top-4 text-[#6B6560] hover:text-[#1A1A1A] transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
@@ -70,11 +70,11 @@ function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 }
 
 function DialogTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn('text-lg font-semibold text-[#F1EFE7]', className)} {...props} />;
+  return <h2 className={cn('text-lg font-semibold text-[#1A1A1A]', className)} {...props} />;
 }
 
 function DialogDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn('text-sm text-[#A0998A] mt-1', className)} {...props} />;
+  return <p className={cn('text-sm text-[#6B6560] mt-1', className)} {...props} />;
 }
 
 export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription };

@@ -83,14 +83,14 @@ export default function DiscoverPage() {
   };
 
   return (
-    <div className="flex h-screen bg-[#0A0A0A]">
+    <div className="flex h-screen bg-[#F1EFE7]">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center gap-3 mb-6">
-            <Sparkles className="w-6 h-6 text-[#C4B99A]" />
-            <h1 className="font-serif italic text-2xl text-[#F1EFE7]">AI Discovery</h1>
+            <Sparkles className="w-6 h-6 text-[#6B6560]" />
+            <h1 className="font-serif italic text-2xl text-[#1A1A1A]">AI Discovery</h1>
           </div>
 
           <Tabs value={activeTab} onValueChange={(v) => {
@@ -106,7 +106,7 @@ export default function DiscoverPage() {
             <TabsContent value="event">
               <Card className="mb-6">
                 <CardContent className="p-6">
-                  <label className="block text-sm font-medium text-[#A0998A] mb-2">
+                  <label className="block text-sm font-medium text-[#6B6560] mb-2">
                     Describe your event, initiative, or what you&apos;re looking for:
                   </label>
                   <Textarea
@@ -116,7 +116,7 @@ export default function DiscoverPage() {
                     className="h-32"
                   />
                   {query.length > 0 && query.length < 20 && (
-                    <p className="mt-1 text-xs text-amber-400">
+                    <p className="mt-2 text-xs text-[#8B6914]">
                       Please provide at least 20 characters ({20 - query.length} more needed).
                     </p>
                   )}
@@ -128,23 +128,23 @@ export default function DiscoverPage() {
 
               {results.length > 0 && (
                 <div className="space-y-3">
-                  <h2 className="text-lg font-semibold text-[#F1EFE7]">Top {results.length} Recommendations</h2>
+                  <h2 className="text-lg font-semibold text-[#1A1A1A]">Top {results.length} Recommendations</h2>
                   {results.map((r, i) => (
                     <Link key={r.contact.id} href={`/contacts/${r.contact.id}`}>
-                      <Card className="p-5 hover:border-[#3A3A3A] transition-colors cursor-pointer">
+                      <Card className="p-5 hover:border-[#C4BEB4] hover:shadow-sm transition-all cursor-pointer">
                         <div className="flex items-start gap-4">
-                          <div className="w-10 h-10 rounded-full bg-[#F1EFE7] text-[#0A0A0A] flex items-center justify-center font-bold text-sm flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
                             {i + 1}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold text-[#F1EFE7]">{r.contact.fullName}</h3>
-                              <span className="px-2 py-0.5 bg-[#C4B99A]/15 text-[#C4B99A] text-xs rounded-md font-medium">
+                              <h3 className="font-semibold text-[#1A1A1A]">{r.contact.fullName}</h3>
+                              <span className="px-2 py-0.5 bg-[#F1EFE7] text-[#6B6560] text-xs rounded-full font-medium">
                                 {(r.score * 100).toFixed(0)}% match
                               </span>
                             </div>
-                            <p className="text-sm text-[#A0998A] mb-2">{r.contact.title} at {r.contact.organization}</p>
-                            <p className="text-sm text-[#A0998A]">{r.reason}</p>
+                            <p className="text-sm text-[#6B6560] mb-2">{r.contact.title} at {r.contact.organization}</p>
+                            <p className="text-sm text-[#6B6560]">{r.reason}</p>
                           </div>
                         </div>
                       </Card>
@@ -155,8 +155,10 @@ export default function DiscoverPage() {
 
               {!loading && results.length === 0 && query.length >= 20 && (
                 <div className="text-center py-16">
-                  <Target className="w-10 h-10 text-[#2A2A2A] mx-auto mb-3" />
-                  <p className="text-sm text-[#6B6560]">Click &quot;Find Best Contacts&quot; to discover relevant people in your network</p>
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white border border-[#E5E0D8] mx-auto mb-4">
+                    <Target className="w-6 h-6 text-[#A09A90]" />
+                  </div>
+                  <p className="text-sm text-[#A09A90]">Click &quot;Find Best Contacts&quot; to discover relevant people in your network</p>
                 </div>
               )}
             </TabsContent>
@@ -167,18 +169,18 @@ export default function DiscoverPage() {
                 <CardContent>
                   {loading ? (
                     <div className="flex items-center justify-center py-12">
-                      <Loader2 className="w-6 h-6 animate-spin text-[#C4B99A] mr-2" />
+                      <Loader2 className="w-6 h-6 animate-spin text-[#6B6560] mr-2" />
                       <span className="text-sm text-[#6B6560]">Analyzing your network...</span>
                     </div>
                   ) : gaps?.underrepresented?.length ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {gaps.underrepresented.map((gap) => (
-                        <div key={gap.category} className="flex items-center justify-between p-4 bg-[#141414] rounded-lg">
-                          <div>
-                            <p className="text-sm font-medium text-[#F1EFE7]">{gap.category}</p>
-                            <p className="text-xs text-[#6B6560] mt-0.5">{gap.suggestion}</p>
+                        <div key={gap.category} className="flex items-center justify-between p-4 bg-[#FAFAF7] rounded-xl border border-[#E5E0D8]">
+                          <div className="min-w-0 flex-1 mr-4">
+                            <p className="text-sm font-medium text-[#1A1A1A]">{gap.category}</p>
+                            <p className="text-xs text-[#A09A90] mt-0.5 leading-relaxed">{gap.suggestion}</p>
                           </div>
-                          <span className="text-sm font-bold text-[#6B6560]">{gap.count} contacts</span>
+                          <span className="text-sm font-semibold text-[#1A1A1A] flex-shrink-0" style={{ fontVariantNumeric: 'tabular-nums' }}>{gap.count}</span>
                         </div>
                       ))}
                     </div>
@@ -205,13 +207,15 @@ export default function DiscoverPage() {
                     <div className="mt-6">
                       {pathResult.length > 0 ? (
                         <>
-                          <p className="text-sm text-[#A0998A] mb-3">{pathResult.length}-step connection found:</p>
+                          <p className="text-sm text-[#6B6560] mb-3">{pathResult.length}-step connection found:</p>
                           <WarmIntroPathway path={pathResult} />
                         </>
                       ) : (
                         <div className="text-center py-8">
-                          <Route className="w-8 h-8 text-[#2A2A2A] mx-auto mb-2" />
-                          <p className="text-sm text-[#6B6560]">No connection path found between these contacts.</p>
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F1EFE7] mx-auto mb-3">
+                            <Route className="w-5 h-5 text-[#A09A90]" />
+                          </div>
+                          <p className="text-sm text-[#A09A90]">No connection path found between these contacts.</p>
                         </div>
                       )}
                     </div>

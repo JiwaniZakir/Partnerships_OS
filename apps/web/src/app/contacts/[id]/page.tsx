@@ -41,7 +41,7 @@ export default function ContactDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen bg-[#0A0A0A]">
+      <div className="flex h-screen bg-[#F1EFE7]">
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <Header />
@@ -60,7 +60,7 @@ export default function ContactDetailPage() {
 
   if (!contact) {
     return (
-      <div className="flex h-screen bg-[#0A0A0A]">
+      <div className="flex h-screen bg-[#F1EFE7]">
         <Sidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -73,14 +73,14 @@ export default function ContactDetailPage() {
   }
 
   return (
-    <div className="flex h-screen bg-[#0A0A0A]">
+    <div className="flex h-screen bg-[#F1EFE7]">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto p-6">
           <button
             onClick={() => router.push('/contacts')}
-            className="inline-flex items-center gap-1.5 text-sm text-[#6B6560] hover:text-[#F1EFE7] mb-4 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-[#6B6560] hover:text-[#1A1A1A] mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to contacts
@@ -91,25 +91,25 @@ export default function ContactDetailPage() {
             <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
               <Avatar name={contact.fullName} size="xl" />
               <div className="flex-1 min-w-0">
-                <h1 className="font-serif italic text-2xl text-[#F1EFE7]">{contact.fullName}</h1>
-                <p className="text-[#A0998A] mt-1">{contact.title} at {contact.organization}</p>
+                <h1 className="font-serif italic text-2xl text-[#1A1A1A]">{contact.fullName}</h1>
+                <p className="text-[#6B6560] mt-1">{contact.title} at {contact.organization}</p>
                 <div className="flex flex-wrap items-center gap-2.5 mt-3">
-                  <span className={`inline-flex px-2.5 py-1 text-xs font-medium rounded-md ${contactTypeColor(contact.contactType)}`}>
+                  <span className={`inline-flex px-2.5 py-1 text-xs font-medium rounded-full ${contactTypeColor(contact.contactType)}`}>
                     {contact.contactType?.replace(/_/g, ' ')}
                   </span>
-                  <span className="text-[#C4B99A] text-sm">{warmthToStars(contact.warmthScore)}</span>
+                  <span className="text-[#6B6560] text-sm">{warmthToStars(contact.warmthScore)}</span>
                   {contact.linkedinUrl && (
-                    <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[#A0998A] text-xs hover:text-[#F1EFE7] transition-colors">
+                    <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[#6B6560] text-xs hover:text-[#1A1A1A] transition-colors">
                       <Linkedin className="w-3.5 h-3.5" /> LinkedIn
                     </a>
                   )}
                   {contact.twitterUrl && (
-                    <a href={contact.twitterUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[#A0998A] text-xs hover:text-[#F1EFE7] transition-colors">
+                    <a href={contact.twitterUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[#6B6560] text-xs hover:text-[#1A1A1A] transition-colors">
                       <Twitter className="w-3.5 h-3.5" /> Twitter
                     </a>
                   )}
                   {contact.personalWebsite && (
-                    <a href={contact.personalWebsite} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[#A0998A] text-xs hover:text-[#F1EFE7] transition-colors">
+                    <a href={contact.personalWebsite} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[#6B6560] text-xs hover:text-[#1A1A1A] transition-colors">
                       <Globe className="w-3.5 h-3.5" /> Website
                     </a>
                   )}
@@ -137,9 +137,9 @@ export default function ContactDetailPage() {
                 <CardHeader><CardTitle>AI Research Profile</CardTitle></CardHeader>
                 <CardContent>
                   {contact.researchSummary ? (
-                    <p className="text-[#A0998A] text-sm leading-relaxed whitespace-pre-wrap">{contact.researchSummary}</p>
+                    <p className="text-[#6B6560] text-sm leading-relaxed whitespace-pre-wrap">{contact.researchSummary}</p>
                   ) : (
-                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 text-sm text-amber-400">
+                    <div className="bg-[#F1EFE7] border border-[#E5E0D8] rounded-xl p-4 text-sm text-[#6B6560]">
                       Research pending. Click &quot;Update Research&quot; to trigger the AI research pipeline.
                     </div>
                   )}
@@ -153,8 +153,8 @@ export default function ContactDetailPage() {
                   <CardContent>
                     <ul className="space-y-2">
                       {contact.keyAchievements.map((a: string, i: number) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-[#A0998A]">
-                          <span className="text-[#C4B99A] mt-0.5 flex-shrink-0">&bull;</span>
+                        <li key={i} className="flex items-start gap-2 text-sm text-[#6B6560]">
+                          <span className="text-[#6B6560] mt-0.5 flex-shrink-0">&bull;</span>
                           {a}
                         </li>
                       ))}
@@ -170,16 +170,16 @@ export default function ContactDetailPage() {
                   {contact.interactions?.length > 0 ? (
                     <div className="space-y-4">
                       {contact.interactions.map((inter: any) => (
-                        <div key={inter.id} className="border-l-2 border-[#2A2A2A] pl-4 py-2">
+                        <div key={inter.id} className="border-l-2 border-[#E5E0D8] pl-4 py-3 hover:border-[#C4BEB4] transition-colors">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-medium text-[#C4B99A] bg-[#C4B99A]/10 px-2 py-0.5 rounded">{inter.type}</span>
-                            <span className="text-xs text-[#6B6560]">{formatDate(inter.date)} &mdash; {inter.member?.name}</span>
+                            <span className="text-[10px] font-medium text-[#6B6560] bg-[#F1EFE7] px-2 py-0.5 rounded-md uppercase tracking-wider">{inter.type.replace(/_/g, ' ')}</span>
+                            <span className="text-xs text-[#A09A90]">{formatDate(inter.date)} &mdash; {inter.member?.name}</span>
                           </div>
-                          <p className="text-sm text-[#A0998A]">{inter.summary}</p>
+                          <p className="text-sm text-[#6B6560]">{inter.summary}</p>
                           {inter.keyTakeaways?.length > 0 && (
                             <div className="mt-2">
                               <p className="text-xs font-medium text-[#6B6560] mb-1">Key Takeaways:</p>
-                              <ul className="text-xs text-[#A0998A] space-y-0.5">
+                              <ul className="text-xs text-[#6B6560] space-y-0.5">
                                 {inter.keyTakeaways.map((t: string, i: number) => <li key={i}>- {t}</li>)}
                               </ul>
                             </div>
@@ -237,7 +237,7 @@ export default function ContactDetailPage() {
                   <p className="text-[10px] font-semibold text-[#6B6560] uppercase tracking-wider">Onboarded By</p>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm font-medium text-[#F1EFE7]">{contact.onboardedBy?.name}</p>
+                  <p className="text-sm font-medium text-[#1A1A1A]">{contact.onboardedBy?.name}</p>
                   <p className="text-xs text-[#6B6560]">{contact.onboardedBy?.role}</p>
                 </CardContent>
               </Card>
@@ -249,7 +249,7 @@ export default function ContactDetailPage() {
                     <p className="text-[10px] font-semibold text-[#6B6560] uppercase tracking-wider">Why They Matter</p>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-[#A0998A] leading-relaxed">{contact.potentialValue}</p>
+                    <p className="text-sm text-[#6B6560] leading-relaxed">{contact.potentialValue}</p>
                   </CardContent>
                 </Card>
               )}
@@ -263,7 +263,7 @@ export default function ContactDetailPage() {
                   <CardContent>
                     <ul className="space-y-2">
                       {contact.suggestedIntroductions.map((intro: string, i: number) => (
-                        <li key={i} className="text-sm text-[#A0998A]">{intro}</li>
+                        <li key={i} className="text-sm text-[#6B6560]">{intro}</li>
                       ))}
                     </ul>
                   </CardContent>
@@ -288,7 +288,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between">
       <dt className="text-[#6B6560]">{label}</dt>
-      <dd className="font-medium text-[#F1EFE7] text-right truncate ml-2 capitalize">{value}</dd>
+      <dd className="font-medium text-[#1A1A1A] text-right truncate ml-2 capitalize">{value}</dd>
     </div>
   );
 }

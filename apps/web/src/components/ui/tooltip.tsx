@@ -30,7 +30,7 @@ function Tooltip({ content, children, side = 'top', className }: TooltipProps) {
       {show && (
         <div
           className={cn(
-            'absolute z-50 whitespace-nowrap rounded-md bg-[#2A2A2A] px-2.5 py-1 text-xs text-[#F1EFE7] shadow-lg pointer-events-none',
+            'absolute z-50 whitespace-nowrap rounded-lg bg-[#1A1A1A] px-2.5 py-1.5 text-xs text-white shadow-lg pointer-events-none',
             positionClasses[side],
             className
           )}

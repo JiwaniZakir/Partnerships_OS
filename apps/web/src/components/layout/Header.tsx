@@ -34,23 +34,23 @@ export function Header() {
 
   return (
     <>
-      <header className="h-14 border-b border-[#0f0f0f] bg-black flex items-center justify-between px-6">
+      <header className="h-14 border-b border-[#E5E0D8] bg-white flex items-center justify-between px-6">
         <div className="flex items-center gap-4 pl-10 lg:pl-0">
           <button
             onClick={() => setShowCommandPalette(true)}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm text-[#555555] bg-[#0a0a0a] rounded-lg border border-[#1a1a1a] hover:border-[#2a2a2a] hover:text-[#888888] transition-colors font-mono"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-[#A09A90] bg-[#F1EFE7] rounded-lg border border-[#E5E0D8] hover:border-[#C4BEB4] hover:text-[#6B6560] transition-colors"
           >
             <Search className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">search...</span>
-            <kbd className="text-[10px] bg-black px-1.5 py-0.5 rounded border border-[#1a1a1a] text-[#555555] font-mono ml-4 hidden sm:inline">
-              ⌘K
+            <kbd className="text-[10px] bg-white px-1.5 py-0.5 rounded border border-[#E5E0D8] text-[#A09A90] ml-4 hidden sm:inline">
+              {'\u2318'}K
             </kbd>
           </button>
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="p-2 hover:bg-[#0a0a0a] rounded-lg transition-colors relative">
-            <Bell className="w-4 h-4 text-[#555555]" />
+          <button className="p-2 hover:bg-[#F1EFE7] rounded-lg transition-colors relative">
+            <Bell className="w-4 h-4 text-[#A09A90]" />
           </button>
 
           <div className="relative">
@@ -59,15 +59,15 @@ export function Header() {
                 e.stopPropagation();
                 setShowMenu(!showMenu);
               }}
-              className="flex items-center gap-2.5 hover:bg-[#0a0a0a] rounded-lg p-1.5 pr-3 transition-colors"
+              className="flex items-center gap-2.5 hover:bg-[#F1EFE7] rounded-lg p-1.5 pr-3 transition-colors"
             >
               <Avatar name={member?.name || 'FP'} size="sm" />
               {member && (
-                <div className="text-left hidden sm:block font-mono">
-                  <p className="text-sm font-medium text-white leading-tight">
+                <div className="text-left hidden sm:block">
+                  <p className="text-sm font-medium text-[#1A1A1A] leading-tight">
                     {member.name}
                   </p>
-                  <p className="text-[11px] text-[#555555] leading-tight">
+                  <p className="text-[11px] text-[#A09A90] leading-tight">
                     {member.role || 'member'}
                   </p>
                 </div>
@@ -75,20 +75,22 @@ export function Header() {
             </button>
 
             {showMenu && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-[#0a0a0a] rounded-lg border border-[#1a1a1a] shadow-xl py-1 z-50">
-                <div className="px-3 py-2 border-b border-[#1a1a1a]">
-                  <p className="text-sm font-medium text-white font-mono">
+              <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl border border-[#E5E0D8] shadow-lg py-1.5 z-50">
+                <div className="px-4 py-2.5 border-b border-[#E5E0D8]">
+                  <p className="text-sm font-medium text-[#1A1A1A]">
                     {member?.name}
                   </p>
-                  <p className="text-xs text-[#555555] font-mono">{member?.email}</p>
+                  <p className="text-xs text-[#A09A90] mt-0.5">{member?.email}</p>
                 </div>
-                <button
-                  onClick={() => signOut({ callbackUrl: '/login' })}
-                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[#888888] hover:bg-[#1a1a1a] hover:text-white transition-colors font-mono"
-                >
-                  <LogOut className="w-4 h-4" />
-                  sign out
-                </button>
+                <div className="p-1.5">
+                  <button
+                    onClick={() => signOut({ callbackUrl: '/login' })}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[#6B6560] hover:bg-[#F1EFE7] hover:text-[#1A1A1A] rounded-lg transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign out
+                  </button>
+                </div>
               </div>
             )}
           </div>

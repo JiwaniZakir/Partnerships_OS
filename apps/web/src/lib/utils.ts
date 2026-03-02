@@ -35,15 +35,15 @@ export function warmthToStars(score: number): string {
 
 export function contactTypeColor(type: string): string {
   const colors: Record<string, string> = {
-    SPONSOR: 'bg-emerald-500/15 text-emerald-400',
-    MENTOR: 'bg-blue-500/15 text-blue-400',
-    SPEAKER: 'bg-purple-500/15 text-purple-400',
-    INVESTOR: 'bg-amber-500/15 text-amber-400',
-    CORPORATE_PARTNER: 'bg-[#C4B99A]/15 text-[#C4B99A]',
-    MEDIA: 'bg-pink-500/15 text-pink-400',
-    GOVERNMENT: 'bg-red-500/15 text-red-400',
-    ALUMNI: 'bg-teal-500/15 text-teal-400',
-    OTHER: 'bg-[#2A2A2A] text-[#6B6560]',
+    SPONSOR: 'bg-[#2D6A4F]/10 text-[#2D6A4F]',
+    MENTOR: 'bg-[#3A5A8C]/10 text-[#3A5A8C]',
+    SPEAKER: 'bg-[#6B4C8A]/10 text-[#6B4C8A]',
+    INVESTOR: 'bg-[#8B6914]/10 text-[#8B6914]',
+    CORPORATE_PARTNER: 'bg-[#6B6560]/10 text-[#6B6560]',
+    MEDIA: 'bg-[#8C4966]/10 text-[#8C4966]',
+    GOVERNMENT: 'bg-[#8C3A3A]/10 text-[#8C3A3A]',
+    ALUMNI: 'bg-[#3A7A6B]/10 text-[#3A7A6B]',
+    OTHER: 'bg-[#F1EFE7] text-[#6B6560]',
   };
   return colors[type] || colors.OTHER;
 }

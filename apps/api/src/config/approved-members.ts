@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 
 interface ApprovedMember {
@@ -82,4 +82,45 @@ export function isAdminMember(email: string): boolean {
 
 export function getApprovedMembers(): ApprovedMember[] {
   return loadApprovedMembers();
+}
+
+function serializeApprovedMembers(members: ApprovedMember[]): string {
+  const admins = members.filter((m) => m.isAdmin);
+  const regular = members.filter((m) => !m.isAdmin);
+
+  let content = '# Approved Members\n\n';
+  content += '## Admins\n';
+  for (const m of admins) content += `- ${m.email}\n`;
+  content += '\n## Members\n';
+  for (const m of regular) content += `- ${m.email}\n`;
+  return content;
+}
+
+export function addApprovedMember(email: string, isAdmin = false): boolean {
+  const members = loadApprovedMembers();
+  const lower = email.toLowerCase();
+  if (members.some((m) => m.email.toLowerCase() === lower)) return false;
+
+  members.push({ email: lower, isAdmin });
+  writeFileSync(getFilePath(), serializeApprovedMembers(members), 'utf-8');
+
+  // Invalidate cache
+  approvedMembers = members;
+  lastLoadedAt = Date.now();
+  return true;
+}
+
+export function removeApprovedMember(email: string): boolean {
+  const members = loadApprovedMembers();
+  const lower = email.toLowerCase();
+  const idx = members.findIndex((m) => m.email.toLowerCase() === lower);
+  if (idx === -1) return false;
+
+  members.splice(idx, 1);
+  writeFileSync(getFilePath(), serializeApprovedMembers(members), 'utf-8');
+
+  // Invalidate cache
+  approvedMembers = members;
+  lastLoadedAt = Date.now();
+  return true;
 }

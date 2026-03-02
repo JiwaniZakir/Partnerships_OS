@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   TextInput,
   Alert,
+  KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -14,8 +15,8 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { useAuthStore } from '../stores/auth.store';
 import { loginWithGoogle, devLogin } from '../services/auth';
+import { colors } from '../constants/theme';
 
-// Required for web browser auth session to complete
 WebBrowser.maybeCompleteAuthSession();
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
@@ -28,7 +29,6 @@ export default function LoginScreen() {
   const [devLoading, setDevLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  // Google OAuth setup — only if client ID is configured
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
     GOOGLE_CLIENT_ID
       ? { clientId: GOOGLE_CLIENT_ID }
@@ -37,11 +37,10 @@ export default function LoginScreen() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/(auth)/voice');
+      router.replace('/(auth)/home');
     }
   }, [isAuthenticated]);
 
-  // Handle Google OAuth response
   useEffect(() => {
     if (response?.type === 'success') {
       const idToken = response.params.id_token;
@@ -91,178 +90,219 @@ export default function LoginScreen() {
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#6366F1" />
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.foreground} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <View style={styles.topSpacer} />
+
+      <View style={styles.brandContainer}>
         <Text style={styles.logoLetter}>f</Text>
-        <Text style={styles.logo}>partnerships</Text>
-        <Text style={styles.subtitle}>PARTNERSHIPS OS</Text>
+        <Text style={styles.logoName}>the foundry</Text>
+        <View style={styles.subtitleContainer}>
+          <View style={styles.subtitleLine} />
+          <Text style={styles.subtitle}>PARTNERSHIPS OS</Text>
+          <View style={styles.subtitleLine} />
+        </View>
       </View>
 
       <Text style={styles.tagline}>
-        Your AI-powered partnership intelligence platform
+        Your network, intelligently connected.
       </Text>
 
-      <TouchableOpacity
-        style={[styles.googleButton, googleLoading && styles.buttonDisabled]}
-        onPress={handleGoogleSignIn}
-        disabled={googleLoading || !request}
-      >
-        {googleLoading ? (
-          <ActivityIndicator size="small" color="#0A0A0A" />
-        ) : (
-          <Text style={styles.googleButtonText}>Sign in with Google</Text>
-        )}
-      </TouchableOpacity>
+      <View style={styles.formContainer}>
+        <TouchableOpacity
+          style={[styles.googleButton, googleLoading && styles.buttonDisabled]}
+          onPress={handleGoogleSignIn}
+          disabled={googleLoading || !request}
+          activeOpacity={0.8}
+        >
+          {googleLoading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.googleButtonText}>Continue with Google</Text>
+          )}
+        </TouchableOpacity>
 
-      <View style={styles.divider}>
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>or dev login</Text>
-        <View style={styles.dividerLine} />
+        <View style={styles.divider}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>or</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <TextInput
+          style={styles.emailInput}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="your@email.com"
+          placeholderTextColor={colors.foregroundTertiary}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          onSubmitEditing={handleDevLogin}
+        />
+
+        <TouchableOpacity
+          style={[styles.devButton, devLoading && styles.buttonDisabled]}
+          onPress={handleDevLogin}
+          disabled={devLoading}
+          activeOpacity={0.8}
+        >
+          {devLoading ? (
+            <ActivityIndicator size="small" color={colors.foreground} />
+          ) : (
+            <Text style={styles.devButtonText}>Sign in with Email</Text>
+          )}
+        </TouchableOpacity>
       </View>
 
-      <TextInput
-        style={styles.emailInput}
-        value={email}
-        onChangeText={setEmail}
-        placeholder="your@approved-email.com"
-        placeholderTextColor="#555"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        onSubmitEditing={handleDevLogin}
-      />
-
-      <TouchableOpacity
-        style={[styles.devButton, devLoading && styles.buttonDisabled]}
-        onPress={handleDevLogin}
-        disabled={devLoading}
-      >
-        {devLoading ? (
-          <ActivityIndicator size="small" color="#6366F1" />
-        ) : (
-          <Text style={styles.devButtonText}>Dev Login</Text>
-        )}
-      </TouchableOpacity>
-
-      <Text style={styles.apiUrl}>{API_URL}</Text>
-    </View>
+      <View style={styles.bottomSpacer}>
+        <Text style={styles.apiUrl}>{API_URL}</Text>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A0A0A',
+    backgroundColor: colors.background,
+    paddingHorizontal: 32,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
   },
-  header: {
+  topSpacer: {
+    flex: 1.2,
+  },
+  brandContainer: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 20,
   },
   logoLetter: {
     fontStyle: 'italic',
-    fontSize: 100,
-    color: '#F1EFE7',
-    lineHeight: 110,
+    fontSize: 96,
+    color: colors.foreground,
+    lineHeight: 104,
+    fontWeight: '300',
   },
-  logo: {
-    color: '#F1EFE7',
-    fontSize: 28,
+  logoName: {
+    color: colors.foreground,
+    fontSize: 26,
     fontWeight: '300',
     fontStyle: 'italic',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
+    marginTop: -4,
+  },
+  subtitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    gap: 12,
+  },
+  subtitleLine: {
+    width: 24,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.foregroundMuted,
   },
   subtitle: {
-    color: '#555',
-    fontSize: 11,
+    color: colors.foregroundMuted,
+    fontSize: 10,
     fontWeight: '600',
     letterSpacing: 4,
-    marginTop: 6,
   },
   tagline: {
-    color: '#6B7280',
-    fontSize: 14,
+    color: colors.foregroundSecondary,
+    fontSize: 16,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 24,
     marginBottom: 40,
-    maxWidth: 280,
+    fontWeight: '400',
+  },
+  formContainer: {
+    width: '100%',
+    maxWidth: 340,
+    alignSelf: 'center',
   },
   googleButton: {
-    backgroundColor: '#F1EFE7',
-    paddingHorizontal: 32,
+    backgroundColor: colors.primary,
     paddingVertical: 16,
-    borderRadius: 12,
-    width: '100%',
-    maxWidth: 320,
+    borderRadius: 14,
     alignItems: 'center',
-    minHeight: 52,
+    minHeight: 54,
     justifyContent: 'center',
   },
   googleButtonText: {
-    color: '#0A0A0A',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+    letterSpacing: 0.2,
   },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
-    maxWidth: 320,
-    marginVertical: 20,
-    gap: 12,
+    marginVertical: 24,
+    gap: 16,
   },
   dividerLine: {
     flex: 1,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#222',
+    backgroundColor: colors.border,
   },
   dividerText: {
-    color: '#555',
-    fontSize: 12,
+    color: colors.foregroundMuted,
+    fontSize: 13,
+    fontWeight: '400',
   },
   emailInput: {
-    width: '100%',
-    maxWidth: 320,
-    backgroundColor: '#111',
+    backgroundColor: colors.backgroundCard,
     borderWidth: 1,
-    borderColor: '#222',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    color: '#F1EFE7',
-    fontSize: 15,
+    borderColor: colors.border,
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    color: colors.foreground,
+    fontSize: 16,
     marginBottom: 12,
   },
   devButton: {
-    width: '100%',
-    maxWidth: 320,
     borderWidth: 1,
-    borderColor: '#6366F1',
-    backgroundColor: 'rgba(99,102,241,0.1)',
-    paddingVertical: 14,
-    borderRadius: 12,
+    borderColor: colors.border,
+    backgroundColor: colors.backgroundCard,
+    paddingVertical: 16,
+    borderRadius: 14,
     alignItems: 'center',
-    minHeight: 50,
+    minHeight: 54,
     justifyContent: 'center',
   },
-  buttonDisabled: { opacity: 0.5 },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
   devButtonText: {
-    color: '#6366F1',
-    fontSize: 15,
+    color: colors.foreground,
+    fontSize: 16,
     fontWeight: '600',
+    letterSpacing: 0.2,
+  },
+  bottomSpacer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 32,
   },
   apiUrl: {
-    color: '#1F2937',
+    color: colors.foregroundTertiary,
     fontSize: 10,
-    marginTop: 24,
+    letterSpacing: 0.3,
   },
 });

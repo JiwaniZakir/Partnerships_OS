@@ -24,11 +24,8 @@ const devLoginSchema = z.object({
 export async function authRoutes(app: FastifyInstance): Promise<void> {
   const prisma = getPrisma();
 
-  // Dev login bypass — enabled in development OR when DEV_LOGIN_ENABLED=true
-  // Safe: still restricted to approved members list
-  const devLoginEnabled =
-    process.env.NODE_ENV === 'development' ||
-    process.env.DEV_LOGIN_ENABLED === 'true';
+  // Dev login bypass — ONLY in development (never production)
+  const devLoginEnabled = process.env.NODE_ENV === 'development';
 
   if (devLoginEnabled) {
     app.post('/auth/dev-login', async (request) => {

@@ -80,29 +80,29 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   return (
     <div className="fixed inset-0 z-50">
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 bg-white/60 backdrop-blur-sm"
         onClick={() => onOpenChange(false)}
       />
       <div className="fixed inset-0 flex items-start justify-center pt-[20vh]">
         <Command
-          className="w-full max-w-lg rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] shadow-2xl overflow-hidden"
+          className="w-full max-w-lg rounded-2xl border border-[#E5E0D8] bg-white shadow-2xl overflow-hidden"
           shouldFilter={false}
         >
           <Command.Input
             value={query}
             onValueChange={setQuery}
             placeholder="Search contacts, navigate, or run actions..."
-            className="w-full h-12 px-4 bg-transparent text-[#F1EFE7] placeholder:text-[#6B6560] text-sm border-b border-[#2A2A2A] outline-none"
+            className="w-full h-12 px-5 bg-transparent text-[#1A1A1A] placeholder:text-[#A09A90] text-sm border-b border-[#E5E0D8] outline-none"
           />
           <Command.List className="max-h-[300px] overflow-y-auto p-2">
-            <Command.Empty className="py-6 text-center text-sm text-[#6B6560]">
+            <Command.Empty className="py-8 text-center text-sm text-[#A09A90]">
               {searching ? 'Searching...' : 'No results found.'}
             </Command.Empty>
 
             {contacts.length > 0 && (
               <Command.Group
                 heading={
-                  <span className="text-[10px] uppercase tracking-wider text-[#6B6560] px-2">
+                  <span className="text-[10px] uppercase tracking-wider text-[#A09A90] px-2">
                     Contacts
                   </span>
                 }
@@ -112,7 +112,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                     key={contact.id}
                     value={contact.fullName}
                     onSelect={() => navigate(`/contacts/${contact.id}`)}
-                    className="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-[#A0998A] cursor-pointer data-[selected=true]:bg-[#2A2A2A] data-[selected=true]:text-[#F1EFE7]"
+                    className="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-[#6B6560] cursor-pointer data-[selected=true]:bg-[#F1EFE7] data-[selected=true]:text-[#1A1A1A]"
                   >
                     <User className="w-4 h-4 flex-shrink-0" />
                     <div className="min-w-0">
@@ -142,7 +142,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                     key={item.href}
                     value={item.label}
                     onSelect={() => navigate(item.href)}
-                    className="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-[#A0998A] cursor-pointer data-[selected=true]:bg-[#2A2A2A] data-[selected=true]:text-[#F1EFE7]"
+                    className="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-[#6B6560] cursor-pointer data-[selected=true]:bg-[#F1EFE7] data-[selected=true]:text-[#1A1A1A]"
                   >
                     <Icon className="w-4 h-4 flex-shrink-0" />
                     {item.label}
@@ -161,7 +161,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               <Command.Item
                 value="Sync Notion"
                 onSelect={triggerNotionSync}
-                className="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-[#A0998A] cursor-pointer data-[selected=true]:bg-[#2A2A2A] data-[selected=true]:text-[#F1EFE7]"
+                className="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-[#6B6560] cursor-pointer data-[selected=true]:bg-[#F1EFE7] data-[selected=true]:text-[#1A1A1A]"
               >
                 <RefreshCw className="w-4 h-4 flex-shrink-0" />
                 Sync to Notion

@@ -3,24 +3,24 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center text-xs font-mono transition-colors',
+  'inline-flex items-center text-xs font-medium rounded-full px-2.5 py-0.5 transition-colors',
   {
     variants: {
       variant: {
-        default: 'text-[#888888] before:content-["["] after:content-["]"]',
-        sponsor: 'text-[#888888] before:content-["["] after:content-["]"]',
-        mentor: 'text-[#888888] before:content-["["] after:content-["]"]',
-        speaker: 'text-[#888888] before:content-["["] after:content-["]"]',
-        investor: 'text-[#888888] before:content-["["] after:content-["]"]',
-        corporate: 'text-[#888888] before:content-["["] after:content-["]"]',
-        media: 'text-[#888888] before:content-["["] after:content-["]"]',
-        government: 'text-[#888888] before:content-["["] after:content-["]"]',
-        alumni: 'text-[#888888] before:content-["["] after:content-["]"]',
-        admin: 'text-white before:content-["["] after:content-["]"]',
-        success: 'text-[#888888] before:content-["["] after:content-["]"]',
-        warning: 'text-[#888888] before:content-["["] after:content-["]"]',
-        error: 'text-[#ef4444] before:content-["["] after:content-["]"]',
-        muted: 'text-[#444444] before:content-["["] after:content-["]"]',
+        default: 'bg-[#F1EFE7] text-[#6B6560]',
+        sponsor: 'bg-[#F1EFE7] text-[#6B6560]',
+        mentor: 'bg-[#F1EFE7] text-[#6B6560]',
+        speaker: 'bg-[#F1EFE7] text-[#6B6560]',
+        investor: 'bg-[#F1EFE7] text-[#6B6560]',
+        corporate: 'bg-[#F1EFE7] text-[#6B6560]',
+        media: 'bg-[#F1EFE7] text-[#6B6560]',
+        government: 'bg-[#F1EFE7] text-[#6B6560]',
+        alumni: 'bg-[#F1EFE7] text-[#6B6560]',
+        admin: 'bg-[#1A1A1A] text-white',
+        success: 'bg-[#2D6A4F]/10 text-[#2D6A4F]',
+        warning: 'bg-[#E9C46A]/20 text-[#8B6914]',
+        error: 'bg-[#C1121F]/10 text-[#C1121F]',
+        muted: 'bg-[#F1EFE7] text-[#A09A90]',
       },
     },
     defaultVariants: {

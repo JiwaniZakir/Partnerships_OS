@@ -1,15 +1,70 @@
 export const colors = {
-  background: '#0A0A0A',
-  backgroundCard: '#1A1A1A',
-  backgroundElevated: '#141414',
-  border: '#2A2A2A',
-  foreground: '#F1EFE7',
-  foregroundSecondary: '#A0998A',
-  foregroundMuted: '#6B6560',
-  primary: '#F1EFE7',
-  primaryForeground: '#0A0A0A',
-  accent: '#C4B99A',
-  destructive: '#EF4444',
-  warmAvatar: '#2A2823',
-  warmBubble: '#3D3A33',
+  // Backgrounds
+  background: '#F1EFE7',
+  backgroundCard: '#FFFFFF',
+  backgroundElevated: '#FAFAF7',
+  backgroundSubtle: '#F7F5EF',
+
+  // Borders
+  border: '#E5E0D8',
+  borderLight: '#EDEBE4',
+
+  // Foreground / Text
+  foreground: '#1A1A1A',
+  foregroundSecondary: '#6B6560',
+  foregroundMuted: '#A09A90',
+  foregroundTertiary: '#C5BFB5',
+
+  // Actions
+  primary: '#1A1A1A',
+  primaryForeground: '#F1EFE7',
+  accent: '#1A1A1A',
+  accentForeground: '#FFFFFF',
+
+  // Semantic
+  destructive: '#C1121F',
+  success: '#2D6A4F',
+  successLight: '#E8F5E9',
+  warning: '#E9C46A',
+  warningLight: '#FFF8E1',
+  info: '#5B7FA4',
+
+  // Warmth / Brand
+  warmAvatar: '#E5E0D8',
+  warmGold: '#D4A843',
+
+  // Chat Bubbles
+  warmBubble: '#FFFFFF',
+  userBubble: '#1A1A1A',
+  userBubbleText: '#FFFFFF',
+  assistantBubble: '#FFFFFF',
+  assistantBubbleText: '#1A1A1A',
 };
+
+export const spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 24,
+  xxxl: 32,
+} as const;
+
+export const radius = {
+  sm: 8,
+  md: 12,
+  lg: 14,
+  xl: 18,
+  pill: 999,
+} as const;
+
+export const fontSize = {
+  xs: 11,
+  sm: 13,
+  md: 15,
+  lg: 17,
+  xl: 20,
+  xxl: 24,
+  title: 28,
+} as const;

@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "Partnerships OS",
+    "name": "The Foundry",
     "slug": "fpos-mobile",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "fpos",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "backgroundColor": "#0A0A0A"
+      "backgroundColor": "#F1EFE7"
     },
     "ios": {
       "supportsTablet": false,
@@ -18,7 +18,7 @@
     "android": {
       "package": "com.partnerships.os",
       "adaptiveIcon": {
-        "backgroundColor": "#0A0A0A"
+        "backgroundColor": "#F1EFE7"
       }
     },
     "web": {

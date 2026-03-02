@@ -51,13 +51,13 @@ export default function ContactsPage() {
   }, [contacts]);
 
   return (
-    <div className="flex h-screen bg-[#0A0A0A]">
+    <div className="flex h-screen bg-[#F1EFE7]">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="font-serif italic text-2xl text-[#F1EFE7]">Contacts</h1>
+            <h1 className="font-serif italic text-2xl text-[#1A1A1A]">Contacts</h1>
             <div className="flex items-center gap-3">
               <span className="text-sm text-[#6B6560]">{pagination.total} total</span>
               <Button variant="secondary" size="sm" onClick={handleExport}>
@@ -67,11 +67,11 @@ export default function ContactsPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-5">
             <Input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search contacts by name, organization, or title..."
+              placeholder="Search by name, organization, or title..."
               className="max-w-md"
             />
             <Select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}>
@@ -90,19 +90,19 @@ export default function ContactsPage() {
           <Card className="overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#2A2A2A]">
-                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider">Name</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider">Organization</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider">Type</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider hidden lg:table-cell">Onboarded By</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider hidden md:table-cell">Warmth</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#6B6560] uppercase tracking-wider hidden md:table-cell">Added</th>
+                <tr className="border-b border-[#E5E0D8]">
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider">Name</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider">Organization</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider">Type</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider hidden lg:table-cell">Onboarded By</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider hidden md:table-cell">Warmth</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-medium text-[#A09A90] uppercase tracking-wider hidden md:table-cell">Added</th>
                 </tr>
               </thead>
               <tbody>
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
-                    <tr key={i} className="border-b border-[#2A2A2A]">
+                    <tr key={i} className="border-b border-[#E5E0D8]">
                       <td className="px-4 py-4"><div className="flex items-center gap-3"><Skeleton className="w-8 h-8 rounded-full" /><div className="space-y-1.5"><Skeleton className="h-3.5 w-28" /><Skeleton className="h-3 w-20" /></div></div></td>
                       <td className="px-4 py-4"><Skeleton className="h-3.5 w-24" /></td>
                       <td className="px-4 py-4"><Skeleton className="h-5 w-16 rounded-full" /></td>
@@ -112,25 +112,25 @@ export default function ContactsPage() {
                     </tr>
                   ))
                 ) : contacts.map((c: any) => (
-                  <tr key={c.id} className="border-b border-[#2A2A2A] last:border-0 hover:bg-[#141414] transition-colors">
-                    <td className="px-4 py-3">
+                  <tr key={c.id} className="border-b border-[#E5E0D8] last:border-0 hover:bg-[#FAFAF7] transition-colors">
+                    <td className="px-4 py-3.5">
                       <Link href={`/contacts/${c.id}`} className="flex items-center gap-3 group">
                         <Avatar name={c.fullName} size="sm" />
                         <div>
-                          <p className="text-sm font-medium text-[#F1EFE7] group-hover:text-[#C4B99A] transition-colors">{c.fullName}</p>
-                          <p className="text-xs text-[#6B6560]">{c.title}</p>
+                          <p className="text-sm font-medium text-[#1A1A1A] group-hover:underline transition-colors">{c.fullName}</p>
+                          <p className="text-xs text-[#A09A90]">{c.title}</p>
                         </div>
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#A0998A]">{c.organization}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-md ${contactTypeColor(c.contactType)}`}>
+                    <td className="px-4 py-3.5 text-sm text-[#6B6560]">{c.organization}</td>
+                    <td className="px-4 py-3.5">
+                      <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${contactTypeColor(c.contactType)}`}>
                         {c.contactType.replace(/_/g, ' ')}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#A0998A] hidden lg:table-cell">{c.onboardedBy?.name || '\u2014'}</td>
-                    <td className="px-4 py-3 text-sm text-[#C4B99A] hidden md:table-cell">{warmthToStars(c.warmthScore)}</td>
-                    <td className="px-4 py-3 text-sm text-[#6B6560] hidden md:table-cell">{formatDate(c.createdAt)}</td>
+                    <td className="px-4 py-3.5 text-sm text-[#6B6560] hidden lg:table-cell">{c.onboardedBy?.name || '\u2014'}</td>
+                    <td className="px-4 py-3.5 text-sm text-[#6B6560] hidden md:table-cell">{warmthToStars(c.warmthScore)}</td>
+                    <td className="px-4 py-3.5 text-sm text-[#A09A90] hidden md:table-cell">{formatDate(c.createdAt)}</td>
                   </tr>
                 ))}
                 {!isLoading && contacts.length === 0 && (
@@ -149,15 +149,15 @@ export default function ContactsPage() {
           </Card>
 
           {pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-[#6B6560]">Page {pagination.page} of {pagination.totalPages}</p>
+            <div className="flex items-center justify-between mt-5">
+              <p className="text-sm text-[#A09A90]">Page {pagination.page} of {pagination.totalPages}</p>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage(Math.max(1, page - 1))}
                   disabled={page <= 1}
-                  className="p-2 rounded-lg border border-[#2A2A2A] hover:bg-[#1A1A1A] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="p-2 rounded-xl border border-[#E5E0D8] bg-white hover:bg-[#FAFAF7] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  <ChevronLeft className="w-4 h-4 text-[#A0998A]" />
+                  <ChevronLeft className="w-4 h-4 text-[#6B6560]" />
                 </button>
                 {Array.from({ length: Math.min(pagination.totalPages, 7) }, (_, i) => {
                   const p = i + 1;
@@ -165,8 +165,8 @@ export default function ContactsPage() {
                     <button
                       key={p}
                       onClick={() => setPage(p)}
-                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                        page === p ? 'bg-[#F1EFE7] text-[#0A0A0A]' : 'hover:bg-[#1A1A1A] text-[#A0998A]'
+                      className={`w-9 h-9 text-sm rounded-xl transition-colors ${
+                        page === p ? 'bg-[#1A1A1A] text-white font-medium' : 'hover:bg-white text-[#6B6560]'
                       }`}
                     >
                       {p}
@@ -176,9 +176,9 @@ export default function ContactsPage() {
                 <button
                   onClick={() => setPage(Math.min(pagination.totalPages, page + 1))}
                   disabled={page >= pagination.totalPages}
-                  className="p-2 rounded-lg border border-[#2A2A2A] hover:bg-[#1A1A1A] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="p-2 rounded-xl border border-[#E5E0D8] bg-white hover:bg-[#FAFAF7] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  <ChevronRight className="w-4 h-4 text-[#A0998A]" />
+                  <ChevronRight className="w-4 h-4 text-[#6B6560]" />
                 </button>
               </div>
             </div>
